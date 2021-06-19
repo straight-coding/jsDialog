@@ -1,0 +1,12 @@
+.dlgTitle
+{
+    display: flex;
+}
+.dlgContent
+{
+    display: flex;
+}
+.dlgFooter
+{
+    display: flex;
+}

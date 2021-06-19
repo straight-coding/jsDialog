@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>jsDialog Examples</title>
+    <script src="jsDialog.js"></script>
+</head>
+<body>
+
+    <h1>This is a Heading</h1>
+    <p>This is a paragraph.</p>
+
+    <script>
+        var dlg1 = new jsDialog({
+            theme: '',
+            zIndex: 100,
+            frame: {
+                style: '',
+                resizable: true,
+            },
+            title: {
+                draggable: true,
+                left: {
+
+                },
+                middle: {
+
+                },
+                right: {
+                    maximize: true,
+                    fullScreen: true
+                }
+            },
+            content: {
+                wrapper: 'iframe',
+                url: '',
+                content: ''
+            },
+            footer: {
+                left: {
+
+                },
+                middle: {
+
+                },
+                right: {
+                    
+                }
+            },
+            onInitDialog: function(context) {
+            },
+            onContentLoaded: function(context) {
+            },
+            onEnter: function(context) {
+            },
+            onLeave: function(context) {
+            },
+            onDragged: function(context) {
+            },
+            onDropped: function(context) {
+            },
+            onClosed: function(context, result) {
+            }
+        });
+
+        dlg1.close();
+    </script>
+
+</body>
+</html>
