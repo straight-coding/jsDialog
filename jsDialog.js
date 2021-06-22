@@ -66,26 +66,60 @@ function jsDialog(opt)
     elemOverlay.style.zIndex = zIndex;
 
     var elemFrame = top.document.createElement("div");
-    elemFrame.className = 'dlgFrame';
-    elemFrame.style.width = '800px';
-    elemFrame.style.height = '600px';
-    elemFrame.style.left = '0px';
-    elemFrame.style.top = '0px';
-    elemFrame.style.zIndex = zIndex+1;
+        elemFrame.className = 'dlgFrame';
+        elemFrame.style.width = '800px';
+        elemFrame.style.height = '600px';
+        elemFrame.style.left = '0px';
+        elemFrame.style.top = '0px';
+        elemFrame.style.zIndex = zIndex+1;
 
     var elemTitle = top.document.createElement("div");
-    elemTitle.className = 'dlgTitle';
-    elemFrame.appendChild(elemTitle);
+        elemTitle.className = 'dlgTitle';
+
+    var elemTitleLeft = top.document.createElement("div");
+        elemTitleLeft.className = 'dlgTitleLeft';
+    var elemTitleLeftIcon = top.document.createElement("div");
+        elemTitleLeftIcon.className = 'dlgTitleIcon';
+        elemTitleLeftIcon.innerHTML = '<span></span>';
+        //elemTitleLeft.appendChild(elemTitleLeftIcon);
+        elemTitle.appendChild(elemTitleLeft);
+
+    var elemTitleMiddle = top.document.createElement("div");
+        elemTitleMiddle.className = 'dlgTitleMiddle';
+    var elemTitleText = top.document.createElement("div");
+        elemTitleText.className = 'dlgTitleText';
+        elemTitleText.innerHTML = '<span>Dialog Examples</span>';
+        elemTitleMiddle.appendChild(elemTitleText);
+        elemTitle.appendChild(elemTitleMiddle);
+
+    var elemTitleRight = top.document.createElement("div");
+        elemTitleRight.className = 'dlgTitleRight';
+    var elemTitleMin = top.document.createElement("div");
+        elemTitleMin.className = 'dlgTitleIcon';
+        elemTitleMin.innerHTML = '<span>&#9866;</span>';
+        elemTitleRight.appendChild(elemTitleMin);
+    var elemTitleMax = top.document.createElement("div");
+        elemTitleMax.className = 'dlgTitleIcon';
+        elemTitleMax.innerHTML = '<span>&#9744;</span>';
+        elemTitleRight.appendChild(elemTitleMax);
+    var elemTitleClose = top.document.createElement("div");
+        elemTitleClose.className = 'dlgTitleIcon dlgClose';
+        elemTitleClose.innerHTML = '<span>&#10005;</span>';
+        elemTitleRight.appendChild(elemTitleClose);
+
+        elemTitle.appendChild(elemTitleRight);
+
+        elemFrame.appendChild(elemTitle);
 
     var elemContent = top.document.createElement("div");
-    elemContent.className = 'dlgContent';
-    elemFrame.appendChild(elemContent);
+        elemContent.className = 'dlgContent';
+        elemFrame.appendChild(elemContent);
 
     var elemFooter = top.document.createElement("div");
-    elemFooter.className = 'dlgFooter';
-    elemFrame.appendChild(elemFooter);
+        elemFooter.className = 'dlgFooter';
+        //elemFrame.appendChild(elemFooter);
 
-    elemOverlay.appendChild(elemFrame);
+        elemOverlay.appendChild(elemFrame);
 
     if (elemTopBody.hasChildNodes())
     {
@@ -109,7 +143,7 @@ function jsDialog(opt)
         dragging = true;
         elemOverlay.addEventListener('mousemove', onMouseMove);
         elemOverlay.addEventListener('mouseup', onMouseUp);
-        elemTitle.addEventListener('mouseleave', onMouseUp);
+        elemOverlay.addEventListener('mouseleave', onMouseUp);
     }
 
     function onMouseMove(event)
