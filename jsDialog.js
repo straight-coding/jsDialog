@@ -187,7 +187,7 @@ function jsDialog(opt)
 
         elemOverlay.removeEventListener('mousemove', onMouseMove);
         elemOverlay.removeEventListener('mouseup', onMouseUp);
-        elemTitle.removeEventListener('mouseleave', onMouseUp);
+        elemOverlay.removeEventListener('mouseleave', onMouseUp);
     }
 
     function isObject(obj)
