@@ -12,7 +12,7 @@
     background-color: (0, 0, 0);
     overflow: hidden;
 }
-.dlgFrame
+.dragBox
 {
     box-sizing: border-box; 
     display: flex;
@@ -21,7 +21,67 @@
     top: 50px; 
     left: 150px;
 
+    margin: 0;
+    padding: 0;
+
 	flex-flow: column nowrap;
+    border: 0;
+}
+.rowTop,
+.rowMiddle,
+.rowBottom
+{
+    box-sizing: border-box; 
+    display: flex;
+
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+	flex-flow: row nowrap;
+    border: 0;
+}
+.dragTL,.dragT,.dragTR,.dragL,.dragCenter,.dragR,.dragBL,.dragB,.dragBR
+{
+    box-sizing: border-box; 
+    display: flex;
+
+    margin: 0;
+    padding: 0;
+
+    border: solid 0px gray;
+}
+.dragTL,.dragT,.dragTR,.dragBL,.dragB,.dragBR
+{
+    height: 100%;
+}
+.rowMiddle,.dragT,.dragCenter,.dragB
+{
+    flex: 1 0 auto;
+}
+.dragTL { cursor: nw-resize; }
+.dragT  { cursor: n-resize; }
+.dragTR { cursor: ne-resize; }
+.dragL  { cursor: w-resize; }
+.dragR  { cursor: e-resize; }
+.dragBL { cursor: sw-resize; }
+.dragB  { cursor: s-resize; }
+.dragBR { cursor: se-resize; }
+.dlgFrame
+{
+    box-sizing: border-box; 
+    display: flex;
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+	flex-flow: column nowrap;
+
     border: solid 1px gray;
 /*
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -55,6 +115,8 @@
 
     width: 46px;
     height: 100%;
+
+    font-size: 14px;
     color: black;
 }
 .dlgTitleIcon:hover
