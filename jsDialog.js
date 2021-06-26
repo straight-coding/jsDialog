@@ -221,12 +221,82 @@ function jsDialog(opt)
         return (val != undefined) && (val != null);
     }
 
+    function inRect(event, rect, tol)
+    {
+        var tolerant = 0;
+        if (tol)
+            tolerant = tol;
+
+        if ((event.clientX > rect.left + tolerant) &&
+            (event.clientX < rect.left + rect.width - tolerant) &&
+            (event.clientY > rect.top + tolerant) &&
+            (event.clientY < rect.top + rect.height - tolerant))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    function hoverTest(event, tol)
+    {
+        var tolerant = 0;
+        if (tol)
+            tolerant = tol;
+
+        var rectTitle = elemTitle.getBoundingClientRect();
+        if (inRect(event, rectTitle, tolerant))
+            return 'title';
+
+        var rect = elemFrame.getBoundingClientRect();
+        if (inRect(event, {left: (rect.left-tolerant), top: (rect.top-tolerant), width: (2*tolerant), height: (2*tolerant)}))
+            return 'nw';
+        if (inRect(event, {left: (rect.left-tolerant), top: (rect.top+rect.height-tolerant), width: (2*tolerant), height: (2*tolerant)}))
+            return 'sw';
+        if (inRect(event, {left: (rect.left+rect.width-tolerant), top: (rect.top-tolerant), width: (2*tolerant), height: (2*tolerant)}))
+            return 'ne';
+        if (inRect(event, {left: (rect.left+rect.width-tolerant), top: (rect.top+rect.height-tolerant), width: (2*tolerant), height: (2*tolerant)}))
+            return 'se';
+        if (inRect(event, {left: (rect.left+tolerant), top: (rect.top-tolerant), width: (rect.width-2*tolerant), height: (2*tolerant)}))
+            return 'n';
+        if (inRect(event, {left: (rect.left+tolerant), top: (rect.top+rect.height-tolerant), width: (rect.width-2*tolerant), height: (2*tolerant)}))
+            return 's';
+        if (inRect(event, {left: (rect.left-tolerant), top: (rect.top+tolerant), width: 2*tolerant, height: (rect.height-2*tolerant)}))
+            return 'w';
+        if (inRect(event, {left: (rect.left+rect.width-tolerant), top: (rect.top+tolerant), width: 2*tolerant, height: (rect.height-2*tolerant)}))
+            return 'e';
+
+        //document.body.style.cursor = 'wait';
+    }
+
+    function changeCursor(pos)
+    {
+        if (pos == 'title') document.body.style.cursor = 'move';
+        else if (pos == 'nw') document.body.style.cursor = 'nw-resize';
+        else if (pos == 'n') document.body.style.cursor = 'n-resize';
+        else if (pos == 'ne') document.body.style.cursor = 'ne-resize';
+        else if (pos == 'w') document.body.style.cursor = 'w-resize';
+        else if (pos == 'e') document.body.style.cursor = 'e-resize';
+        else if (pos == 'sw') document.body.style.cursor = 'sw-resize';
+        else if (pos == 's') document.body.style.cursor = 's-resize';
+        else if (pos == 'se') document.body.style.cursor = 'se-resize';
+        else document.body.style.cursor = 'default';
+    }
+
     function onMouseDown(event)
     {
         event = event || window.event;
         event.preventDefault();
 
+        var pos = hoverTest(event, 4);
+        if (pos)
+        {
+            console.log(pos);
+            dragging = pos;
+        }
+/*
         var element = (event.target || event.srcElement);
+
         if (element.closest(".dlgTitle"))
             dragging = 'title';
         else if (element.closest(".dragTL"))
@@ -245,7 +315,7 @@ function jsDialog(opt)
             dragging = 's';
         else if (element.closest(".dragBR"))
             dragging = 'se';
-            
+*/            
         if (dragging)
         {
             console.log('onMouseDown', event);
@@ -262,6 +332,8 @@ function jsDialog(opt)
 
         if (!dragging)
         {
+            var pos = hoverTest(event, 4);
+            changeCursor(pos);
             return;
         }
 

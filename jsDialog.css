@@ -60,6 +60,7 @@
 {
     flex: 1 0 auto;
 }
+/*
 .dragTL { cursor: nw-resize; }
 .dragT  { cursor: n-resize; }
 .dragTR { cursor: ne-resize; }
@@ -68,6 +69,7 @@
 .dragBL { cursor: sw-resize; }
 .dragB  { cursor: s-resize; }
 .dragBR { cursor: se-resize; }
+*/
 .dlgFrame
 {
     box-sizing: border-box; 
