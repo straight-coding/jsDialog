@@ -432,13 +432,10 @@ function jsDialog(opt)
             elemOverlay.style.display = 'none';
         },
         close: function() {
-            if (settings.draggable) {
-                elemTitle.removeEventListener('mousedown', onMouseDown);
-                
-                elemOverlay.removeEventListener('mousemove', onMouseMove);
-                elemOverlay.removeEventListener('mouseup', onMouseUp);
-                elemOverlay.removeEventListener('mouseleave', onMouseUp);
-            }
+            elemOverlay.removeEventListener('mousedown', onMouseDown);
+            elemOverlay.removeEventListener('mousemove', onMouseMove);
+            elemOverlay.removeEventListener('mouseup', onMouseUp);
+            elemOverlay.removeEventListener('mouseleave', onMouseUp);
         }
     };
 }
