@@ -131,13 +131,21 @@ function jsDialog(opt)
         elemTitleLeft.className = 'dlgTitleLeft' + _settings.theme;
         elemTitle.appendChild(elemTitleLeft);
 
-    var elemTitleLeftIcon = top.document.createElement("div");
-        elemTitleLeftIcon.className = 'dlgTitleIcon' + _settings.theme;
-        elemTitleLeftIcon.innerHTML = '<span>&#9783;</span>';
-        elemTitleLeft.appendChild(elemTitleLeftIcon);
+    var hasTitleLeft = false;
+    if (_settings.title && _settings.title.left && _settings.title.left.html)
+    {
+        hasTitleLeft = true;
+        elemTitleLeft.innerHTML = _settings.title.left.html;
+    }
 
+    var rectTitleLeft = elemTitleLeft.getBoundingClientRect();
     var elemTitleMiddle = top.document.createElement("div");
         elemTitleMiddle.className = 'dlgTitleMiddle' + _settings.theme;
+        if (hasTitleLeft && _settings.title.middle)
+        {
+            if (_settings.title.middle.align == 'left')
+                elemTitleMiddle.style.left = rectTitleLeft.width + 'px';
+        }
         elemTitle.appendChild(elemTitleMiddle);
 
     var elemTitleText = top.document.createElement("div");
