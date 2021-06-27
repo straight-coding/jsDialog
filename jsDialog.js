@@ -6,7 +6,7 @@ if (window.top === window.self)
     var liveDialogs = {};
     var deadDialogs = {};
 
-    setTimeout(function() {
+    setInterval(function(){
         dialogGC();
     }, 100);
 
@@ -14,24 +14,34 @@ if (window.top === window.self)
     {
         for(var dlgID in deadDialogs)
         {
-
+            var dlg = top.document.getElementById(dlgID);
+            if (dlg && dlg.parentNode)
+                dlg.parentNode.removeChild(dlg);
+            delete deadDialogs[dlgID];
         }
     }
+}
 
-    // https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid/2117523#2117523
-    function getUuid()
-    {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
-    }
+// https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid/2117523#2117523
+function getUuid()
+{
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
 
-    function getNextZindex()
-    {
-        var curIndex = zIndexNext;
-        zIndexNext += 10;
-        return curIndex;
+function getNextZindex()
+{
+    var curIndex = top.zIndexNext;
+    top.zIndexNext += 10;
+    return curIndex;
+}
+
+function deferRemove(dlgID)
+{
+    top.deadDialogs[dlgID] = {
+        t: new Date()
     }
 }
 
@@ -50,171 +60,122 @@ if (window.top === window.self)
  */
 function jsDialog(opt)
 {
-    var settings = opt;
-    var dlgId = getUuid();
-    var zIndex = getNextZindex();
+    var _default = {
+        id: getUuid(),
+        zIndex: getNextZindex(),
+        dragging: {
+            enabled: true,
+        },
+        resizing: {
+            enabled: true,
+            handleSize: 4
+        },
+        width: 600,
+        height: 400,
+        minWidth: 320,
+        maxWidth: 1024,
+        minHeight: 200,
+        maxHeight: 800
+    };
+
+    var _settings = deepMerge(_default, opt);
+    if (!valid(_settings.theme))
+        _settings.theme = '';
+    if (_settings.theme && (_settings.theme.substring(0, 1) != '-'))
+        _settings.theme = '-' + _settings.theme;
+
+    var _dragging = null; //title, n, s, w, e, nw, ne, sw, se
+
+    var _lastPosition = {};
+
     var elemTopBody = top.document.body;
-
-    var dragging = null; //title, n, s, w, e, nw, ne, sw, se
-
-    var lastPosition = {};
-
     var elemOverlay = top.document.createElement("div");
-    elemOverlay.id = dlgId;
-    elemOverlay.className = 'dlgOverlay';
-    //dlgElem.setAttribute('class', 'dlgOverlay');
-    elemOverlay.style.display = 'none';
-    elemOverlay.style.zIndex = zIndex;
+        elemOverlay.id = _settings.id;
+        elemOverlay.className = 'dlgOverlay' + _settings.theme;
+        elemOverlay.style.display = 'flex';
+        elemOverlay.style.zIndex = _settings.zIndex;
 
-    var dlgWidth = 600;
-    var dlgHeight = 400;
+    if (elemTopBody.hasChildNodes())
+        elemTopBody.children[0].prepend(elemOverlay);
+    else
+        elemTopBody.appendChild(elemOverlay);
 
-    var dlgMinWidth = 320;
-    var dlgMinHeight = 200;
+    if (valid(_settings.minMidth) && (_settings.width < _settings.minWidth))
+        _settings.width = _settings.minWidth;
+    if (valid(_settings.maxWidth) && (_settings.width > _settings.maxWidth))
+        _settings.width = _settings.maxWidth;
 
-    var dlgMaxWidth = 1024;
-    var dlgMaxHeight = 800;
+    if (valid(_settings.minHeight) && (_settings.height < _settings.minHeight))
+        _settings.height = _settings.minHeight;
+    if (valid(_settings.maxHeight) && (_settings.height > _settings.maxHeight))
+        _settings.height = _settings.maxHeight;
 
-    var handleSize = 4;
-
-    if (valid(dlgMinWidth) && (dlgWidth < dlgMinWidth))
-        dlgWidth = dlgMinWidth;
-    if (valid(dlgMaxWidth) && (dlgWidth > dlgMaxWidth))
-        dlgWidth = dlgMaxWidth;
-
-    if (valid(dlgMinHeight) && (dlgHeight < dlgMinHeight))
-        dlgHeight = dlgMinHeight;
-    if (valid(dlgMaxHeight) && (dlgHeight > dlgMaxHeight))
-        dlgHeight = dlgMaxHeight;
-
-    var dragBox = top.document.createElement("div");
-    dragBox.className = 'dragBox';
-    dragBox.style.width = (dlgWidth + 2 * handleSize) + 'px';
-    dragBox.style.height = (dlgHeight + 2 * handleSize) + 'px';
-    dragBox.style.left = '0px';
-    dragBox.style.top = '0px';
-    dragBox.style.zIndex = zIndex+2;
-    elemOverlay.appendChild(dragBox);
-
-    var rowTop = top.document.createElement("div");
-    rowTop.className = 'rowTop';
-    rowTop.style.height = handleSize + 'px';
-    dragBox.appendChild(rowTop);
-
-    var rowMiddle = top.document.createElement("div");
-    rowMiddle.className = 'rowMiddle';
-    dragBox.appendChild(rowMiddle);
-
-    var rowBottom = top.document.createElement("div");
-    rowBottom.className = 'rowBottom';
-    rowBottom.style.height = handleSize + 'px';
-    dragBox.appendChild(rowBottom);
-
-    var dragTL = top.document.createElement("div");
-    dragTL.className = 'dragTL';
-    dragTL.style.width = handleSize + 'px';
-    rowTop.appendChild(dragTL);
-
-    var dragT = top.document.createElement("div");
-    dragT.className = 'dragT';
-    rowTop.appendChild(dragT);
-    
-    var dragTR = top.document.createElement("div");
-    dragTR.className = 'dragTR';
-    dragTR.style.width = handleSize + 'px';
-    rowTop.appendChild(dragTR);
-
-    var dragL = top.document.createElement("div");
-    dragL.className = 'dragL';
-    dragL.style.width = handleSize + 'px';
-    rowMiddle.appendChild(dragL);
-
-    var dragCenter = top.document.createElement("div");
-    dragCenter.className = 'dragCenter';
-    rowMiddle.appendChild(dragCenter);
-
-    var dragR = top.document.createElement("div");
-    dragR.className = 'dragR';
-    dragR.style.width = handleSize + 'px';
-    rowMiddle.appendChild(dragR);
-
-    var dragBL = top.document.createElement("div");
-    dragBL.className = 'dragBL';
-    dragBL.style.width = handleSize + 'px';
-    rowBottom.appendChild(dragBL);
-
-    var dragB = top.document.createElement("div");
-    dragB.className = 'dragB';
-    rowBottom.appendChild(dragB);
-
-    var dragBR = top.document.createElement("div");
-    dragBR.className = 'dragBR';
-    dragBR.style.width = handleSize + 'px';
-    rowBottom.appendChild(dragBR);
+    var rectOverlay = elemOverlay.getBoundingClientRect();
+    var dlgTop  = (rectOverlay.height - _settings.height - 2 * _settings.resizing.handleSize)/2;
+    var dlgLeft = (rectOverlay.width - _settings.width - 2 * _settings.resizing.handleSize)/2;
 
     var elemFrame = top.document.createElement("div");
-    elemFrame.className = 'dlgFrame';
-    elemFrame.style.zIndex = zIndex+2;
-    dragCenter.appendChild(elemFrame);
+        elemFrame.className = 'dlgFrame' + _settings.theme;
+        elemFrame.style.width  = (_settings.width + 2 * _settings.resizing.handleSize) + 'px';
+        elemFrame.style.height = (_settings.height + 2 * _settings.resizing.handleSize) + 'px';
+        elemFrame.style.left = (dlgLeft>0 ? dlgLeft : 0) + 'px';
+        elemFrame.style.top = (dlgTop>0 ? dlgTop: 0) + 'px';
+        elemFrame.style.zIndex = _settings.zIndex + 1;
+        elemOverlay.appendChild(elemFrame);
 
     var elemTitle = top.document.createElement("div");
-        elemTitle.className = 'dlgTitle';
+        elemTitle.className = 'dlgTitle' + _settings.theme;
+        elemFrame.appendChild(elemTitle);
 
     var elemTitleLeft = top.document.createElement("div");
-        elemTitleLeft.className = 'dlgTitleLeft';
-    var elemTitleLeftIcon = top.document.createElement("div");
-        elemTitleLeftIcon.className = 'dlgTitleIcon';
-        elemTitleLeftIcon.innerHTML = '<span></span>';
-        //elemTitleLeft.appendChild(elemTitleLeftIcon);
+        elemTitleLeft.className = 'dlgTitleLeft' + _settings.theme;
         elemTitle.appendChild(elemTitleLeft);
 
+    var elemTitleLeftIcon = top.document.createElement("div");
+        elemTitleLeftIcon.className = 'dlgTitleIcon' + _settings.theme;
+        elemTitleLeftIcon.innerHTML = '<span>&#9783;</span>';
+        elemTitleLeft.appendChild(elemTitleLeftIcon);
+
     var elemTitleMiddle = top.document.createElement("div");
-        elemTitleMiddle.className = 'dlgTitleMiddle';
-    var elemTitleText = top.document.createElement("div");
-        elemTitleText.className = 'dlgTitleText';
-        elemTitleText.innerHTML = '<span>Dialog Examples</span>';
-        elemTitleMiddle.appendChild(elemTitleText);
+        elemTitleMiddle.className = 'dlgTitleMiddle' + _settings.theme;
         elemTitle.appendChild(elemTitleMiddle);
 
+    var elemTitleText = top.document.createElement("div");
+        elemTitleText.className = 'dlgTitleText' + _settings.theme;
+        elemTitleText.innerHTML = '<span>Dialog Examples</span>';
+        elemTitleMiddle.appendChild(elemTitleText);
+
     var elemTitleRight = top.document.createElement("div");
-        elemTitleRight.className = 'dlgTitleRight';
+        elemTitleRight.className = 'dlgTitleRight' + _settings.theme;
+        elemTitle.appendChild(elemTitleRight);
+
     var elemTitleMin = top.document.createElement("div");
-        elemTitleMin.className = 'dlgTitleIcon';
+        elemTitleMin.className = 'dlgTitleIcon' + _settings.theme;
         elemTitleMin.innerHTML = '<span>&#9866;</span>';
         elemTitleRight.appendChild(elemTitleMin);
+
     var elemTitleMax = top.document.createElement("div");
-        elemTitleMax.className = 'dlgTitleIcon';
+        elemTitleMax.className = 'dlgTitleIcon' + _settings.theme;
         elemTitleMax.innerHTML = '<span>&#9744;</span>';
         elemTitleRight.appendChild(elemTitleMax);
+
     var elemTitleRestore = top.document.createElement("div");
-        elemTitleRestore.className = 'dlgTitleIcon';
+        elemTitleRestore.className = 'dlgTitleIcon' + _settings.theme;
         elemTitleRestore.innerHTML = '<span>&#10064;</span>';
         elemTitleRight.appendChild(elemTitleRestore);
+
     var elemTitleClose = top.document.createElement("div");
-        elemTitleClose.className = 'dlgTitleIcon dlgClose';
+        elemTitleClose.className = 'dlgTitleIcon' + _settings.theme + ' dlgClose' + _settings.theme;
         elemTitleClose.innerHTML = '<span>&#10005;</span>';
         elemTitleRight.appendChild(elemTitleClose);
 
-        elemTitle.appendChild(elemTitleRight);
-
-        elemFrame.appendChild(elemTitle);
-
     var elemContent = top.document.createElement("div");
-        elemContent.className = 'dlgContent';
+        elemContent.className = 'dlgContent' + _settings.theme;
         elemFrame.appendChild(elemContent);
 
     var elemFooter = top.document.createElement("div");
-        elemFooter.className = 'dlgFooter';
+        elemFooter.className = 'dlgFooter' + _settings.theme;
         //elemFrame.appendChild(elemFooter);
-
-    if (elemTopBody.hasChildNodes())
-    {
-        elemTopBody.children[0].prepend(elemOverlay);
-    }
-    else
-    {
-        elemTopBody.appendChild(elemOverlay);
-    }
 
     function valid(val)
     {
@@ -266,21 +227,21 @@ function jsDialog(opt)
         if (inRect(event, {left: (rect.left+rect.width-tolerant), top: (rect.top+tolerant), width: 2*tolerant, height: (rect.height-2*tolerant)}))
             return 'e';
 
-        //document.body.style.cursor = 'wait';
+        return '';
     }
 
     function changeCursor(pos)
     {
-        if (pos == 'title') document.body.style.cursor = 'move';
-        else if (pos == 'nw') document.body.style.cursor = 'nw-resize';
-        else if (pos == 'n') document.body.style.cursor = 'n-resize';
-        else if (pos == 'ne') document.body.style.cursor = 'ne-resize';
-        else if (pos == 'w') document.body.style.cursor = 'w-resize';
-        else if (pos == 'e') document.body.style.cursor = 'e-resize';
-        else if (pos == 'sw') document.body.style.cursor = 'sw-resize';
-        else if (pos == 's') document.body.style.cursor = 's-resize';
-        else if (pos == 'se') document.body.style.cursor = 'se-resize';
-        else document.body.style.cursor = 'default';
+        if (pos == 'title') elemOverlay.style.cursor = 'move';
+        else if (pos == 'nw') elemOverlay.style.cursor = 'nw-resize';
+        else if (pos == 'n') elemOverlay.style.cursor = 'n-resize';
+        else if (pos == 'ne') elemOverlay.style.cursor = 'ne-resize';
+        else if (pos == 'w') elemOverlay.style.cursor = 'w-resize';
+        else if (pos == 'e') elemOverlay.style.cursor = 'e-resize';
+        else if (pos == 'sw') elemOverlay.style.cursor = 'sw-resize';
+        else if (pos == 's') elemOverlay.style.cursor = 's-resize';
+        else if (pos == 'se') elemOverlay.style.cursor = 'se-resize';
+        else elemOverlay.style.cursor = 'default';
     }
 
     function onMouseDown(event)
@@ -292,36 +253,17 @@ function jsDialog(opt)
         if (pos)
         {
             console.log(pos);
-            dragging = pos;
+            _dragging = pos;
         }
 /*
         var element = (event.target || event.srcElement);
-
-        if (element.closest(".dlgTitle"))
-            dragging = 'title';
-        else if (element.closest(".dragTL"))
-            dragging = 'nw';
-        else if (element.closest(".dragT"))
-            dragging = 'n';
-        else if (element.closest(".dragTR"))
-            dragging = 'ne';
-        else if (element.closest(".dragL"))
-            dragging = 'w';
-        else if (element.closest(".dragR"))
-            dragging = 'e';
-        else if (element.closest(".dragBL"))
-            dragging = 'sw';
-        else if (element.closest(".dragB"))
-            dragging = 's';
-        else if (element.closest(".dragBR"))
-            dragging = 'se';
 */            
-        if (dragging)
+        if (_dragging)
         {
             console.log('onMouseDown', event);
 
-            lastPosition.x = event.clientX;
-            lastPosition.y = event.clientY;
+            _lastPosition.x = event.clientX;
+            _lastPosition.y = event.clientY;
         }
     }
 
@@ -330,26 +272,26 @@ function jsDialog(opt)
         event = event || window.event;
         event.preventDefault();
 
-        if (!dragging)
+        if (!_dragging)
         {
             var pos = hoverTest(event, 4);
             changeCursor(pos);
             return;
         }
 
-        var deltaX = event.clientX - lastPosition.x;
-        var deltaY = event.clientY - lastPosition.y;
+        var deltaX = event.clientX - _lastPosition.x;
+        var deltaY = event.clientY - _lastPosition.y;
 
-        lastPosition.x = event.clientX;
-        lastPosition.y = event.clientY;
+        _lastPosition.x = event.clientX;
+        _lastPosition.y = event.clientY;
 
         //console.log('onMouseMove', event);
 
         var lastPos = {
-            top: parseInt(dragBox.style.top),
-            left: parseInt(dragBox.style.left),
-            width: parseInt(dragBox.style.width),
-            height: parseInt(dragBox.style.height)
+            top: parseInt(elemFrame.style.top),
+            left: parseInt(elemFrame.style.left),
+            width: parseInt(elemFrame.style.width),
+            height: parseInt(elemFrame.style.height)
         };
 
         var dlgSize = {
@@ -359,44 +301,45 @@ function jsDialog(opt)
             height: lastPos.height
         };
 
-        if ((dragging === 'title') || (dragging === 'w') || (dragging === 'nw') || (dragging === 'sw'))
+        if ((_dragging === 'title') || (_dragging === 'w') || (_dragging === 'nw') || (_dragging === 'sw'))
         { //title, n, s, w, e, nw, ne, sw, se        
             dlgSize.left += deltaX;
-            if (dragging !== 'title')
+            if (_dragging !== 'title')
                 dlgSize.width -= deltaX;
         }
-        if ((dragging === 'title') || (dragging === 'n') || (dragging === 'nw') || (dragging === 'ne'))
+        if ((_dragging === 'title') || (_dragging === 'n') || (_dragging === 'nw') || (_dragging === 'ne'))
         { //title, n, s, w, e, nw, ne, sw, se        
             dlgSize.top += deltaY;
-            if (dragging !== 'title')
+            if (_dragging !== 'title')
                 dlgSize.height -= deltaY;
         }
-        if ((dragging === 'e') || (dragging === 'ne') || (dragging === 'se'))
+        if ((_dragging === 'e') || (_dragging === 'ne') || (_dragging === 'se'))
             dlgSize.width += deltaX;
-        if ((dragging === 's') || (dragging === 'sw') || (dragging === 'se'))
+        if ((_dragging === 's') || (_dragging === 'sw') || (_dragging === 'se'))
             dlgSize.height += deltaY;
 
-        if (valid(dlgMinWidth) && (dlgSize.width < dlgMinWidth))
-            dlgSize.width = dlgMinWidth;
-        if (valid(dlgMaxWidth) && (dlgSize.width > dlgMaxWidth))
-            dlgSize.width = dlgMaxWidth;
-        if (valid(dlgMinHeight) && (dlgSize.height < dlgMinHeight))
-            dlgSize.height = dlgMinHeight;
-        if (valid(dlgMaxHeight) && (dlgSize.height > dlgMaxHeight))
-            dlgSize.height = dlgMaxHeight;
+        if (valid(_settings.minWidth) && (dlgSize.width < _settings.minWidth))
+            dlgSize.width = _settings.minWidth;
+        if (valid(_settings.maxWidth) && (dlgSize.width > _settings.maxWidth))
+            dlgSize.width = _settings.maxWidth;
     
-        dragBox.style.top = dlgSize.top + 'px';
-        dragBox.style.left = dlgSize.left + 'px';
-        dragBox.style.width = dlgSize.width + 'px';
-        dragBox.style.height = dlgSize.height + 'px';
+        if (valid(_settings.minHeight) && (dlgSize.height < _settings.minHeight))
+            dlgSize.height = _settings.minHeight;
+        if (valid(_settings.maxHeight) && (dlgSize.height > _settings.maxHeight))
+            dlgSize.height = _settings.maxHeight;
+    
+        elemFrame.style.top = dlgSize.top + 'px';
+        elemFrame.style.left = dlgSize.left + 'px';
+        elemFrame.style.width = dlgSize.width + 'px';
+        elemFrame.style.height = dlgSize.height + 'px';
 
         if ((dlgSize.top == lastPos.top) && 
             (dlgSize.left == lastPos.left) && 
             (dlgSize.width == lastPos.width) && 
             (dlgSize.height == lastPos.height))
         {
-            dragging = null;
-            lastPosition = {};
+            _dragging = null;
+            _lastPosition = {};
         }
     }
 
@@ -407,8 +350,8 @@ function jsDialog(opt)
 
         console.log('onMouseUp', event);
 
-        dragging = null;
-        lastPosition = {};
+        _dragging = null;
+        _lastPosition = {};
     }
 
     function isObject(obj)
@@ -438,62 +381,94 @@ function jsDialog(opt)
     console.log(JSON.parse(JSON.stringify(A.a)));
     console.log(deepMerge(A, B));
 */
-    function deepMerge(obj, override)
+    function deepMerge()
     {
-        if ((typeof (obj) === 'undefined') || (typeof (obj) === 'null'))
+        var objs = [];
+        for(var i = 0; i < arguments.length; i ++)
         {
-            if ((typeof (override) === 'undefined') || (typeof (override) === 'null'))
-                return null;
-            return JSON.parse(JSON.stringify(override));
-        }
-        else if ((typeof (override) === 'undefined') || (typeof (override) === 'null'))
-        {
-            return JSON.parse(JSON.stringify(obj));
+            if ((arguments[i] == undefined) || (arguments[i] == null))
+                continue;
+            if (typeof (arguments[i]) == 'object')
+                objs.push(arguments[i]);
         }
 
-        var objCopy = JSON.parse(JSON.stringify(obj));
-        var overCopy = JSON.parse(JSON.stringify(override));
-        if (Array.isArray(obj))
-        {
-            if (Array.isArray(override))
-                return objCopy.concat(overCopy);
-
-            objCopy.push(overCopy);
-            return objCopy;
-        }
-        else if ((typeof (obj) !== 'object') || Array.isArray(override))
-        {
+        if (objs.length == 0)
             return null;
+
+        var target = {};
+        var isArray = false;
+        if (Array.isArray(objs[0]))
+        {
+            isArray = true;
+            target = [];
         }
 
-        for(var key in objCopy)
+        for(var i = 0; i < objs.length; i ++)
         {
-            if (key in overCopy)
+            if (isArray)
             {
-                if (isObject(objCopy[key]))
-                    objCopy[key] = deepMerge(objCopy[key], JSON.parse(JSON.stringify(overCopy[key])));
-                else
-                    objCopy[key] = JSON.parse(JSON.stringify(overCopy[key]));
-                delete overCopy[key];
+                if (!Array.isArray(objs[i]))
+                    continue;
+                for(var j = 0; j < objs[i].length; j ++)
+                {
+                    if (Array.isArray(objs[i][j]))
+                        target.push(deepMerge([], objs[i][j]));
+                    else if (typeof (objs[i][j]) == 'object')
+                        target.push(deepMerge({}, objs[i][j]));
+                    else
+                        target.push(objs[i][j]);
+                }
+            }
+            else
+            {
+                if (Array.isArray(objs[i]))
+                    continue;
+                for(var k in objs[i])
+                {
+                    if (Array.isArray(objs[i][k]))
+                        target[k] = deepMerge([], objs[i][k]);
+                    else if (typeof (objs[i][k]) == 'object')
+                        target[k] = deepMerge({}, objs[i][k]);
+                    else
+                        target[k] = objs[i][k];
+                }
             }
         }
-
-        for (key in overCopy)
-        {
-            objCopy[key] = JSON.parse(JSON.stringify(overCopy[key]));
-            delete overCopy[key];
-        }
-        return objCopy;
+        return target;
     }
 
     bindEvents();
 
+    function onButtonClose()
+    {
+        if (typeof(_settings.onClosing) == 'function')
+        {
+            if (_settings.onClosing())
+            {
+                unbindEvents();
+
+                deferRemove(_settings.id);
+            }
+        }
+    }
+
     function bindEvents()
     {
+        if (valid(elemTitleClose))
+            elemTitleClose.addEventListener('click', onButtonClose);
+
         elemOverlay.addEventListener('mousedown', onMouseDown);
         elemOverlay.addEventListener('mousemove', onMouseMove);
         elemOverlay.addEventListener('mouseup', onMouseUp);
         elemOverlay.addEventListener('mouseleave', onMouseUp);
+    }
+
+    function unbindEvents()
+    {
+        elemOverlay.removeEventListener('mousedown', onMouseDown);
+        elemOverlay.removeEventListener('mousemove', onMouseMove);
+        elemOverlay.removeEventListener('mouseup', onMouseUp);
+        elemOverlay.removeEventListener('mouseleave', onMouseUp);
     }
 
     return {
@@ -504,10 +479,7 @@ function jsDialog(opt)
             elemOverlay.style.display = 'none';
         },
         close: function() {
-            elemOverlay.removeEventListener('mousedown', onMouseDown);
-            elemOverlay.removeEventListener('mousemove', onMouseMove);
-            elemOverlay.removeEventListener('mouseup', onMouseUp);
-            elemOverlay.removeEventListener('mouseleave', onMouseUp);
+            unbindEvents();
         }
     };
 }

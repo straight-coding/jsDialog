@@ -38,58 +38,74 @@
       </div>
     
     <script>
-        var dlg1 = new jsDialog({
-            theme: '',
-            zIndex: 100,
-            draggable: true,
-            resizable: true,
-            frame: {
-                style: ''
-            },
-            title: {
-                left: {
-                },
-                middle: {
-                },
-                right: {
-                    maximize: true,
-                    fullScreen: true
-                }
-            },
-            content: {
-                wrapper: 'iframe',
-                url: '',
-                content: ''
-            },
-            footer: {
-                left: {
+        document. getElementById("home").addEventListener('click', function(){
+          var dlg1 = new jsDialog({
+              id: 'qazsewdcxc',
+              zIndex: 10,
+              dragging: {
+                  enabled: true,
+              },
+              resizing: {
+                  enabled: true,
+                  handleSize: 4
+              },
+              theme: '',
+              width: 600,
+              height: 400,
+              minWidth: 320,
+              maxWidth: 1024,
+              minHeight: 200,
+              maxHeight: 800,
+              frame: {
+                  style: ''
+              },
+              title: {
+                  left: {
+                  },
+                  middle: {
+                  },
+                  right: {
+                      maximize: true,
+                      fullScreen: true
+                  }
+              },
+              content: {
+                  wrapper: 'iframe',
+                  url: '',
+                  content: ''
+              },
+              footer: {
+                  left: {
 
-                },
-                middle: {
+                  },
+                  middle: {
 
-                },
-                right: {
-                    
-                }
-            },
-            onInitDialog: function(context) {
-            },
-            onContentLoaded: function(context) {
-            },
-            onEnter: function(context) {
-            },
-            onLeave: function(context) {
-            },
-            onDragged: function(context) {
-            },
-            onDropped: function(context) {
-            },
-            onClosed: function(context, result) {
-            }
+                  },
+                  right: {
+                      
+                  }
+              },
+              onInitDialog: function(context) {
+              },
+              onContentLoaded: function(context) {
+              },
+              onEnter: function(context) {
+              },
+              onLeave: function(context) {
+              },
+              onDragged: function(context) {
+              },
+              onDropped: function(context) {
+              },
+              onClosing: function() {
+                return true;
+              },
+              onClosed: function(context, result) {
+              }
+          });
+
+          dlg1.show();
         });
-
-        dlg1.show();
-        //dlg1.close();
     </script>
 
 </body>
