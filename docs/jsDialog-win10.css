@@ -79,6 +79,14 @@
 {
     background-color: RGB(210,210,210);
 }
+.dlgTitleIcon-win10.dlgFullScreen-win10
+{
+    -moz-transform: scale(1, -1);
+    -webkit-transform: scale(1, -1);
+    -o-transform: scale(1, -1);
+    -ms-transform: scale(1, -1);
+    transform: scale(1, -1);
+}
 .dlgTitleIcon-win10.dlgClose-win10:hover
 {
     color: white;

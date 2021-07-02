@@ -86,7 +86,9 @@ function jsDialog(opt)
 
     var _dragging = null; //title, n, s, w, e, nw, ne, sw, se
 
-    var _lastPosition = {};
+    var _lastMovePos = {};
+    var _dlgStatus = 'normal';
+    var _lastLocation = {};
 
     var elemTopBody = top.document.body;
     var elemOverlay = top.document.createElement("div");
@@ -167,9 +169,15 @@ function jsDialog(opt)
         elemTitleMax.innerHTML = '<span>&#9744;</span>';
         elemTitleRight.appendChild(elemTitleMax);
 
+    var elemTitleFull = top.document.createElement("div");
+        elemTitleFull.className = 'dlgTitleIcon' + _settings.theme + ' dlgFullScreen' + _settings.theme;
+        elemTitleFull.innerHTML = '<span>&#8690;</span>';
+        elemTitleRight.appendChild(elemTitleFull);
+
     var elemTitleRestore = top.document.createElement("div");
         elemTitleRestore.className = 'dlgTitleIcon' + _settings.theme;
         elemTitleRestore.innerHTML = '<span>&#10064;</span>';
+        elemTitleRestore.style.display = 'none';
         elemTitleRight.appendChild(elemTitleRestore);
 
     var elemTitleClose = top.document.createElement("div");
@@ -270,8 +278,8 @@ function jsDialog(opt)
         {
             console.log('onMouseDown', event);
 
-            _lastPosition.x = event.clientX;
-            _lastPosition.y = event.clientY;
+            _lastMovePos.x = event.clientX;
+            _lastMovePos.y = event.clientY;
         }
     }
 
@@ -287,11 +295,11 @@ function jsDialog(opt)
             return;
         }
 
-        var deltaX = event.clientX - _lastPosition.x;
-        var deltaY = event.clientY - _lastPosition.y;
+        var deltaX = event.clientX - _lastMovePos.x;
+        var deltaY = event.clientY - _lastMovePos.y;
 
-        _lastPosition.x = event.clientX;
-        _lastPosition.y = event.clientY;
+        _lastMovePos.x = event.clientX;
+        _lastMovePos.y = event.clientY;
 
         //console.log('onMouseMove', event);
 
@@ -347,7 +355,7 @@ function jsDialog(opt)
             (dlgSize.height == lastPos.height))
         {
             _dragging = null;
-            _lastPosition = {};
+            _lastMovePos = {};
         }
     }
 
@@ -359,12 +367,12 @@ function jsDialog(opt)
         console.log('onMouseUp', event);
 
         _dragging = null;
-        _lastPosition = {};
+        _lastMovePos = {};
     }
 
     function isObject(obj)
     {
-        if ((typeof (obj) === 'undefined') || (typeof (obj) === 'null'))
+        if ((typeof (obj) === undefined) || (typeof (obj) === null))
             return false;
 
         if (Array.isArray(obj))
@@ -373,8 +381,8 @@ function jsDialog(opt)
         return (typeof (obj) === 'object');
     }
 
-/*
-    NOTE: undefined key or function() will be ignored by JSON.stringify(...)
+
+    //NOTE: undefined key or function() will be ignored by JSON.stringify(...)
     const A = {
         a: [null, {a:undefined}, [null,new Date()], {a(){}}],
         b: [1,2],
@@ -385,10 +393,32 @@ function jsDialog(opt)
         b: [new Date()],
         c: {a:{}, c:[]}
     }
-    console.log(JSON.stringify(A.a));
-    console.log(JSON.parse(JSON.stringify(A.a)));
-    console.log(deepMerge(A, B));
-*/
+    console.log('A:', JSON.stringify(deepCopy(A)));
+    console.log('B:', JSON.stringify(deepCopy(B)));
+    console.log('Merged:', deepMerge(A, B));
+
+    function deepCopy(val)
+    {
+        if ((val == undefined) || (val == null))
+            return val;
+        
+        if (Array.isArray(val))
+        {
+            var ret = [];
+            for(var j = 0; j < val.length; j ++)
+                ret.push(deepCopy(val[j]));
+            return ret;
+        }
+        else if (typeof (val) === 'object')
+        {
+            var ret = {};
+            for(var k in val)
+                ret[k] = deepCopy(val[k]);
+            return ret;
+        }
+        return val;
+    }
+
     function deepMerge()
     {
         var objs = [];
@@ -402,6 +432,8 @@ function jsDialog(opt)
 
         if (objs.length == 0)
             return null;
+
+        //console.log(objs);
 
         var target = {};
         var isArray = false;
@@ -418,28 +450,14 @@ function jsDialog(opt)
                 if (!Array.isArray(objs[i]))
                     continue;
                 for(var j = 0; j < objs[i].length; j ++)
-                {
-                    if (Array.isArray(objs[i][j]))
-                        target.push(deepMerge([], objs[i][j]));
-                    else if (typeof (objs[i][j]) == 'object')
-                        target.push(deepMerge({}, objs[i][j]));
-                    else
-                        target.push(objs[i][j]);
-                }
+                    target.push(c(objs[i][j]));
             }
             else
             {
                 if (Array.isArray(objs[i]))
                     continue;
                 for(var k in objs[i])
-                {
-                    if (Array.isArray(objs[i][k]))
-                        target[k] = deepMerge([], objs[i][k]);
-                    else if (typeof (objs[i][k]) == 'object')
-                        target[k] = deepMerge({}, objs[i][k]);
-                    else
-                        target[k] = objs[i][k];
-                }
+                    target[k] = deepCopy(objs[i][k]);
             }
         }
         return target;
@@ -460,10 +478,162 @@ function jsDialog(opt)
         }
     }
 
+    function saveLocation(state)
+    {
+        _dlgStatus = state;
+        if (_dlgStatus != 'fullscreen')
+        {
+            _lastLocation = {
+                top: parseInt(elemFrame.style.top, 10),
+                left: parseInt(elemFrame.style.left, 10),
+                width: parseInt(elemFrame.style.width, 10),
+                height: parseInt(elemFrame.style.height, 10)
+            }
+        }
+
+        if (valid(elemTitleRestore))
+            elemTitleRestore.style.display = 'flex';
+
+        if (valid(elemTitleMin))
+            elemTitleMin.style.display = 'none';
+
+        if (valid(elemTitleMax))
+            elemTitleMax.style.display = 'none';
+
+        if (valid(elemTitleFull))
+            elemTitleFull.style.display = 'none';
+    }
+
+    function restoreLocation()
+    {
+        if (_lastLocation.top)
+            elemFrame.style.top = _lastLocation.top + 'px';
+        if (_lastLocation.left)
+            elemFrame.style.left = _lastLocation.left + 'px';
+        if (_lastLocation.width)
+            elemFrame.style.width = _lastLocation.width + 'px';
+        if (_lastLocation.height)
+            elemFrame.style.height = _lastLocation.height + 'px';
+
+        _dlgStatus = 'normal';
+        _lastLocation = {};
+
+        if (valid(elemTitleRestore))
+            elemTitleRestore.style.display = 'none';
+
+        if (valid(elemTitleMin))
+            elemTitleMin.style.display = 'flex';
+
+        if (valid(elemTitleMax))
+            elemTitleMax.style.display = 'flex';
+
+        if (valid(elemTitleFull))
+            elemTitleFull.style.display = 'flex';
+    }
+
+    function onToggleFullScreen()
+    {
+        if (document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement) 
+        {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } 
+            else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } 
+            else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } 
+            else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        } 
+        else 
+        {
+            if (elemFrame.requestFullscreen) {
+                elemFrame.requestFullscreen();
+            } 
+            else if (elemFrame.mozRequestFullScreen) {
+                elemFrame.mozRequestFullScreen();
+            } 
+            else if (elemFrame.webkitRequestFullscreen) {
+                elemFrame.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            } 
+            else if (elemFrame.msRequestFullscreen) {
+                elemFrame.msRequestFullscreen();
+            }
+        }
+    }
+
+    function onFullScreenChanged()
+    {
+        console.log('onFullScreenChanged');
+
+        if (document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement) 
+        {
+            saveLocation('fullscreen');
+        }
+        else
+        {
+            restoreLocation();
+        }
+    }
+
+    function onToggleMin()
+    {
+        saveLocation('minimized');
+
+        var rectTitle = elemTitle.getBoundingClientRect();
+        elemFrame.style.height = (rectTitle.height + 2 * _settings.resizing.handleSize) + 'px';
+
+        elemTitleRestore.style.display = 'flex';
+    }
+
+    function onToggleMax()
+    {
+        saveLocation('maximized');
+
+        elemFrame.style.top = '0px';
+        elemFrame.style.left = '0px';
+        elemFrame.style.width = '100%';
+        elemFrame.style.height = '100%';
+
+        elemTitleRestore.style.display = 'flex';
+    }
+
+    function onToggleRestore()
+    {
+        if (_dlgStatus == 'fullscreen')
+            onToggleFullScreen();
+        else
+            restoreLocation();
+    }
+
     function bindEvents()
     {
         if (valid(elemTitleClose))
             elemTitleClose.addEventListener('click', onButtonClose);
+
+        if (valid(elemTitleFull))
+            elemTitleFull.addEventListener('click', onToggleFullScreen);
+        if (valid(elemTitleRestore))
+            elemTitleRestore.addEventListener('click', onToggleRestore);
+
+        if (valid(elemTitleMin))
+            elemTitleMin.addEventListener('click', onToggleMin);
+        if (valid(elemTitleMax))
+            elemTitleMax.addEventListener('click', onToggleMax);
+
+        elemFrame.addEventListener('fullscreenchange', onFullScreenChanged);
+        elemFrame.addEventListener('mozfullscreenchange', onFullScreenChanged);
+        elemFrame.addEventListener('webkitfullscreenchange', onFullScreenChanged);
+        elemFrame.addEventListener('msfullscreenchange', onFullScreenChanged);
 
         elemOverlay.addEventListener('mousedown', onMouseDown);
         elemOverlay.addEventListener('mousemove', onMouseMove);
