@@ -79,16 +79,12 @@ function jsDialog(opt)
     };
 
     var _settings = deepMerge(_default, opt);
-    if (!valid(_settings.theme))
-        _settings.theme = '';
-    if (_settings.theme && (_settings.theme.substring(0, 1) != '-'))
-        _settings.theme = '-' + _settings.theme;
+    validateSettings();
 
     var _dragging = null; //title, n, s, w, e, nw, ne, sw, se
-
-    var _lastMovePos = {};
     var _dlgStatus = 'normal';
-    var _lastLocation = {};
+    var _lastMovePos = {};
+    var _lastSavePos = {};
 
     var elemTopBody = top.document.body;
     var elemOverlay = top.document.createElement("div");
@@ -101,16 +97,6 @@ function jsDialog(opt)
         elemTopBody.children[0].prepend(elemOverlay);
     else
         elemTopBody.appendChild(elemOverlay);
-
-    if (valid(_settings.minMidth) && (_settings.width < _settings.minWidth))
-        _settings.width = _settings.minWidth;
-    if (valid(_settings.maxWidth) && (_settings.width > _settings.maxWidth))
-        _settings.width = _settings.maxWidth;
-
-    if (valid(_settings.minHeight) && (_settings.height < _settings.minHeight))
-        _settings.height = _settings.minHeight;
-    if (valid(_settings.maxHeight) && (_settings.height > _settings.maxHeight))
-        _settings.height = _settings.maxHeight;
 
     var rectOverlay = elemOverlay.getBoundingClientRect();
     var dlgTop  = (rectOverlay.height - _settings.height - 2 * _settings.resizing.handleSize)/2;
@@ -139,8 +125,8 @@ function jsDialog(opt)
         hasTitleLeft = true;
         elemTitleLeft.innerHTML = _settings.title.left.html;
     }
-
     var rectTitleLeft = elemTitleLeft.getBoundingClientRect();
+
     var elemTitleMiddle = top.document.createElement("div");
         elemTitleMiddle.className = 'dlgTitleMiddle' + _settings.theme;
         if (hasTitleLeft && _settings.title.middle)
@@ -152,7 +138,8 @@ function jsDialog(opt)
 
     var elemTitleText = top.document.createElement("div");
         elemTitleText.className = 'dlgTitleText' + _settings.theme;
-        elemTitleText.innerHTML = '<span>Dialog Examples</span>';
+        if (_settings.title.middle && _settings.title.middle.html)
+            elemTitleText.innerHTML = _settings.title.middle.html;
         elemTitleMiddle.appendChild(elemTitleText);
 
     var elemTitleRight = top.document.createElement("div");
@@ -192,6 +179,31 @@ function jsDialog(opt)
     var elemFooter = top.document.createElement("div");
         elemFooter.className = 'dlgFooter' + _settings.theme;
         //elemFrame.appendChild(elemFooter);
+
+    function validateSettings()
+    {
+        if (valid(_settings.width))  _settings.width = parseInt(_settings.width, 10);
+        if (valid(_settings.height))  _settings.height = parseInt(_settings.height, 10);
+        if (valid(_settings.minWidth))  _settings.minWidth = parseInt(_settings.minWidth, 10);
+        if (valid(_settings.maxWidth))  _settings.maxWidth = parseInt(_settings.maxWidth, 10);
+        if (valid(_settings.minHeight))  _settings.minHeight = parseInt(_settings.minHeight, 10);
+        if (valid(_settings.maxHeight))  _settings.maxHeight = parseInt(_settings.maxHeight, 10);
+
+        if (valid(_settings.minMidth) && (_settings.width < _settings.minWidth))
+            _settings.width = _settings.minWidth;
+        if (valid(_settings.maxWidth) && (_settings.width > _settings.maxWidth))
+            _settings.width = _settings.maxWidth;
+
+        if (valid(_settings.minHeight) && (_settings.height < _settings.minHeight))
+            _settings.height = _settings.minHeight;
+        if (valid(_settings.maxHeight) && (_settings.height > _settings.maxHeight))
+            _settings.height = _settings.maxHeight;
+
+        if (!valid(_settings.theme))
+            _settings.theme = '';
+        if (_settings.theme && (_settings.theme.substring(0, 1) != '-'))
+            _settings.theme = '-' + _settings.theme;
+    }
 
     function valid(val)
     {
@@ -248,6 +260,18 @@ function jsDialog(opt)
 
     function changeCursor(pos)
     {
+        if ((_dlgStatus == 'maximized') || (_dlgStatus == 'fullscreen'))
+        {
+            elemOverlay.style.cursor = 'default';
+            return;
+        }
+
+        if ((_dlgStatus == 'minimized') && (pos != 'title') && (pos != 'w') && (pos != 'e'))
+        {
+            elemOverlay.style.cursor = 'default';
+            return;
+        }
+
         if (pos == 'title') elemOverlay.style.cursor = 'move';
         else if (pos == 'nw') elemOverlay.style.cursor = 'nw-resize';
         else if (pos == 'n') elemOverlay.style.cursor = 'n-resize';
@@ -268,6 +292,11 @@ function jsDialog(opt)
         var pos = hoverTest(event, 4);
         if (pos)
         {
+            if ((_dlgStatus == 'maximized') || (_dlgStatus == 'fullscreen'))
+                return;
+            if ((_dlgStatus == 'minimized') && (pos != 'title') && (pos != 'e') && (pos != 'w'))
+                return;
+
             console.log(pos);
             _dragging = pos;
         }
@@ -281,6 +310,45 @@ function jsDialog(opt)
             _lastMovePos.x = event.clientX;
             _lastMovePos.y = event.clientY;
         }
+    }
+
+    function getMinDragWidth()
+    {
+        var rectTitleText = elemTitleText.getBoundingClientRect();
+        var rectTitleRight = elemTitleRight.getBoundingClientRect();
+        return (rectTitleLeft.width + rectTitleText.width + rectTitleRight.width + 4);
+    }
+
+    function checkSizeLimit(moveLocation)
+    {
+        var dlgSize = {
+            top: moveLocation.top,
+            left: moveLocation.left,
+            width: moveLocation.width,
+            height: moveLocation.height
+        }
+
+        var minDragWidth = getMinDragWidth();
+
+        if (_dlgStatus != 'minimized')
+        {
+            if (valid(_settings.minWidth) && (dlgSize.width < _settings.minWidth))
+                minDragWidth = _settings.minWidth;
+        }
+        if (dlgSize.width < minDragWidth)
+            dlgSize.width = minDragWidth;
+
+        if (valid(_settings.maxWidth) && (dlgSize.width > _settings.maxWidth))
+            dlgSize.width = _settings.maxWidth;
+
+        if (_dlgStatus != 'minimized')
+        {
+            if (valid(_settings.minHeight) && (dlgSize.height < _settings.minHeight))
+                dlgSize.height = _settings.minHeight;
+            if (valid(_settings.maxHeight) && (dlgSize.height > _settings.maxHeight))
+                dlgSize.height = _settings.maxHeight;
+        }
+        return dlgSize;
     }
 
     function onMouseMove(event)
@@ -334,25 +402,17 @@ function jsDialog(opt)
         if ((_dragging === 's') || (_dragging === 'sw') || (_dragging === 'se'))
             dlgSize.height += deltaY;
 
-        if (valid(_settings.minWidth) && (dlgSize.width < _settings.minWidth))
-            dlgSize.width = _settings.minWidth;
-        if (valid(_settings.maxWidth) && (dlgSize.width > _settings.maxWidth))
-            dlgSize.width = _settings.maxWidth;
+        var newLocation = checkSizeLimit(dlgSize);
     
-        if (valid(_settings.minHeight) && (dlgSize.height < _settings.minHeight))
-            dlgSize.height = _settings.minHeight;
-        if (valid(_settings.maxHeight) && (dlgSize.height > _settings.maxHeight))
-            dlgSize.height = _settings.maxHeight;
-    
-        elemFrame.style.top = dlgSize.top + 'px';
-        elemFrame.style.left = dlgSize.left + 'px';
-        elemFrame.style.width = dlgSize.width + 'px';
-        elemFrame.style.height = dlgSize.height + 'px';
+        elemFrame.style.top = newLocation.top + 'px';
+        elemFrame.style.left = newLocation.left + 'px';
+        elemFrame.style.width = newLocation.width + 'px';
+        elemFrame.style.height = newLocation.height + 'px';
 
-        if ((dlgSize.top == lastPos.top) && 
-            (dlgSize.left == lastPos.left) && 
-            (dlgSize.width == lastPos.width) && 
-            (dlgSize.height == lastPos.height))
+        if ((newLocation.top == lastPos.top) && 
+            (newLocation.left == lastPos.left) && 
+            (newLocation.width == lastPos.width) && 
+            (newLocation.height == lastPos.height))
         {
             _dragging = null;
             _lastMovePos = {};
@@ -370,7 +430,7 @@ function jsDialog(opt)
         _lastMovePos = {};
     }
 
-    function isObject(obj)
+    function isRealObject(obj)
     {
         if ((typeof (obj) === undefined) || (typeof (obj) === null))
             return false;
@@ -381,7 +441,7 @@ function jsDialog(opt)
         return (typeof (obj) === 'object');
     }
 
-
+/*
     //NOTE: undefined key or function() will be ignored by JSON.stringify(...)
     const A = {
         a: [null, {a:undefined}, [null,new Date()], {a(){}}],
@@ -396,7 +456,7 @@ function jsDialog(opt)
     console.log('A:', JSON.stringify(deepCopy(A)));
     console.log('B:', JSON.stringify(deepCopy(B)));
     console.log('Merged:', deepMerge(A, B));
-
+*/
     function deepCopy(val)
     {
         if ((val == undefined) || (val == null))
@@ -483,7 +543,7 @@ function jsDialog(opt)
         _dlgStatus = state;
         if (_dlgStatus != 'fullscreen')
         {
-            _lastLocation = {
+            _lastSavePos = {
                 top: parseInt(elemFrame.style.top, 10),
                 left: parseInt(elemFrame.style.left, 10),
                 width: parseInt(elemFrame.style.width, 10),
@@ -506,17 +566,17 @@ function jsDialog(opt)
 
     function restoreLocation()
     {
-        if (_lastLocation.top)
-            elemFrame.style.top = _lastLocation.top + 'px';
-        if (_lastLocation.left)
-            elemFrame.style.left = _lastLocation.left + 'px';
-        if (_lastLocation.width)
-            elemFrame.style.width = _lastLocation.width + 'px';
-        if (_lastLocation.height)
-            elemFrame.style.height = _lastLocation.height + 'px';
+        if (_lastSavePos.top)
+            elemFrame.style.top = _lastSavePos.top + 'px';
+        if (_lastSavePos.left)
+            elemFrame.style.left = _lastSavePos.left + 'px';
+        if (_lastSavePos.width)
+            elemFrame.style.width = _lastSavePos.width + 'px';
+        if (_lastSavePos.height)
+            elemFrame.style.height = _lastSavePos.height + 'px';
 
         _dlgStatus = 'normal';
-        _lastLocation = {};
+        _lastSavePos = {};
 
         if (valid(elemTitleRestore))
             elemTitleRestore.style.display = 'none';
@@ -590,7 +650,8 @@ function jsDialog(opt)
         saveLocation('minimized');
 
         var rectTitle = elemTitle.getBoundingClientRect();
-        elemFrame.style.height = (rectTitle.height + 2 * _settings.resizing.handleSize) + 'px';
+        elemFrame.style.height = rectTitle.height + 'px';
+        elemFrame.style.width = getMinDragWidth() + 'px';
 
         elemTitleRestore.style.display = 'flex';
     }
