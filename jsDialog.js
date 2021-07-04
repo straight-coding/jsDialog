@@ -176,9 +176,31 @@ function jsDialog(opt)
         elemContent.className = 'dlgContent' + _settings.theme;
         elemFrame.appendChild(elemContent);
 
+        elemContent.appendChild(getSvgElement());
+
     var elemFooter = top.document.createElement("div");
         elemFooter.className = 'dlgFooter' + _settings.theme;
         //elemFrame.appendChild(elemFooter);
+
+    function getSvgElement()
+    {
+        var htmlSvg = '';
+        htmlSvg += '<svg';
+        htmlSvg += ' viewBox="0 0 105 93"';
+        htmlSvg += ' width="105"';
+        htmlSvg += ' height="93"';
+        htmlSvg += ' xmlns="http://www.w3.org/2000/svg"';
+        htmlSvg += '>';
+        htmlSvg +=   '<path';
+        htmlSvg +=   ' d="M66,0h39v93zM38,0h-38v93zM52,35l25,58h-16l-8-18h-18z"';
+        htmlSvg +=   ' fill="#ED1C24"';
+        htmlSvg +=   '/>';
+        htmlSvg += '</svg>';
+
+        var elemImg = top.document.createElement("img");
+            elemImg.src = 'data:image/svg+xml;base64,' + btoa(htmlSvg);
+        return elemImg;
+    }
 
     function validateSettings()
     {
