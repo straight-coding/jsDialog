@@ -79,14 +79,12 @@ function jsDialog(opt)
     };
 
     var _settings = deepMerge(_default, opt);
-    if (!valid(_settings.theme))
-        _settings.theme = '';
-    if (_settings.theme && (_settings.theme.substring(0, 1) != '-'))
-        _settings.theme = '-' + _settings.theme;
+    validateSettings();
 
     var _dragging = null; //title, n, s, w, e, nw, ne, sw, se
-
-    var _lastPosition = {};
+    var _dlgStatus = 'normal';
+    var _lastMovePos = {};
+    var _lastSavePos = {};
 
     var elemTopBody = top.document.body;
     var elemOverlay = top.document.createElement("div");
@@ -100,19 +98,9 @@ function jsDialog(opt)
     else
         elemTopBody.appendChild(elemOverlay);
 
-    if (valid(_settings.minMidth) && (_settings.width < _settings.minWidth))
-        _settings.width = _settings.minWidth;
-    if (valid(_settings.maxWidth) && (_settings.width > _settings.maxWidth))
-        _settings.width = _settings.maxWidth;
-
-    if (valid(_settings.minHeight) && (_settings.height < _settings.minHeight))
-        _settings.height = _settings.minHeight;
-    if (valid(_settings.maxHeight) && (_settings.height > _settings.maxHeight))
-        _settings.height = _settings.maxHeight;
-
     var rectOverlay = elemOverlay.getBoundingClientRect();
-    var dlgTop  = (rectOverlay.height - _settings.height - 2 * _settings.resizing.handleSize)/2;
-    var dlgLeft = (rectOverlay.width - _settings.width - 2 * _settings.resizing.handleSize)/2;
+    var dlgTop  = (parseInt(rectOverlay.height,10) - _settings.height - 2 * _settings.resizing.handleSize)/2;
+    var dlgLeft = (parseInt(rectOverlay.width,10) - _settings.width - 2 * _settings.resizing.handleSize)/2;
 
     var elemFrame = top.document.createElement("div");
         elemFrame.className = 'dlgFrame' + _settings.theme;
@@ -137,20 +125,21 @@ function jsDialog(opt)
         hasTitleLeft = true;
         elemTitleLeft.innerHTML = _settings.title.left.html;
     }
-
     var rectTitleLeft = elemTitleLeft.getBoundingClientRect();
+
     var elemTitleMiddle = top.document.createElement("div");
         elemTitleMiddle.className = 'dlgTitleMiddle' + _settings.theme;
         if (hasTitleLeft && _settings.title.middle)
         {
             if (_settings.title.middle.align == 'left')
-                elemTitleMiddle.style.left = rectTitleLeft.width + 'px';
+                elemTitleMiddle.style.left = parseInt(rectTitleLeft.width,10) + 'px';
         }
         elemTitle.appendChild(elemTitleMiddle);
 
     var elemTitleText = top.document.createElement("div");
         elemTitleText.className = 'dlgTitleText' + _settings.theme;
-        elemTitleText.innerHTML = '<span>Dialog Examples</span>';
+        if (_settings.title.middle && _settings.title.middle.html)
+            elemTitleText.innerHTML = _settings.title.middle.html;
         elemTitleMiddle.appendChild(elemTitleText);
 
     var elemTitleRight = top.document.createElement("div");
@@ -167,9 +156,15 @@ function jsDialog(opt)
         elemTitleMax.innerHTML = '<span>&#9744;</span>';
         elemTitleRight.appendChild(elemTitleMax);
 
+    var elemTitleFull = top.document.createElement("div");
+        elemTitleFull.className = 'dlgTitleIcon' + _settings.theme + ' dlgFullScreen' + _settings.theme;
+        elemTitleFull.innerHTML = '<span>&#8690;</span>';
+        elemTitleRight.appendChild(elemTitleFull);
+
     var elemTitleRestore = top.document.createElement("div");
         elemTitleRestore.className = 'dlgTitleIcon' + _settings.theme;
         elemTitleRestore.innerHTML = '<span>&#10064;</span>';
+        elemTitleRestore.style.display = 'none';
         elemTitleRight.appendChild(elemTitleRestore);
 
     var elemTitleClose = top.document.createElement("div");
@@ -184,6 +179,31 @@ function jsDialog(opt)
     var elemFooter = top.document.createElement("div");
         elemFooter.className = 'dlgFooter' + _settings.theme;
         //elemFrame.appendChild(elemFooter);
+
+    function validateSettings()
+    {
+        if (valid(_settings.width))  _settings.width = parseInt(_settings.width, 10);
+        if (valid(_settings.height))  _settings.height = parseInt(_settings.height, 10);
+        if (valid(_settings.minWidth))  _settings.minWidth = parseInt(_settings.minWidth, 10);
+        if (valid(_settings.maxWidth))  _settings.maxWidth = parseInt(_settings.maxWidth, 10);
+        if (valid(_settings.minHeight))  _settings.minHeight = parseInt(_settings.minHeight, 10);
+        if (valid(_settings.maxHeight))  _settings.maxHeight = parseInt(_settings.maxHeight, 10);
+
+        if (valid(_settings.minMidth) && (_settings.width < _settings.minWidth))
+            _settings.width = _settings.minWidth;
+        if (valid(_settings.maxWidth) && (_settings.width > _settings.maxWidth))
+            _settings.width = _settings.maxWidth;
+
+        if (valid(_settings.minHeight) && (_settings.height < _settings.minHeight))
+            _settings.height = _settings.minHeight;
+        if (valid(_settings.maxHeight) && (_settings.height > _settings.maxHeight))
+            _settings.height = _settings.maxHeight;
+
+        if (!valid(_settings.theme))
+            _settings.theme = '';
+        if (_settings.theme && (_settings.theme.substring(0, 1) != '-'))
+            _settings.theme = '-' + _settings.theme;
+    }
 
     function valid(val)
     {
@@ -240,6 +260,18 @@ function jsDialog(opt)
 
     function changeCursor(pos)
     {
+        if ((_dlgStatus == 'maximized') || (_dlgStatus == 'fullscreen'))
+        {
+            elemOverlay.style.cursor = 'default';
+            return;
+        }
+
+        if ((_dlgStatus == 'minimized') && (pos != 'title') && (pos != 'w') && (pos != 'e'))
+        {
+            elemOverlay.style.cursor = 'default';
+            return;
+        }
+
         if (pos == 'title') elemOverlay.style.cursor = 'move';
         else if (pos == 'nw') elemOverlay.style.cursor = 'nw-resize';
         else if (pos == 'n') elemOverlay.style.cursor = 'n-resize';
@@ -260,6 +292,11 @@ function jsDialog(opt)
         var pos = hoverTest(event, 4);
         if (pos)
         {
+            if ((_dlgStatus == 'maximized') || (_dlgStatus == 'fullscreen'))
+                return;
+            if ((_dlgStatus == 'minimized') && (pos != 'title') && (pos != 'e') && (pos != 'w'))
+                return;
+
             console.log(pos);
             _dragging = pos;
         }
@@ -270,9 +307,89 @@ function jsDialog(opt)
         {
             console.log('onMouseDown', event);
 
-            _lastPosition.x = event.clientX;
-            _lastPosition.y = event.clientY;
+            _lastMovePos.x = event.clientX;
+            _lastMovePos.y = event.clientY;
         }
+    }
+
+    function getMinDragWidth()
+    {
+        var rectTitleText = elemTitleText.getBoundingClientRect();
+        var rectTitleRight = elemTitleRight.getBoundingClientRect();
+        return (parseInt(rectTitleLeft.width,10) + parseInt(rectTitleText.width,10) + parseInt(rectTitleRight.width,10) + 4);
+    }
+
+    function validatePosition(lastPos, nextPos)
+    {
+        var dlgSize = {
+            top: nextPos.top,
+            left: nextPos.left,
+            width: nextPos.width,
+            height: nextPos.height
+        }
+
+        if (_dragging === 'title')
+            return dlgSize;
+
+        var clamped = false;
+        if (_dlgStatus == 'minimized')
+        {
+            var dragWidth = getMinDragWidth();
+            if (dlgSize.width < dragWidth)
+            {
+                dlgSize.width = dragWidth;
+                clamped = true;
+            }
+        }
+        else
+        {
+            if (valid(_settings.minWidth) && (dlgSize.width < _settings.minWidth))
+            {
+                dlgSize.width = _settings.minWidth;
+                clamped = true;
+            }
+        }
+
+        if (valid(_settings.maxWidth) && (dlgSize.width > _settings.maxWidth))
+        {
+            dlgSize.width = _settings.maxWidth;
+            clamped = true;
+        }
+
+        if (_dlgStatus != 'minimized')
+        {
+            if (valid(_settings.minHeight) && (dlgSize.height < _settings.minHeight))
+            {
+                dlgSize.height = _settings.minHeight;
+                clamped = true;
+            }
+            if (valid(_settings.maxHeight) && (dlgSize.height > _settings.maxHeight))
+            {
+                dlgSize.height = _settings.maxHeight;
+                clamped = true;
+            }
+        }
+
+        if ((_dragging === 'w') || (_dragging === 'nw') || (_dragging === 'sw'))
+        {
+            if (dlgSize.left + dlgSize.width != lastPos.left + lastPos.width)
+                dlgSize.left  = lastPos.left + lastPos.width - dlgSize.width;
+        }
+        if ((_dragging === 'n') || (_dragging === 'nw') || (_dragging === 'ne'))
+        {
+            if (dlgSize.top + dlgSize.height != lastPos.top + lastPos.height)
+                dlgSize.top  = lastPos.top + lastPos.height - dlgSize.height;
+        }
+
+        if ((dlgSize.top == lastPos.top) && 
+            (dlgSize.left == lastPos.left) && 
+            (dlgSize.width == lastPos.width) && 
+            (dlgSize.height == lastPos.height) && clamped)
+        {
+            return null;
+        }
+
+        return dlgSize;
     }
 
     function onMouseMove(event)
@@ -287,13 +404,13 @@ function jsDialog(opt)
             return;
         }
 
-        var deltaX = event.clientX - _lastPosition.x;
-        var deltaY = event.clientY - _lastPosition.y;
+        var deltaX = event.clientX - _lastMovePos.x;
+        var deltaY = event.clientY - _lastMovePos.y;
+            _lastMovePos.x = event.clientX;
+            _lastMovePos.y = event.clientY;
 
-        _lastPosition.x = event.clientX;
-        _lastPosition.y = event.clientY;
-
-        //console.log('onMouseMove', event);
+        if ((deltaX == 0) && (deltaY == 0))
+            return;
 
         var lastPos = {
             top: parseInt(elemFrame.style.top),
@@ -302,52 +419,47 @@ function jsDialog(opt)
             height: parseInt(elemFrame.style.height)
         };
 
-        var dlgSize = {
+        var nextPos = {
             top: lastPos.top,
             left: lastPos.left,
             width: lastPos.width,
             height: lastPos.height
         };
 
+        //console.log('onMouseMove', event);
+
         if ((_dragging === 'title') || (_dragging === 'w') || (_dragging === 'nw') || (_dragging === 'sw'))
         { //title, n, s, w, e, nw, ne, sw, se        
-            dlgSize.left += deltaX;
+            nextPos.left += deltaX;
             if (_dragging !== 'title')
-                dlgSize.width -= deltaX;
+                nextPos.width -= deltaX;
         }
+
         if ((_dragging === 'title') || (_dragging === 'n') || (_dragging === 'nw') || (_dragging === 'ne'))
         { //title, n, s, w, e, nw, ne, sw, se        
-            dlgSize.top += deltaY;
+            nextPos.top += deltaY;
             if (_dragging !== 'title')
-                dlgSize.height -= deltaY;
+                nextPos.height -= deltaY;
         }
+
         if ((_dragging === 'e') || (_dragging === 'ne') || (_dragging === 'se'))
-            dlgSize.width += deltaX;
+            nextPos.width += deltaX;
+
         if ((_dragging === 's') || (_dragging === 'sw') || (_dragging === 'se'))
-            dlgSize.height += deltaY;
+            nextPos.height += deltaY;
 
-        if (valid(_settings.minWidth) && (dlgSize.width < _settings.minWidth))
-            dlgSize.width = _settings.minWidth;
-        if (valid(_settings.maxWidth) && (dlgSize.width > _settings.maxWidth))
-            dlgSize.width = _settings.maxWidth;
-    
-        if (valid(_settings.minHeight) && (dlgSize.height < _settings.minHeight))
-            dlgSize.height = _settings.minHeight;
-        if (valid(_settings.maxHeight) && (dlgSize.height > _settings.maxHeight))
-            dlgSize.height = _settings.maxHeight;
-    
-        elemFrame.style.top = dlgSize.top + 'px';
-        elemFrame.style.left = dlgSize.left + 'px';
-        elemFrame.style.width = dlgSize.width + 'px';
-        elemFrame.style.height = dlgSize.height + 'px';
-
-        if ((dlgSize.top == lastPos.top) && 
-            (dlgSize.left == lastPos.left) && 
-            (dlgSize.width == lastPos.width) && 
-            (dlgSize.height == lastPos.height))
+        var newLocation = validatePosition(lastPos, nextPos);
+        if (newLocation == null)
         {
             _dragging = null;
-            _lastPosition = {};
+            _lastMovePos = {};
+        }
+        else
+        {
+            elemFrame.style.top = newLocation.top + 'px';
+            elemFrame.style.left = newLocation.left + 'px';
+            elemFrame.style.width = newLocation.width + 'px';
+            elemFrame.style.height = newLocation.height + 'px';
         }
     }
 
@@ -359,12 +471,12 @@ function jsDialog(opt)
         console.log('onMouseUp', event);
 
         _dragging = null;
-        _lastPosition = {};
+        _lastMovePos = {};
     }
 
-    function isObject(obj)
+    function isRealObject(obj)
     {
-        if ((typeof (obj) === 'undefined') || (typeof (obj) === 'null'))
+        if ((typeof (obj) === undefined) || (typeof (obj) === null))
             return false;
 
         if (Array.isArray(obj))
@@ -374,7 +486,7 @@ function jsDialog(opt)
     }
 
 /*
-    NOTE: undefined key or function() will be ignored by JSON.stringify(...)
+    //NOTE: undefined key or function() will be ignored by JSON.stringify(...)
     const A = {
         a: [null, {a:undefined}, [null,new Date()], {a(){}}],
         b: [1,2],
@@ -385,10 +497,32 @@ function jsDialog(opt)
         b: [new Date()],
         c: {a:{}, c:[]}
     }
-    console.log(JSON.stringify(A.a));
-    console.log(JSON.parse(JSON.stringify(A.a)));
-    console.log(deepMerge(A, B));
+    console.log('A:', JSON.stringify(deepCopy(A)));
+    console.log('B:', JSON.stringify(deepCopy(B)));
+    console.log('Merged:', deepMerge(A, B));
 */
+    function deepCopy(val)
+    {
+        if ((val == undefined) || (val == null))
+            return val;
+        
+        if (Array.isArray(val))
+        {
+            var ret = [];
+            for(var j = 0; j < val.length; j ++)
+                ret.push(deepCopy(val[j]));
+            return ret;
+        }
+        else if (typeof (val) === 'object')
+        {
+            var ret = {};
+            for(var k in val)
+                ret[k] = deepCopy(val[k]);
+            return ret;
+        }
+        return val;
+    }
+
     function deepMerge()
     {
         var objs = [];
@@ -402,6 +536,8 @@ function jsDialog(opt)
 
         if (objs.length == 0)
             return null;
+
+        //console.log(objs);
 
         var target = {};
         var isArray = false;
@@ -418,28 +554,14 @@ function jsDialog(opt)
                 if (!Array.isArray(objs[i]))
                     continue;
                 for(var j = 0; j < objs[i].length; j ++)
-                {
-                    if (Array.isArray(objs[i][j]))
-                        target.push(deepMerge([], objs[i][j]));
-                    else if (typeof (objs[i][j]) == 'object')
-                        target.push(deepMerge({}, objs[i][j]));
-                    else
-                        target.push(objs[i][j]);
-                }
+                    target.push(c(objs[i][j]));
             }
             else
             {
                 if (Array.isArray(objs[i]))
                     continue;
                 for(var k in objs[i])
-                {
-                    if (Array.isArray(objs[i][k]))
-                        target[k] = deepMerge([], objs[i][k]);
-                    else if (typeof (objs[i][k]) == 'object')
-                        target[k] = deepMerge({}, objs[i][k]);
-                    else
-                        target[k] = objs[i][k];
-                }
+                    target[k] = deepCopy(objs[i][k]);
             }
         }
         return target;
@@ -460,10 +582,163 @@ function jsDialog(opt)
         }
     }
 
+    function saveLocation(state)
+    {
+        _dlgStatus = state;
+        if (_dlgStatus != 'fullscreen')
+        {
+            _lastSavePos = {
+                top: parseInt(elemFrame.style.top, 10),
+                left: parseInt(elemFrame.style.left, 10),
+                width: parseInt(elemFrame.style.width, 10),
+                height: parseInt(elemFrame.style.height, 10)
+            }
+        }
+
+        if (valid(elemTitleRestore))
+            elemTitleRestore.style.display = 'flex';
+
+        if (valid(elemTitleMin))
+            elemTitleMin.style.display = 'none';
+
+        if (valid(elemTitleMax))
+            elemTitleMax.style.display = 'none';
+
+        if (valid(elemTitleFull))
+            elemTitleFull.style.display = 'none';
+    }
+
+    function restoreLocation()
+    {
+        if (_lastSavePos.top)
+            elemFrame.style.top = _lastSavePos.top + 'px';
+        if (_lastSavePos.left)
+            elemFrame.style.left = _lastSavePos.left + 'px';
+        if (_lastSavePos.width)
+            elemFrame.style.width = _lastSavePos.width + 'px';
+        if (_lastSavePos.height)
+            elemFrame.style.height = _lastSavePos.height + 'px';
+
+        _dlgStatus = 'normal';
+        _lastSavePos = {};
+
+        if (valid(elemTitleRestore))
+            elemTitleRestore.style.display = 'none';
+
+        if (valid(elemTitleMin))
+            elemTitleMin.style.display = 'flex';
+
+        if (valid(elemTitleMax))
+            elemTitleMax.style.display = 'flex';
+
+        if (valid(elemTitleFull))
+            elemTitleFull.style.display = 'flex';
+    }
+
+    function onToggleFullScreen()
+    {
+        if (document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement) 
+        {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } 
+            else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } 
+            else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } 
+            else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        } 
+        else 
+        {
+            if (elemFrame.requestFullscreen) {
+                elemFrame.requestFullscreen();
+            } 
+            else if (elemFrame.mozRequestFullScreen) {
+                elemFrame.mozRequestFullScreen();
+            } 
+            else if (elemFrame.webkitRequestFullscreen) {
+                elemFrame.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            } 
+            else if (elemFrame.msRequestFullscreen) {
+                elemFrame.msRequestFullscreen();
+            }
+        }
+    }
+
+    function onFullScreenChanged()
+    {
+        console.log('onFullScreenChanged');
+
+        if (document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement) 
+        {
+            saveLocation('fullscreen');
+        }
+        else
+        {
+            restoreLocation();
+        }
+    }
+
+    function onToggleMin()
+    {
+        saveLocation('minimized');
+
+        var rectTitle = elemTitle.getBoundingClientRect();
+        elemFrame.style.height = parseInt(rectTitle.height,10) + 'px';
+        elemFrame.style.width = getMinDragWidth() + 'px';
+
+        elemTitleRestore.style.display = 'flex';
+    }
+
+    function onToggleMax()
+    {
+        saveLocation('maximized');
+
+        elemFrame.style.top = '0px';
+        elemFrame.style.left = '0px';
+        elemFrame.style.width = '100%';
+        elemFrame.style.height = '100%';
+
+        elemTitleRestore.style.display = 'flex';
+    }
+
+    function onToggleRestore()
+    {
+        if (_dlgStatus == 'fullscreen')
+            onToggleFullScreen();
+        else
+            restoreLocation();
+    }
+
     function bindEvents()
     {
         if (valid(elemTitleClose))
             elemTitleClose.addEventListener('click', onButtonClose);
+
+        if (valid(elemTitleFull))
+            elemTitleFull.addEventListener('click', onToggleFullScreen);
+        if (valid(elemTitleRestore))
+            elemTitleRestore.addEventListener('click', onToggleRestore);
+
+        if (valid(elemTitleMin))
+            elemTitleMin.addEventListener('click', onToggleMin);
+        if (valid(elemTitleMax))
+            elemTitleMax.addEventListener('click', onToggleMax);
+
+        elemFrame.addEventListener('fullscreenchange', onFullScreenChanged);
+        elemFrame.addEventListener('mozfullscreenchange', onFullScreenChanged);
+        elemFrame.addEventListener('webkitfullscreenchange', onFullScreenChanged);
+        elemFrame.addEventListener('msfullscreenchange', onFullScreenChanged);
 
         elemOverlay.addEventListener('mousedown', onMouseDown);
         elemOverlay.addEventListener('mousemove', onMouseMove);
