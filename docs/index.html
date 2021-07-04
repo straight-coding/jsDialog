@@ -42,20 +42,20 @@
           var dlg1 = new jsDialog({
               id: 'qazsewdcxc',
               zIndex: 10,
+              theme: 'win10',
+              width: 600,
+              height: 400,
               dragging: {
                   enabled: true,
               },
               resizing: {
                   enabled: true,
-                  handleSize: 4
+                  handleSize: 4,
+                  minWidth: 320,
+                  maxWidth: 1024,
+                  minHeight: 200,
+                  maxHeight: 800
               },
-              theme: 'win10',
-              width: 600,
-              height: 400,
-              minWidth: 320,
-              maxWidth: 1024,
-              minHeight: 200,
-              maxHeight: 800,
               title: {
                   left: {
                     html: '<div class="dlgTitleIcon-win10"><span>&#9783;</span></div>'
@@ -65,8 +65,11 @@
                     html: '<span>Dialog Examples</span>'
                   },
                   right: {
-                      maximize: true,
-                      fullScreen: true
+                    html: '<div class="dlgTitleIcon-win10"><span>&#9783;</span></div>',
+                    minimize: true,
+                    maximize: true,
+                    fullScreen: true,
+                    close: true
                   }
               },
               content: {
