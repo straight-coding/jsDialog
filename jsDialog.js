@@ -332,6 +332,7 @@ function jsDialog(opt)
             return dlgSize;
 
         var clamped = false;
+        //check minimum width
         if (_dlgStatus == 'minimized')
         {
             var dragWidth = getMinDragWidth();
@@ -350,12 +351,14 @@ function jsDialog(opt)
             }
         }
 
+        //check maximum width
         if (valid(_settings.maxWidth) && (dlgSize.width > _settings.maxWidth))
         {
             dlgSize.width = _settings.maxWidth;
             clamped = true;
         }
 
+        //check minimum/maximum height
         if (_dlgStatus != 'minimized')
         {
             if (valid(_settings.minHeight) && (dlgSize.height < _settings.minHeight))
@@ -370,15 +373,19 @@ function jsDialog(opt)
             }
         }
 
-        if ((_dragging === 'w') || (_dragging === 'nw') || (_dragging === 'sw'))
+        //check top-left corner when width or height is clamped
+        if (clamped)
         {
-            if (dlgSize.left + dlgSize.width != lastPos.left + lastPos.width)
-                dlgSize.left  = lastPos.left + lastPos.width - dlgSize.width;
-        }
-        if ((_dragging === 'n') || (_dragging === 'nw') || (_dragging === 'ne'))
-        {
-            if (dlgSize.top + dlgSize.height != lastPos.top + lastPos.height)
-                dlgSize.top  = lastPos.top + lastPos.height - dlgSize.height;
+            if ((_dragging === 'w') || (_dragging === 'nw') || (_dragging === 'sw'))
+            {
+                if (dlgSize.left + dlgSize.width != lastPos.left + lastPos.width)
+                    dlgSize.left  = lastPos.left + lastPos.width - dlgSize.width;
+            }
+            if ((_dragging === 'n') || (_dragging === 'nw') || (_dragging === 'ne'))
+            {
+                if (dlgSize.top + dlgSize.height != lastPos.top + lastPos.height)
+                    dlgSize.top  = lastPos.top + lastPos.height - dlgSize.height;
+            }
         }
 
         if ((dlgSize.top == lastPos.top) && 
@@ -404,8 +411,8 @@ function jsDialog(opt)
             return;
         }
 
-        var deltaX = event.clientX - _lastMovePos.x;
-        var deltaY = event.clientY - _lastMovePos.y;
+        var deltaX = parseInt(event.clientX - _lastMovePos.x, 10);
+        var deltaY = parseInt(event.clientY - _lastMovePos.y, 10);
             _lastMovePos.x = event.clientX;
             _lastMovePos.y = event.clientY;
 
