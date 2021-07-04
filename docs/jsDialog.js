@@ -99,8 +99,8 @@ function jsDialog(opt)
         elemTopBody.appendChild(elemOverlay);
 
     var rectOverlay = elemOverlay.getBoundingClientRect();
-    var dlgTop  = (rectOverlay.height - _settings.height - 2 * _settings.resizing.handleSize)/2;
-    var dlgLeft = (rectOverlay.width - _settings.width - 2 * _settings.resizing.handleSize)/2;
+    var dlgTop  = (parseInt(rectOverlay.height,10) - _settings.height - 2 * _settings.resizing.handleSize)/2;
+    var dlgLeft = (parseInt(rectOverlay.width,10) - _settings.width - 2 * _settings.resizing.handleSize)/2;
 
     var elemFrame = top.document.createElement("div");
         elemFrame.className = 'dlgFrame' + _settings.theme;
@@ -132,7 +132,7 @@ function jsDialog(opt)
         if (hasTitleLeft && _settings.title.middle)
         {
             if (_settings.title.middle.align == 'left')
-                elemTitleMiddle.style.left = rectTitleLeft.width + 'px';
+                elemTitleMiddle.style.left = parseInt(rectTitleLeft.width,10) + 'px';
         }
         elemTitle.appendChild(elemTitleMiddle);
 
@@ -316,38 +316,79 @@ function jsDialog(opt)
     {
         var rectTitleText = elemTitleText.getBoundingClientRect();
         var rectTitleRight = elemTitleRight.getBoundingClientRect();
-        return (rectTitleLeft.width + rectTitleText.width + rectTitleRight.width + 4);
+        return (parseInt(rectTitleLeft.width,10) + parseInt(rectTitleText.width,10) + parseInt(rectTitleRight.width,10) + 4);
     }
 
-    function checkSizeLimit(moveLocation)
+    function validatePosition(lastPos, nextPos)
     {
         var dlgSize = {
-            top: moveLocation.top,
-            left: moveLocation.left,
-            width: moveLocation.width,
-            height: moveLocation.height
+            top: nextPos.top,
+            left: nextPos.left,
+            width: nextPos.width,
+            height: nextPos.height
         }
 
-        var minDragWidth = getMinDragWidth();
+        if (_dragging === 'title')
+            return dlgSize;
 
-        if (_dlgStatus != 'minimized')
+        var clamped = false;
+        if (_dlgStatus == 'minimized')
+        {
+            var dragWidth = getMinDragWidth();
+            if (dlgSize.width < dragWidth)
+            {
+                dlgSize.width = dragWidth;
+                clamped = true;
+            }
+        }
+        else
         {
             if (valid(_settings.minWidth) && (dlgSize.width < _settings.minWidth))
-                minDragWidth = _settings.minWidth;
+            {
+                dlgSize.width = _settings.minWidth;
+                clamped = true;
+            }
         }
-        if (dlgSize.width < minDragWidth)
-            dlgSize.width = minDragWidth;
 
         if (valid(_settings.maxWidth) && (dlgSize.width > _settings.maxWidth))
+        {
             dlgSize.width = _settings.maxWidth;
+            clamped = true;
+        }
 
         if (_dlgStatus != 'minimized')
         {
             if (valid(_settings.minHeight) && (dlgSize.height < _settings.minHeight))
+            {
                 dlgSize.height = _settings.minHeight;
+                clamped = true;
+            }
             if (valid(_settings.maxHeight) && (dlgSize.height > _settings.maxHeight))
+            {
                 dlgSize.height = _settings.maxHeight;
+                clamped = true;
+            }
         }
+
+        if ((_dragging === 'w') || (_dragging === 'nw') || (_dragging === 'sw'))
+        {
+            if (dlgSize.left + dlgSize.width != lastPos.left + lastPos.width)
+                dlgSize.left  = lastPos.left + lastPos.width - dlgSize.width;
+        }
+        if ((_dragging === 'n') || (_dragging === 'nw') || (_dragging === 'ne'))
+        {
+            if (dlgSize.top + dlgSize.height != lastPos.top + lastPos.height)
+                dlgSize.top  = lastPos.top + lastPos.height - dlgSize.height;
+        }
+
+        if ((dlgSize.top == lastPos.top) && 
+            (dlgSize.left == lastPos.left) && 
+            (dlgSize.width == lastPos.width) && 
+            (dlgSize.height == lastPos.height) && clamped)
+        {
+            return null;
+        }
+
         return dlgSize;
     }
 
@@ -365,11 +406,11 @@ function jsDialog(opt)
 
         var deltaX = event.clientX - _lastMovePos.x;
         var deltaY = event.clientY - _lastMovePos.y;
+            _lastMovePos.x = event.clientX;
+            _lastMovePos.y = event.clientY;
 
-        _lastMovePos.x = event.clientX;
-        _lastMovePos.y = event.clientY;
-
-        //console.log('onMouseMove', event);
+        if ((deltaX == 0) && (deltaY == 0))
+            return;
 
         var lastPos = {
             top: parseInt(elemFrame.style.top),
@@ -378,44 +419,47 @@ function jsDialog(opt)
             height: parseInt(elemFrame.style.height)
         };
 
-        var dlgSize = {
+        var nextPos = {
             top: lastPos.top,
             left: lastPos.left,
             width: lastPos.width,
             height: lastPos.height
         };
 
+        //console.log('onMouseMove', event);
+
         if ((_dragging === 'title') || (_dragging === 'w') || (_dragging === 'nw') || (_dragging === 'sw'))
         { //title, n, s, w, e, nw, ne, sw, se        
-            dlgSize.left += deltaX;
+            nextPos.left += deltaX;
             if (_dragging !== 'title')
-                dlgSize.width -= deltaX;
+                nextPos.width -= deltaX;
         }
+
         if ((_dragging === 'title') || (_dragging === 'n') || (_dragging === 'nw') || (_dragging === 'ne'))
         { //title, n, s, w, e, nw, ne, sw, se        
-            dlgSize.top += deltaY;
+            nextPos.top += deltaY;
             if (_dragging !== 'title')
-                dlgSize.height -= deltaY;
+                nextPos.height -= deltaY;
         }
+
         if ((_dragging === 'e') || (_dragging === 'ne') || (_dragging === 'se'))
-            dlgSize.width += deltaX;
+            nextPos.width += deltaX;
+
         if ((_dragging === 's') || (_dragging === 'sw') || (_dragging === 'se'))
-            dlgSize.height += deltaY;
+            nextPos.height += deltaY;
 
-        var newLocation = checkSizeLimit(dlgSize);
-    
-        elemFrame.style.top = newLocation.top + 'px';
-        elemFrame.style.left = newLocation.left + 'px';
-        elemFrame.style.width = newLocation.width + 'px';
-        elemFrame.style.height = newLocation.height + 'px';
-
-        if ((newLocation.top == lastPos.top) && 
-            (newLocation.left == lastPos.left) && 
-            (newLocation.width == lastPos.width) && 
-            (newLocation.height == lastPos.height))
+        var newLocation = validatePosition(lastPos, nextPos);
+        if (newLocation == null)
         {
             _dragging = null;
             _lastMovePos = {};
+        }
+        else
+        {
+            elemFrame.style.top = newLocation.top + 'px';
+            elemFrame.style.left = newLocation.left + 'px';
+            elemFrame.style.width = newLocation.width + 'px';
+            elemFrame.style.height = newLocation.height + 'px';
         }
     }
 
@@ -650,7 +694,7 @@ function jsDialog(opt)
         saveLocation('minimized');
 
         var rectTitle = elemTitle.getBoundingClientRect();
-        elemFrame.style.height = rectTitle.height + 'px';
+        elemFrame.style.height = parseInt(rectTitle.height,10) + 'px';
         elemFrame.style.width = getMinDragWidth() + 'px';
 
         elemTitleRestore.style.display = 'flex';
