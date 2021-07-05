@@ -79,22 +79,20 @@
 {
     background-color: RGB(210,210,210);
 }
-.dlgTitleIcon-win10.dlgFullScreen-win10
+.dlgClose-win10:hover > svg > path
 {
-    -moz-transform: scale(1, -1);
-    -webkit-transform: scale(1, -1);
-    -o-transform: scale(1, -1);
-    -ms-transform: scale(1, -1);
-    transform: scale(1, -1);
+    stroke: white;
 }
-.dlgTitleIcon-win10.dlgClose-win10:hover
+.dlgClose-win10:active > svg > path
 {
-    color: white;
+    stroke: white;
+}
+.dlgClose-win10:hover
+{
     background-color: RGB(240,0,0);
 }
-.dlgTitleIcon-win10.dlgClose-win10:active
+.dlgClose-win10:active
 {
-    color: white;
     background-color: RGB(255,100,100);
 }
 .dlgTitleLeft-win10

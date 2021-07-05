@@ -45,6 +45,135 @@ function deferRemove(dlgID)
     }
 }
 
+function valid(val)
+{
+    return (val != undefined) && (val != null);
+}
+
+function getSvgHtml(opt)
+{ //{type:'',box:{top:0,left:0,width:100,height:100},padding:4,stroke:'',fill:'','fill-opacity':0.5,'stroke-opacity':0.8}
+    var box = {
+        top:0,
+        left:0,
+        width:20,
+        height:20
+    };
+
+    var padding = 0;
+    var fill = 'none';
+    var fillOpacity = null;
+    var stroke = '#000';
+    var strokeOpacity = null;
+
+    if (opt)
+    {
+        if (opt.box) 
+        {
+            if (valid(opt.box.top)) box.top = parseInt(opt.box.top, 10);
+            if (valid(opt.box.left)) box.left = parseInt(opt.box.left, 10);
+            if (valid(opt.box.width)) box.width = parseInt(opt.box.width, 10);
+            if (valid(opt.box.height)) box.height = parseInt(opt.box.height, 10);
+        }
+        for(var attr in opt)
+        {
+            if (attr == 'padding')               padding = opt[attr];
+            else if (attr == 'fill')             fill = opt[attr];
+            else if (attr == 'stroke')           stroke = opt[attr];
+            else if (attr == 'fill-opacity')     fillOpacity = opt[attr];
+            else if (attr == 'stroke-opacity')   strokeOpacity = opt[attr];
+        }
+    }
+
+    var htmlSvg = '';
+    htmlSvg += '<svg';
+    htmlSvg += ' viewBox="'+box.left+' '+box.top+' '+box.width+' '+box.height+'"';
+    htmlSvg += ' width="'+box.width+'"';
+    htmlSvg += ' height="'+box.height+'"';
+    htmlSvg += ' xmlns="http://www.w3.org/2000/svg"';
+    htmlSvg += '>';
+    htmlSvg +=   '<path';
+    htmlSvg += ' d="';
+    if (opt.type == 'menu')
+    {
+        var size = 5;
+        htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+1);              htmlSvg += 'h'+(size);
+        htmlSvg += 'M'+(box.left+padding)+','+(box.top+(box.height/2));         htmlSvg += 'h'+(size);
+        htmlSvg += 'M'+(box.left+padding)+','+(box.top+box.height-padding-1);   htmlSvg += 'h'+(size);
+
+        htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+padding+1);            htmlSvg += 'h-'+(size);
+        htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+(box.height/2));       htmlSvg += 'h-'+(size);
+        htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+box.height-padding-1); htmlSvg += 'h-'+(size);
+    }
+    else if (opt.type == 'minimize')
+    {
+        htmlSvg += 'M'+(box.left+padding)+','+(box.top+(box.height/2));
+        htmlSvg += 'h'+(box.width-2*padding);
+    }
+    else if (opt.type == 'maximize')
+    {
+        htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding);
+        htmlSvg += 'h'+(box.width-2*padding);
+        htmlSvg += 'v'+(box.height-2*padding);
+        htmlSvg += 'h-'+(box.width-2*padding);
+        htmlSvg += 'z';
+    }
+    else if (opt.type == 'fullscreen')
+    {
+        var size = 4;
+        htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+size);
+        htmlSvg += 'v-'+(size);
+        htmlSvg += 'h'+(size);
+        htmlSvg += 'M'+(box.left+box.width-padding-size)+','+(box.top+padding);
+        htmlSvg += 'h'+(size);
+        htmlSvg += 'v'+(size);
+        htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+box.height-padding-size);
+        htmlSvg += 'v'+(size);
+        htmlSvg += 'h-'+(size);
+        htmlSvg += 'M'+(box.left+padding+size)+','+(box.top+box.height-padding);
+        htmlSvg += 'h-'+(size);
+        htmlSvg += 'v-'+(size);
+    }
+    else if (opt.type == 'restore')
+    {
+        var cascade = 3;
+        htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+cascade);
+        htmlSvg += 'h'+(box.width-2*padding-cascade);
+        htmlSvg += 'v'+(box.height-2*padding-cascade);
+        htmlSvg += 'h-'+(box.width-2*padding-cascade);
+        htmlSvg += 'z';
+        htmlSvg += 'M'+(box.left+padding+cascade+1)+','+(box.top+padding+cascade);
+        htmlSvg += 'v-'+(cascade);
+        htmlSvg += 'h'+(box.width-2*padding-cascade-1);
+        htmlSvg += 'v'+(box.height-2*padding-cascade-1);
+        htmlSvg += 'h-'+(cascade);
+    }
+    else if (opt.type == 'close')
+    {
+        htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding);
+        htmlSvg += 'L'+(box.left+box.width-padding)+','+(box.top+box.height-padding);
+        htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+padding);
+        htmlSvg += 'L'+(box.left+padding)+','+(box.top+box.height-padding);
+    }
+    else
+    {
+    }
+    htmlSvg += '"';
+
+    if (stroke) 
+        htmlSvg += ' stroke="'+stroke+'"'; //#ED1C24
+    if (strokeOpacity) 
+        htmlSvg += ' stroke-opacity="'+strokeOpacity+'"'; //#ED1C24
+    if (fill) 
+        htmlSvg += ' fill="'+fill+'"'; //#ED1C24
+    if (fillOpacity) 
+        htmlSvg += ' fill-opacity="'+fillOpacity+'"'; //#ED1C24
+
+    htmlSvg +=   '/>';
+    htmlSvg += '</svg>';
+
+    return htmlSvg;
+}
+
 /**
 <div id="" class="dlgOverlay" style="display:none;">
     <div class="dlgFrame">
@@ -148,35 +277,35 @@ function jsDialog(opt)
 
     var elemTitleMin = top.document.createElement("div");
         elemTitleMin.className = 'dlgTitleIcon' + _settings.theme;
-        elemTitleMin.innerHTML = '<span>&#9866;</span>';
+        elemTitleMin.innerHTML = getSvgHtml({type:'minimize',box:{width:20,height:20},padding:4});
         elemTitleRight.appendChild(elemTitleMin);
 
     var elemTitleMax = top.document.createElement("div");
         elemTitleMax.className = 'dlgTitleIcon' + _settings.theme;
-        elemTitleMax.innerHTML = '<span>&#9744;</span>';
+        elemTitleMax.innerHTML = getSvgHtml({type:'maximize',box:{width:20,height:20},padding:5});
         elemTitleRight.appendChild(elemTitleMax);
 
     var elemTitleFull = top.document.createElement("div");
         elemTitleFull.className = 'dlgTitleIcon' + _settings.theme + ' dlgFullScreen' + _settings.theme;
-        elemTitleFull.innerHTML = '<span>&#8690;</span>';
+        elemTitleFull.innerHTML = getSvgHtml({type:'fullscreen',box:{width:20,height:20},padding:4});
         elemTitleRight.appendChild(elemTitleFull);
 
     var elemTitleRestore = top.document.createElement("div");
         elemTitleRestore.className = 'dlgTitleIcon' + _settings.theme;
-        elemTitleRestore.innerHTML = '<span>&#10064;</span>';
+        elemTitleRestore.innerHTML = getSvgHtml({type:'restore',box:{width:20,height:20},padding:4});
         elemTitleRestore.style.display = 'none';
         elemTitleRight.appendChild(elemTitleRestore);
 
     var elemTitleClose = top.document.createElement("div");
         elemTitleClose.className = 'dlgTitleIcon' + _settings.theme + ' dlgClose' + _settings.theme;
-        elemTitleClose.innerHTML = '<span>&#10005;</span>';
+        elemTitleClose.innerHTML = getSvgHtml({type:'close',box:{width:20,height:20},padding:5});
         elemTitleRight.appendChild(elemTitleClose);
 
     var elemContent = top.document.createElement("div");
         elemContent.className = 'dlgContent' + _settings.theme;
         elemFrame.appendChild(elemContent);
 
-        elemContent.appendChild(getSvgElement({type:'',box:{top:0,left:0,width:100,height:100},padding:4,stroke:'#FFF',fill:'#ED1C24','fill-opacity':0.5,'stroke-opacity':0.8}));
+        //elemContent.innerHTML = getSvgHtml({type:'',box:{top:0,left:0,width:100,height:100},padding:4,stroke:'#FFF',fill:'#ED1C24','fill-opacity':0.5,'stroke-opacity':0.8});
 
     var elemFooter = top.document.createElement("div");
         elemFooter.className = 'dlgFooter' + _settings.theme;
@@ -186,65 +315,6 @@ function jsDialog(opt)
     {
         if (arguments)
             console.log(arguments);
-    }
-
-    function getSvgElement(opt)
-    { //{type:'',box:{top:0,left:0,width:100,height:100},padding:4,stroke:'',fill:'','fill-opacity':0.5,'stroke-opacity':0.8}
-        var box = {
-            top:0,
-            left:0,
-            width:100,
-            height:100
-        };
-
-        var fill = null;
-        var fillOpacity = null;
-        var stroke = null;
-        var strokeOpacity = null;
-
-        if (opt)
-        {
-            if (opt.box) 
-            {
-                if (valid(opt.box.top)) box.top = parseInt(opt.box.top, 10);
-                if (valid(opt.box.left)) box.left = parseInt(opt.box.left, 10);
-                if (valid(opt.box.width)) box.width = parseInt(opt.box.width, 10);
-                if (valid(opt.box.height)) box.height = parseInt(opt.box.height, 10);
-            }
-            for(var attr in opt)
-            {
-                if (attr == 'fill')             fill = opt[attr];
-                if (attr == 'stroke')           stroke = opt[attr];
-                if (attr == 'fill-opacity')     fillOpacity = opt[attr];
-                if (attr == 'stroke-opacity')   strokeOpacity = opt[attr];
-            }
-        }
-
-        var htmlSvg = '';
-        htmlSvg += '<svg';
-        htmlSvg += ' viewBox="'+box.left+' '+box.top+' '+box.width+' '+box.height+'"';
-        htmlSvg += ' width="'+box.width+'"';
-        htmlSvg += ' height="'+box.height+'"';
-        htmlSvg += ' xmlns="http://www.w3.org/2000/svg"';
-        htmlSvg += '>';
-        htmlSvg +=   '<path';
-        htmlSvg +=   ' d="M66,0h39v93zM38,0h-38v93zM52,35l25,58h-16l-8-18h-18z"';
-
-        if (stroke) 
-            htmlSvg += ' stroke="'+stroke+'"'; //#ED1C24
-        if (strokeOpacity) 
-            htmlSvg += ' stroke-opacity="'+strokeOpacity+'"'; //#ED1C24
-        if (fill) 
-            htmlSvg += ' fill="'+fill+'"'; //#ED1C24
-        if (fillOpacity) 
-            htmlSvg += ' fill-opacity="'+fillOpacity+'"'; //#ED1C24
-
-        htmlSvg +=   '/>';
-        htmlSvg += '</svg>';
-
-        var elemImg = top.document.createElement("img");
-            elemImg.src = 'data:image/svg+xml;base64,' + btoa(htmlSvg);
-        return elemImg;
     }
 
     function validateSettings()
@@ -274,11 +344,6 @@ function jsDialog(opt)
             _settings.theme = '';
         if (_settings.theme && (_settings.theme.substring(0, 1) != '-'))
             _settings.theme = '-' + _settings.theme;
-    }
-
-    function valid(val)
-    {
-        return (val != undefined) && (val != null);
     }
 
     function inRect(event, rect, tol)
@@ -666,8 +731,11 @@ function jsDialog(opt)
 
     bindEvents();
 
-    function onButtonClose()
+    function onButtonClose(event)
     {
+        event.stopPropagation();
+        event.preventDefault();
+
         if (typeof(_settings.onClosing) == 'function')
         {
             if (_settings.onClosing())
@@ -730,8 +798,11 @@ function jsDialog(opt)
             elemTitleFull.style.display = 'flex';
     }
 
-    function onToggleFullScreen()
+    function onToggleFullScreen(event)
     { //manually triggered
+        event.stopPropagation();
+        event.preventDefault();
+
         if (top.document.fullscreenElement ||
             top.document.webkitFullscreenElement ||
             top.document.mozFullScreenElement ||
@@ -801,8 +872,11 @@ function jsDialog(opt)
         log('onFullScreenError');
     }
 
-    function onToggleMin()
+    function onToggleMin(event)
     {
+        event.stopPropagation();
+        event.preventDefault();
+
         log('onToggleMin');
 
         saveLocation('minimized');
@@ -815,8 +889,11 @@ function jsDialog(opt)
         elemTitleRestore.style.display = 'flex';
     }
 
-    function onToggleMax()
+    function onToggleMax(event)
     {
+        event.stopPropagation();
+        event.preventDefault();
+
         log('onToggleMin');
 
         //save current location before changing
@@ -831,8 +908,11 @@ function jsDialog(opt)
         elemTitleRestore.style.display = 'flex';
     }
 
-    function onToggleRestore()
+    function onToggleRestore(event)
     {
+        event.stopPropagation();
+        event.preventDefault();
+
         log('onToggleRestore');
 
         if (_dlgStatus == 'minimized')
@@ -847,17 +927,17 @@ function jsDialog(opt)
     function bindEvents()
     {
         if (valid(elemTitleClose))
-            elemTitleClose.addEventListener('click', onButtonClose);
+            elemTitleClose.addEventListener('click', onButtonClose, true);
 
         if (valid(elemTitleFull))
-            elemTitleFull.addEventListener('click', onToggleFullScreen);
+            elemTitleFull.addEventListener('click', onToggleFullScreen, true);
         if (valid(elemTitleRestore))
-            elemTitleRestore.addEventListener('click', onToggleRestore);
+            elemTitleRestore.addEventListener('click', onToggleRestore, true);
 
         if (valid(elemTitleMin))
-            elemTitleMin.addEventListener('click', onToggleMin);
+            elemTitleMin.addEventListener('click', onToggleMin, true);
         if (valid(elemTitleMax))
-            elemTitleMax.addEventListener('click', onToggleMax);
+            elemTitleMax.addEventListener('click', onToggleMax, true);
 
         top.document.addEventListener('fullscreenchange', onFullScreenChanged);
         top.document.addEventListener('webkitfullscreenchange', onFullScreenChanged);
