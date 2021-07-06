@@ -1,3 +1,11 @@
+/*
+  pureDialog.js
+  Author: Straight Coder<simpleisrobust@gmail.com>
+  Date: July 05, 2021
+*/
+
+'use strict';
+
 if (window.top === window.self)
 {
     var zIndexStart = 10000;
@@ -174,19 +182,6 @@ function getSvgHtml(opt)
     return htmlSvg;
 }
 
-/**
-<div id="" class="dlgOverlay" style="display:none;">
-    <div class="dlgFrame">
-        <div class="dlgTitle">
-        </div>
-        <div class="dlgContent">
-        </div>
-        <div class="dlgFooter">
-        </div>
-    </div>
-</div> 
-
- */
 function pureDialog(opt)
 {
     var _default = {
@@ -214,6 +209,7 @@ function pureDialog(opt)
     var _dlgStatus = 'normal';
     var _lastMovePos = {};
     var _lastSavePos = {};
+    var _buttonContainers = [];
 
     var elemTopBody = top.document.body;
     var elemOverlay = top.document.createElement("div");
@@ -247,6 +243,7 @@ function pureDialog(opt)
     var elemTitleLeft = top.document.createElement("div");
         elemTitleLeft.className = 'dlgTitleLeft' + _settings.theme;
         elemTitle.appendChild(elemTitleLeft);
+    _buttonContainers.push(elemTitleLeft);
 
     var hasTitleLeft = false;
     if (_settings.title && _settings.title.left && _settings.title.left.html)
@@ -274,6 +271,7 @@ function pureDialog(opt)
     var elemTitleRight = top.document.createElement("div");
         elemTitleRight.className = 'dlgTitleRight' + _settings.theme;
         elemTitle.appendChild(elemTitleRight);
+    _buttonContainers.push(elemTitleRight);
 
     var elemTitleMin = top.document.createElement("div");
         elemTitleMin.className = 'dlgTitleIcon' + _settings.theme;
@@ -363,6 +361,17 @@ function pureDialog(opt)
         return false;
     }
 
+    function hoverButtons(event)
+    {
+        for(var i = 0; i < _buttonContainers.length; i ++)
+        {
+            var rect = _buttonContainers[i].getBoundingClientRect();
+            if (inRect(event, rect, 0))
+                return true;
+        }
+        return false;
+    }
+
     function hoverTest(event, tol)
     {
         var tolerant = 0;
@@ -434,6 +443,9 @@ function pureDialog(opt)
     {
         event = event || window.event;
         event.preventDefault();
+
+        if (hoverButtons(event))
+            return;
 
         var pos = hoverTest(event, 4);
         if (pos)
