@@ -187,7 +187,7 @@ function getSvgHtml(opt)
 </div> 
 
  */
-function jsDialog(opt)
+function pureDialog(opt)
 {
     var _default = {
         id: getUuid(),
@@ -800,9 +800,6 @@ function jsDialog(opt)
 
     function onToggleFullScreen(event)
     { //manually triggered
-        event.stopPropagation();
-        event.preventDefault();
-
         if (top.document.fullscreenElement ||
             top.document.webkitFullscreenElement ||
             top.document.mozFullScreenElement ||
