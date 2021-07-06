@@ -1,1 +1,1 @@
-# jsDialog
+# pureDialog
