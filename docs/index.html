@@ -11,6 +11,23 @@
     <script src="../pureDialog.js"></script>
 
     <style>
+      table
+      {
+        border-collapse: collapse;
+      }
+      table tr
+      {
+        height: 35px;
+      }
+      table, th, td 
+      {
+        border: 1px solid black;
+      }      
+      tr > th, 
+      tr > td
+      {
+        padding: 4px;
+      }
     </style>
 </head>
 <body class="fill">
@@ -20,14 +37,84 @@
           <div class='sub-title margin-t2'>Powered by Straight</div>
         </div>
     
-        <div class='base columns center-item main-stretch' style="overflow-x: hidden; overflow-y: auto;">
-          <div class='key margin-t24'>Model</div>           <div class='value margin-t2'><!--#DEV_MODEL--></div>
-    
-          <svg id="qrcode-svg" class="base no-shrink" style="width:80px; height:80px; padding:4px; background-color:#E8E8E8; display:none;">
-            <rect width="100%" height="100%" fill="#FFFFFF" stroke-width="0"></rect>
-            <path d="" fill="#000000" stroke-width="0"></path>
-          </svg>
-          </div>
+        <div class='base columns main-stretch' style="margin-top:20px; overflow-x: hidden; overflow-y: auto;">
+          <table>
+            <tr>
+              <td colspan="3">
+                <div class="base row">
+                  <input type="checkbox" id="dragging" name="dragging"/>
+                  <label for="dragging">Draggable Title</label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3">
+                <div class="base row">
+                  <input type="checkbox" id="resizable" name="resizable"/>
+                  <label for="resizable">Resizable Border</label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td rowspan="3" class="inCellCenter">
+                <label>Title</label>
+              </td>
+              <td class="inCellCenter">
+                <label>Left</label>
+              </td>
+              <td>
+                <div class="base row">
+                  <input type="checkbox" id="minimize_l" name="minimize_l"/>
+                  <label for="minimize_l">Minimize</label>
+      
+                  <input type="checkbox" id="maximize_l" name="maximize_l"/>
+                  <label for="maximize_l">Maximize</label>
+      
+                  <input type="checkbox" id="fullscreen_l" name="fullscreen_l"/>
+                  <label for="fullscreen_l">Fullscreen</label>
+      
+                  <input type="checkbox" id="close_l" name="close_l"/>
+                  <label for="close_l">Close</label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="inCellCenter">
+                <label>Middle</label>
+              </td>
+              <td>
+                <div class="base row">
+                  <input type="text" id="title" name="title" placeholder="Dialog Examples"/>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="inCellCenter">
+                <label>Right</label>
+              </td>
+              <td>
+                <div class="base row">
+                  <input type="checkbox" id="minimize_r" name="minimize_r"/>
+                  <label for="minimize_r">Minimize</label>
+      
+                  <input type="checkbox" id="maximize_r" name="maximize_r"/>
+                  <label for="maximize_r">Maximize</label>
+      
+                  <input type="checkbox" id="fullscreen_r" name="fullscreen_r"/>
+                  <label for="fullscreen_r">Fullscreen</label>
+      
+                  <input type="checkbox" id="close_r" name="close_r"/>
+                  <label for="close_r">Close</label>
+                </div>
+                    </td>
+            </tr>
+          </table>
+          
+          <!--input type="radio" id="font_small"  name="VAR_FONT" value="small"><label for="font_small">Small</label>&nbsp;&nbsp;
+          <input type="radio" id="font_middle" name="VAR_FONT" value="middle"><label for="font_middle">Middle</label>&nbsp;&nbsp;
+          <input type="radio" id="font_large"  name="VAR_FONT" value="large"><label for="font_large">Large</label-->
+  
+        </div>
     
         <div class='base row between-content margin-t24' style="height: 40px;">
           <button class='tab' id='win10'>win10</button>
@@ -38,7 +125,22 @@
       </div>
     
     <script>
-        document. getElementById("win10").addEventListener('click', function(){
+        document.getElementById('dragging').checked = true;
+        document.getElementById('resizable').checked = true;
+
+        document.getElementById('minimize_l').checked = true;
+        document.getElementById('maximize_l').checked = true;
+        document.getElementById('fullscreen_l').checked = true;
+        document.getElementById('close_l').checked = true;
+
+        document.getElementById('title').value = "Dialog Example";
+
+        document.getElementById('minimize_r').checked = true;
+        document.getElementById('maximize_r').checked = true;
+        document.getElementById('fullscreen_r').checked = true;
+        document.getElementById('close_r').checked = true;
+
+        document.getElementById("win10").addEventListener('click', function(){
           var dlg1 = new pureDialog({
               id: 'qazsewdcxc',
               zIndex: 10,
@@ -46,10 +148,10 @@
               width: 600,
               height: 400,
               dragging: {
-                  enabled: true,
+                  enabled: document.getElementById('dragging').checked,
               },
               resizing: {
-                  enabled: true,
+                  enabled: document.getElementById('resizable').checked,
                   handleSize: 4,
                   minWidth: 320,
                   maxWidth: 1024,
