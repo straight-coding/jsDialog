@@ -159,8 +159,13 @@
                   maxHeight: 800
               },
               title: {
+                  enabled: true,
                   left: {
-                    html: '<div class="dlgTitleIcon-win10">'+getSvgHtml({type:'menu',box:{width:20,height:20},padding:4})+'</div>'
+                    html: '<div class="dlgTitleIcon-win10">'+getSvgHtml({type:'menu',box:{width:20,height:20},padding:4})+'</div>',
+                    close: document.getElementById('close_l').checked,
+                    minimize: document.getElementById('minimize_l').checked,
+                    maximize: document.getElementById('maximize_l').checked,
+                    fullscreen: document.getElementById('fullscreen_l').checked
                   },
                   middle: {
                     align: 'left',
@@ -168,10 +173,10 @@
                   },
                   right: {
                     html: '<div class="dlgTitleIcon-win10"><span>&#9783;</span></div>',
-                    minimize: true,
-                    maximize: true,
-                    fullScreen: true,
-                    close: true
+                    minimize: document.getElementById('minimize_r').checked,
+                    maximize: document.getElementById('maximize_r').checked,
+                    fullscreen: document.getElementById('fullscreen_r').checked,
+                    close: document.getElementById('close_r').checked
                   }
               },
               content: {

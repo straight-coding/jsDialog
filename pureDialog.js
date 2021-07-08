@@ -236,68 +236,65 @@ function pureDialog(opt)
         elemFrame.style.zIndex = _settings.zIndex + 1;
         elemOverlay.appendChild(elemFrame);
 
-    var elemTitle = top.document.createElement("div");
+    var elemTitle = undefined;
+    var elemTitleLeft = undefined;
+    var elemTitleMiddle = undefined;
+    var elemTitleRight = undefined;
+    var elemTitleText = undefined;
+    var elemTitleMin = undefined;
+    var elemTitleMax = undefined;
+    var elemTitleFull = undefined;
+    var elemTitleRestore = undefined;
+    var elemTitleClose = undefined;
+
+    if (_settings.title && _settings.title.enabled)
+    {
+        elemTitle = top.document.createElement("div");
         elemTitle.className = 'dlgTitle' + _settings.theme;
         elemFrame.appendChild(elemTitle);
 
-    var elemTitleLeft = top.document.createElement("div");
-        elemTitleLeft.className = 'dlgTitleLeft' + _settings.theme;
-        elemTitle.appendChild(elemTitleLeft);
-    _buttonContainers.push(elemTitleLeft);
+        if (_settings.title.left)
+        {        
+            elemTitleLeft = top.document.createElement("div");
+            elemTitleLeft.className = 'dlgTitleLeft' + _settings.theme;
+            elemTitle.appendChild(elemTitleLeft);
+            _buttonContainers.push(elemTitleLeft);
 
-    var hasTitleLeft = false;
-    if (_settings.title && _settings.title.left && _settings.title.left.html)
-    {
-        hasTitleLeft = true;
-        elemTitleLeft.innerHTML = _settings.title.left.html;
-    }
-    var rectTitleLeft = elemTitleLeft.getBoundingClientRect();
-
-    var elemTitleMiddle = top.document.createElement("div");
-        elemTitleMiddle.className = 'dlgTitleMiddle' + _settings.theme;
-        if (hasTitleLeft && _settings.title.middle)
-        {
-            if (_settings.title.middle.align == 'left')
-                elemTitleMiddle.style.left = parseInt(rectTitleLeft.width,10) + 'px';
+            createTitleSection(elemTitleLeft, _settings.title.left);
         }
-        elemTitle.appendChild(elemTitleMiddle);
 
-    var elemTitleText = top.document.createElement("div");
-        elemTitleText.className = 'dlgTitleText' + _settings.theme;
-        if (_settings.title.middle && _settings.title.middle.html)
-            elemTitleText.innerHTML = _settings.title.middle.html;
-        elemTitleMiddle.appendChild(elemTitleText);
+        if (_settings.title.middle)
+        {        
+            var leftWidth = 0;
+            if (elemTitleLeft)
+            {
+                var rectTitleLeft = elemTitleLeft.getBoundingClientRect();
+                leftWidth = rectTitleLeft.width;
+            }
 
-    var elemTitleRight = top.document.createElement("div");
-        elemTitleRight.className = 'dlgTitleRight' + _settings.theme;
-        elemTitle.appendChild(elemTitleRight);
-    _buttonContainers.push(elemTitleRight);
+            elemTitleMiddle = top.document.createElement("div");
+            elemTitleMiddle.className = 'dlgTitleMiddle' + _settings.theme;
+            if (_settings.title.middle.align == 'left')
+                elemTitleMiddle.style.left = parseInt(leftWidth,10) + 'px';
+            elemTitle.appendChild(elemTitleMiddle);
 
-    var elemTitleMin = top.document.createElement("div");
-        elemTitleMin.className = 'dlgTitleIcon' + _settings.theme;
-        elemTitleMin.innerHTML = getSvgHtml({type:'minimize',box:{width:20,height:20},padding:4});
-        elemTitleRight.appendChild(elemTitleMin);
+            elemTitleText = top.document.createElement("div");
+            elemTitleText.className = 'dlgTitleText' + _settings.theme;
+            if (_settings.title.middle && _settings.title.middle.html)
+                elemTitleText.innerHTML = _settings.title.middle.html;
+            elemTitleMiddle.appendChild(elemTitleText);
+        }
 
-    var elemTitleMax = top.document.createElement("div");
-        elemTitleMax.className = 'dlgTitleIcon' + _settings.theme;
-        elemTitleMax.innerHTML = getSvgHtml({type:'maximize',box:{width:20,height:20},padding:5});
-        elemTitleRight.appendChild(elemTitleMax);
+        if (_settings.title.right)
+        {
+            elemTitleRight = top.document.createElement("div");
+            elemTitleRight.className = 'dlgTitleRight' + _settings.theme;
+            elemTitle.appendChild(elemTitleRight);
+            _buttonContainers.push(elemTitleRight);
 
-    var elemTitleFull = top.document.createElement("div");
-        elemTitleFull.className = 'dlgTitleIcon' + _settings.theme + ' dlgFullScreen' + _settings.theme;
-        elemTitleFull.innerHTML = getSvgHtml({type:'fullscreen',box:{width:20,height:20},padding:4});
-        elemTitleRight.appendChild(elemTitleFull);
-
-    var elemTitleRestore = top.document.createElement("div");
-        elemTitleRestore.className = 'dlgTitleIcon' + _settings.theme;
-        elemTitleRestore.innerHTML = getSvgHtml({type:'restore',box:{width:20,height:20},padding:4});
-        elemTitleRestore.style.display = 'none';
-        elemTitleRight.appendChild(elemTitleRestore);
-
-    var elemTitleClose = top.document.createElement("div");
-        elemTitleClose.className = 'dlgTitleIcon' + _settings.theme + ' dlgClose' + _settings.theme;
-        elemTitleClose.innerHTML = getSvgHtml({type:'close',box:{width:20,height:20},padding:5});
-        elemTitleRight.appendChild(elemTitleClose);
+            createTitleSection(elemTitleRight, _settings.title.right);
+        }
+    }
 
     var elemContent = top.document.createElement("div");
         elemContent.className = 'dlgContent' + _settings.theme;
@@ -308,6 +305,79 @@ function pureDialog(opt)
     var elemFooter = top.document.createElement("div");
         elemFooter.className = 'dlgFooter' + _settings.theme;
         //elemFrame.appendChild(elemFooter);
+
+    function createTitleSection(container, section)
+    {
+        //keep resizing elements together and in their original order
+        var elemResizing = [];
+        for(var type in section)
+        {        
+            if (type == 'minimize')
+            {
+                if (!elemTitleMin && section[type])
+                {
+                    elemTitleMin = top.document.createElement("div");
+                    elemTitleMin.className = 'dlgTitleIcon' + _settings.theme;
+                    elemTitleMin.innerHTML = getSvgHtml({type:'minimize',box:{width:20,height:20},padding:4});
+                    elemResizing.push(elemTitleMin);
+                }
+            }
+            else if (type == 'maximize')
+            {
+                if (!elemTitleMax && section[type])
+                {
+                    elemTitleMax = top.document.createElement("div");
+                    elemTitleMax.className = 'dlgTitleIcon' + _settings.theme;
+                    elemTitleMax.innerHTML = getSvgHtml({type:'maximize',box:{width:20,height:20},padding:5});
+                    elemResizing.push(elemTitleMax);
+                }
+            }
+            else if (type == 'fullscreen')
+            {
+                if (!elemTitleFull && section[type])
+                {
+                    elemTitleFull = top.document.createElement("div");
+                    elemTitleFull.className = 'dlgTitleIcon' + _settings.theme + ' dlgFullScreen' + _settings.theme;
+                    elemTitleFull.innerHTML = getSvgHtml({type:'fullscreen',box:{width:20,height:20},padding:4});
+                    elemResizing.push(elemTitleFull);
+                }
+            }
+        }
+
+        for(var type in section)
+        {
+            if ((type == 'minimize') || (type == 'maximize') || (type == 'fullscreen'))
+            {
+                for(var i = 0; i < elemResizing.length; i ++)
+                {
+                    container.appendChild(elemResizing[i]);
+                }
+                if (elemResizing.length > 0)
+                {
+                    elemTitleRestore = top.document.createElement("div");
+                    elemTitleRestore.className = 'dlgTitleIcon' + _settings.theme;
+                    elemTitleRestore.innerHTML = getSvgHtml({type:'restore',box:{width:20,height:20},padding:4});
+                    elemTitleRestore.style.display = 'none';
+                    container.appendChild(elemTitleRestore);
+                }
+                elemResizing = [];
+            }
+            else if (type == 'html')
+            {
+                container.innerHTML = section[type];
+            }
+            else if (type == 'close')
+            {
+                if (!elemTitleClose && section[type])
+                {
+                    elemTitleClose = top.document.createElement("div");
+                    elemTitleClose.className = 'dlgTitleIcon' + _settings.theme + ' dlgClose' + _settings.theme;
+                    elemTitleClose.innerHTML = getSvgHtml({type:'close',box:{width:20,height:20},padding:5});
+                    container.appendChild(elemTitleClose);
+                }
+            }
+        }
+    }
 
     function log()
     {
@@ -478,6 +548,7 @@ function pureDialog(opt)
 
     function getMinDragWidth()
     {
+        var rectTitleLeft = elemTitleLeft.getBoundingClientRect();
         var rectTitleText = elemTitleText.getBoundingClientRect();
         var rectTitleRight = elemTitleRight.getBoundingClientRect();
         return (parseInt(rectTitleLeft.width,10) + parseInt(rectTitleText.width,10) + parseInt(rectTitleRight.width,10) + 4);
@@ -808,8 +879,12 @@ function pureDialog(opt)
 
         if (valid(elemTitleFull))
             elemTitleFull.style.display = 'flex';
+
+        //after all being visible
+        reLocateTitleText();
     }
 
+    //to start fullscreen operation
     function onToggleFullScreen(event)
     { //manually triggered
         if (top.document.fullscreenElement ||
@@ -853,6 +928,7 @@ function pureDialog(opt)
         }
     }
 
+    //event when fullscreen operation ends
     function onFullScreenChanged()
     {
         if (top.document.fullscreenElement ||
@@ -867,6 +943,9 @@ function pureDialog(opt)
             elemFrame.style.left = '0px';
             elemFrame.style.width = '100%';
             elemFrame.style.height = '100%';
+
+            //after all being visible
+            reLocateTitleText();
         }
         else
         {
@@ -879,6 +958,20 @@ function pureDialog(opt)
     function onFullScreenError()
     {
         log('onFullScreenError');
+    }
+
+    function reLocateTitleText()
+    {
+        if (_settings.title.middle && (_settings.title.middle.align == 'left'))
+        {
+            var leftWidth = 0;
+            if (elemTitleLeft)
+            {
+                var rectTitleLeft = elemTitleLeft.getBoundingClientRect();
+                leftWidth = rectTitleLeft.width;
+            }
+            elemTitleMiddle.style.left = parseInt(leftWidth,10) + 'px';
+        }
     }
 
     function onToggleMin(event)
@@ -896,6 +989,9 @@ function pureDialog(opt)
 
         elemContent.style.display = 'none';
         elemTitleRestore.style.display = 'flex';
+
+        //after all being visible
+        reLocateTitleText();
     }
 
     function onToggleMax(event)
@@ -915,6 +1011,9 @@ function pureDialog(opt)
         elemFrame.style.height = '100%';
 
         elemTitleRestore.style.display = 'flex';
+
+        //after all being visible
+        reLocateTitleText();
     }
 
     function onToggleRestore(event)
