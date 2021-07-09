@@ -1,4 +1,4 @@
-.dlgOverlay-win10
+.win10-dlgOverlay
 {
     box-sizing: border-box; 
     display: none;
@@ -12,7 +12,7 @@
     background-color: (0, 0, 0, 0.4);
     overflow: hidden;
 }
-.dlgFrame-win10
+.win10-dlgFrame
 {
     box-sizing: border-box; 
     display: flex;
@@ -34,11 +34,14 @@
     box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
     background:(255, 255, 255);
 }
-.dlgTitle-win10
+.win10-dlgTitle
 {
     box-sizing: border-box; 
     display: flex;
     position: relative;
+
+	flex-flow: row nowrap;
+	align-items: stretch; 
 
     font-size: 12px;
 
@@ -48,7 +51,33 @@
     width: 100%;
     height: 32px;
 }
-.dlgTitleIcon-win10
+.win10-dlgContent
+{
+    box-sizing: border-box; 
+    display: flex;
+    position: relative;
+
+	flex: 1 0 auto;
+
+    width: 100%;
+
+    background: whitesmoke;
+}
+.win10-dlgFooter
+{
+    box-sizing: border-box; 
+    display: flex;
+    position: relative;
+
+	flex-flow: row nowrap;
+	align-items: stretch; 
+
+    width: 100%;
+    height: 40px;
+
+    background-color: white;
+}
+.win10-dlgIcon
 {
     box-sizing: border-box; 
     display: flex;
@@ -62,40 +91,43 @@
     font-size: 14px;
     color: black;
 }
-.dlgTitleLeft-win10 .dlgTitleIcon-win10
+.win10-dlgTitle .Left .win10-dlgIcon,
+.win10-dlgFooter .Left .win10-dlgIcon 
 {
     width: 32px;
 }
-.dlgTitleRight-win10 .dlgTitleIcon-win10
+.win10-dlgTitle .Right .win10-dlgIcon,
+.win10-dlgFooter .Right .win10-dlgIcon 
 {
     width: 46px;
 }
-.dlgTitleIcon-win10:hover
+.win10-dlgIcon:hover
 {
     cursor: pointer;
     background-color: RGB(230,230,230);
 }
-.dlgTitleIcon-win10:active
+.win10-dlgIcon:active
 {
     background-color: RGB(210,210,210);
 }
-.dlgClose-win10:hover > svg > path
+.win10-dlgClose:hover > svg > path
 {
     stroke: white;
 }
-.dlgClose-win10:active > svg > path
+.win10-dlgClose:active > svg > path
 {
     stroke: white;
 }
-.dlgClose-win10:hover
+.win10-dlgClose:hover
 {
     background-color: RGB(240,0,0);
 }
-.dlgClose-win10:active
+.win10-dlgClose:active
 {
     background-color: RGB(255,100,100);
 }
-.dlgTitleLeft-win10
+.win10-dlgTitle .Left,
+.win10-dlgFooter .Left
 {
     box-sizing: border-box; 
     display: flex;
@@ -108,7 +140,8 @@
     height: 100%;
     left: 0px;
 }
-.dlgTitleMiddle-win10
+.win10-dlgTitle .Middle,
+.win10-dlgFooter .Middle
 {
     box-sizing: border-box; 
     display: flex;
@@ -118,14 +151,16 @@
 	align-items: center; 
 
     left: 32px;
-    width: calc(100% - 20px);
+/*    width: calc(100% - 20px); */
     height: 100%;
 }
-.dlgTitleText-win10
+.win10-dlgTitle .Text,
+.win10-dlgFooter .Text
 {
     color:RGB(100,100,100);
 }
-.dlgTitleRight-win10
+.win10-dlgTitle .Right,
+.win10-dlgFooter .Right
 {
     box-sizing: border-box; 
     display: flex;
@@ -139,30 +174,8 @@
 
     color: white;
 }
-.dlgTitleRight-win10 .dlgTitleIcon-win10
+.win10-dlgTitle .Right .win10-dlgIcon,
+.win10-dlgFooter .Right .win10-dlgIcon
 {
     margin-left: 0px;
-}
-.dlgContent-win10
-{
-    box-sizing: border-box; 
-    display: flex;
-    position: relative;
-
-	flex: 1 0 auto;
-
-    width: 100%;
-
-    background: whitesmoke;
-}
-.dlgFooter-win10
-{
-    box-sizing: border-box; 
-    display: flex;
-    position: relative;
-
-    width: 100%;
-    height: 25px;
-
-    background-color: red;
 }

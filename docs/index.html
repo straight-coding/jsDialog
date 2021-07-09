@@ -108,6 +108,59 @@
                 </div>
                     </td>
             </tr>
+            <tr>
+              <td rowspan="3" class="inCellCenter">
+                <label>Footer</label>
+              </td>
+              <td class="inCellCenter">
+                <label>Left</label>
+              </td>
+              <td>
+                <div class="base row">
+                  <input type="checkbox" id="minimize_l" name="minimize_l"/>
+                  <label for="minimize_l">Minimize</label>
+      
+                  <input type="checkbox" id="maximize_l" name="maximize_l"/>
+                  <label for="maximize_l">Maximize</label>
+      
+                  <input type="checkbox" id="fullscreen_l" name="fullscreen_l"/>
+                  <label for="fullscreen_l">Fullscreen</label>
+      
+                  <input type="checkbox" id="close_l" name="close_l"/>
+                  <label for="close_l">Close</label>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="inCellCenter">
+                <label>Middle</label>
+              </td>
+              <td>
+                <div class="base row">
+                  <input type="text" id="title" name="title" placeholder="Dialog Examples"/>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="inCellCenter">
+                <label>Right</label>
+              </td>
+              <td>
+                <div class="base row">
+                  <input type="checkbox" id="minimize_r" name="minimize_r"/>
+                  <label for="minimize_r">Minimize</label>
+      
+                  <input type="checkbox" id="maximize_r" name="maximize_r"/>
+                  <label for="maximize_r">Maximize</label>
+      
+                  <input type="checkbox" id="fullscreen_r" name="fullscreen_r"/>
+                  <label for="fullscreen_r">Fullscreen</label>
+      
+                  <input type="checkbox" id="close_r" name="close_r"/>
+                  <label for="close_r">Close</label>
+                </div>
+                    </td>
+            </tr>
           </table>
           
           <!--input type="radio" id="font_small"  name="VAR_FONT" value="small"><label for="font_small">Small</label>&nbsp;&nbsp;
@@ -148,121 +201,53 @@
               width: 600,
               height: 400,
               dragging: {
-                  enabled: document.getElementById('dragging').checked,
+                enabled: document.getElementById('dragging').checked,
               },
               resizing: {
-                  enabled: document.getElementById('resizable').checked,
-                  handleSize: 4,
-                  minWidth: 320,
-                  maxWidth: 1024,
-                  minHeight: 200,
-                  maxHeight: 800
+                enabled: document.getElementById('resizable').checked,
+                handleSize: 4,
+                minWidth: 320,
+                maxWidth: 1024,
+                minHeight: 200,
+                maxHeight: 800
               },
               title: {
-                  enabled: true,
+                enabled: true,
+                left: {
+                  html: '<div class="win10-dlgIcon">'+getSvgHtml({type:'menu',box:{width:20,height:20},padding:4})+'</div>',
+                  close: document.getElementById('close_l').checked,
+                  minimize: document.getElementById('minimize_l').checked,
+                  maximize: document.getElementById('maximize_l').checked,
+                  fullscreen: document.getElementById('fullscreen_l').checked
+                },
+                middle: {
+                  align: 'left',
+                  html: '<span>Dialog Examples</span>'
+                },
+                right: {
+                  html: '<div class="win10-dlgIcon"><span>&#9783;</span></div>',
+                  minimize: document.getElementById('minimize_r').checked,
+                  maximize: document.getElementById('maximize_r').checked,
+                  fullscreen: document.getElementById('fullscreen_r').checked,
+                  close: document.getElementById('close_r').checked
+                }
+              },
+              content: {
+                wrapper: 'iframe',
+                url: '',
+                content: ''
+              },
+              footer: {
+                enabled: true,
                   left: {
-                    html: '<div class="dlgTitleIcon-win10">'+getSvgHtml({type:'menu',box:{width:20,height:20},padding:4})+'</div>',
-                    close: document.getElementById('close_l').checked,
-                    minimize: document.getElementById('minimize_l').checked,
-                    maximize: document.getElementById('maximize_l').checked,
-                    fullscreen: document.getElementById('fullscreen_l').checked
+                    html: '<div class="win10-dlgIcon"><span>&#9783;</span></div>',
                   },
                   middle: {
                     align: 'left',
                     html: '<span>Dialog Examples</span>'
                   },
                   right: {
-                    html: '<div class="dlgTitleIcon-win10"><span>&#9783;</span></div>',
-                    minimize: document.getElementById('minimize_r').checked,
-                    maximize: document.getElementById('maximize_r').checked,
-                    fullscreen: document.getElementById('fullscreen_r').checked,
-                    close: document.getElementById('close_r').checked
-                  }
-              },
-              content: {
-                  wrapper: 'iframe',
-                  url: '',
-                  content: ''
-              },
-              footer: {
-                  left: {
-
-                  },
-                  middle: {
-
-                  },
-                  right: {
-                      
-                  }
-              },
-              onInitDialog: function(context) {
-              },
-              onContentLoaded: function(context) {
-              },
-              onEnter: function(context) {
-              },
-              onLeave: function(context) {
-              },
-              onDragged: function(context) {
-              },
-              onDropped: function(context) {
-              },
-              onClosing: function() {
-                return true;
-              },
-              onClosed: function(context, result) {
-              }
-          });
-
-          dlg1.show();
-        });
-
-        document. getElementById("jquery").addEventListener('click', function(){
-          var dlg1 = new pureDialog({
-              id: 'qazsewdcxc',
-              zIndex: 10,
-              dragging: {
-                  enabled: true,
-              },
-              resizing: {
-                  enabled: true,
-                  handleSize: 4
-              },
-              theme: 'jquery',
-              width: 600,
-              height: 400,
-              minWidth: 320,
-              maxWidth: 1024,
-              minHeight: 200,
-              maxHeight: 800,
-              frame: {
-                  style: ''
-              },
-              title: {
-                  left: {
-                  },
-                  middle: {
-                    align: 'left'
-                  },
-                  right: {
-                      maximize: true,
-                      fullScreen: true
-                  }
-              },
-              content: {
-                  wrapper: 'iframe',
-                  url: '',
-                  content: ''
-              },
-              footer: {
-                  left: {
-
-                  },
-                  middle: {
-
-                  },
-                  right: {
-                      
+                    html: '<div class="win10-dlgIcon"><span>&#9783;</span></div>',
                   }
               },
               onInitDialog: function(context) {
