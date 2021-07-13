@@ -58,6 +58,13 @@ function valid(val)
     return (val != undefined) && (val != null);
 }
 
+function elementFromHTML(htmlString) 
+{
+    var template  = document.createElement('template');
+    template.innerHTML = htmlString;
+    return template.firstElementChild || template.content.firstChild; 
+}
+
 function getSvgHtml(opt)
 { //{type:'',box:{top:0,left:0,width:100,height:100},padding:4,stroke:'',fill:'','fill-opacity':0.5,'stroke-opacity':0.8}
     var box = {
@@ -182,34 +189,114 @@ function getSvgHtml(opt)
     return htmlSvg;
 }
 
-function pureDialog(opt)
+function measureText(text, cssClass)
 {
+    var div = top.document.createElement('div');
+    if (cssClass)
+        div.className = cssClass;
+    top.document.body.appendChild(div);
+
+    div.style.position = "absolute";
+    div.style.left = -1000;
+    div.style.top = -1000;
+    div.innerHTML = text;
+
+    var size = {
+        width: div.clientWidth,
+        height: div.clientHeight
+    };
+
+    top.document.body.removeChild(div);
+    div = null;
+
+    return size;
+}
+
+function pureDialog()
+{
+    var opt = undefined;
+    var caption = undefined;
+    var message = undefined;
+
+    var argLen = arguments.length;
+    if (argLen == 0)
+        return null;
+
+    if (typeof arguments[0] == 'object')
+        opt = arguments[0];
+    else
+    {
+        if (typeof arguments[0] == 'string')
+            caption = arguments[0];
+
+        if ((argLen > 1) && (typeof arguments[1] == 'string'))
+            message = arguments[1];
+    }
+
     var _default = {
         id: getUuid(),
         zIndex: getNextZindex(),
-        dragging: {
-            enabled: true,
-        },
-        resizing: {
-            enabled: true,
-            handleSize: 4,
-            minWidth: 320,
-            maxWidth: 1024,
-            minHeight: 200,
-            maxHeight: 800
-        },
+        theme: 'win10',
+        dragging: false,
+        resizing: false,
         width: 600,
         height: 400
     };
 
     var _settings = deepMerge(_default, opt);
+
+    if (caption)
+    {
+        _settings.title = {
+            left: [
+                {
+                    type: 'html',
+                    content: caption,
+                    toolTip: '',
+                }
+            ],
+            right: [
+                {
+                    type: 'close',
+                    toolTip: 'Close'
+                },
+            ]
+        };
+    }
+
+    if (message)
+    {
+        var captionSize = measureText('Caption', _settings.theme + '-dlgTitle');
+        var footerSize = measureText('Footer', _settings.theme + '-dlgFooter');
+
+        var msgSize = measureText(message);
+        _settings.width = msgSize.width;
+        _settings.height = msgSize.height + captionSize.height + footerSize.height;
+    }
+
+    if (!opt)
+    {
+        _settings.footer =  {
+            right: [
+                {
+                    type: 'OK',
+                    toolTip: 'OK'
+                },
+                {
+                    type: 'Cancel',
+                    toolTip: 'Cancel'
+                },
+            ]
+        }
+    }
+
     validateSettings();
 
     var _dragging = null; //title, n, s, w, e, nw, ne, sw, se
     var _dlgStatus = 'normal';
     var _lastMovePos = {};
     var _lastSavePos = {};
-    var _titleContainers = [];
+    var _clickableParts = [];
 
     var elemTopBody = top.document.body;
     var elemOverlay = top.document.createElement("div");
@@ -238,7 +325,7 @@ function pureDialog(opt)
 
     var elemTitle = undefined;
     var elemTitleParts = {};
-    if (_settings.title && _settings.title.enabled)
+    if (_settings.title)
     {
         elemTitle = top.document.createElement("div");
         elemTitle.className = _settings.theme + 'dlgTitle';
@@ -251,11 +338,20 @@ function pureDialog(opt)
         elemContent = top.document.createElement("div");
         elemContent.className = _settings.theme + 'dlgContent';
         elemFrame.appendChild(elemContent);
-        //elemContent.innerHTML = getSvgHtml({type:'',box:{top:0,left:0,width:100,height:100},padding:4,stroke:'#FFF',fill:'#ED1C24','fill-opacity':0.5,'stroke-opacity':0.8});
+    if (_settings.content)
+    {
+        if (_settings.content.iframe && _settings.content.url)
+        {
+            var iframe = document.createElement('iframe');
+            iframe.src = _settings.content.url;
+            iframe.style.border = '0';
+            elemContent.appendChild(iframe);
+        }
+    }
 
     var elemFooter = undefined;
     var elemFooterParts = {};
-    if (_settings.footer && _settings.footer.enabled)
+    if (_settings.footer)
     {
         elemFooter = top.document.createElement("div");
         elemFooter.className = _settings.theme + 'dlgFooter';
@@ -264,14 +360,13 @@ function pureDialog(opt)
         createBar(_settings.footer, elemFooter, elemFooterParts);
     }
 
-    function createBar(barConfig, container, barParts)
+    function createBar(barConfig, elemBar, barParts)
     {
         if (barConfig.left)
         {        
             barParts['left'] = top.document.createElement("div");
             barParts['left'].className = 'Left';
-            container.appendChild(barParts['left']);
-            _titleContainers.push(barParts['left']);
+            elemBar.appendChild(barParts['left']);
 
             createBarParts(barParts, 'left', barConfig.left);
         }
@@ -284,26 +379,19 @@ function pureDialog(opt)
                 var rectTitleLeft = barParts['left'].getBoundingClientRect();
                 leftWidth = rectTitleLeft.width;
             }
-
             barParts['middle'] = top.document.createElement("div");
             barParts['middle'].className = 'Middle';
-            if (barConfig.middle.align == 'left')
-                barParts['middle'].style.left = parseInt(leftWidth,10) + 'px';
-            container.appendChild(barParts['middle']);
+            barParts['middle'].style.marginLeft = parseInt(leftWidth,10) + 'px';
+            elemBar.appendChild(barParts['middle']);
 
-            barParts['text'] = top.document.createElement("div");
-            barParts['text'].className = 'Text';
-            if (barConfig.middle && barConfig.middle.html)
-                barParts['text'].innerHTML = barConfig.middle.html;
-            barParts['middle'].appendChild(barParts['text']);
+            createBarParts(barParts, 'middle', barConfig.middle);
         }
 
         if (barConfig.right)
         {
             barParts['right'] = top.document.createElement("div");
             barParts['right'].className = 'Right';
-            container.appendChild(barParts['right']);
-            _titleContainers.push(barParts['right']);
+            elemBar.appendChild(barParts['right']);
 
             createBarParts(barParts, 'right', barConfig.right);
         }
@@ -313,70 +401,124 @@ function pureDialog(opt)
     {
         //keep resizing elements together and in their original order
         var elemResizing = [];
-        for(var type in section)
-        {        
+        for(var i = 0; i < section.length; i ++)
+        {
+            var type = section[i].type;
+            if (!type)
+                continue;
+
             if (type == 'minimize')
             {
-                if (!barParts[type] && section[type])
+                if (!barParts[type])
                 {
                     barParts[type] = top.document.createElement("div");
-                    barParts[type].className = _settings.theme + 'dlgIcon ' + _settings.theme + 'dlgMinimize';
+                    if (section[i].toolTip)
+                        barParts[type].title = section[i].toolTip;
+                    barParts[type].className = _settings.theme + 'dlgIcon dlgMinimize';
                     barParts[type].innerHTML = getSvgHtml({type:type,box:{width:20,height:20},padding:4});
                     elemResizing.push(barParts[type]);
+                    _clickableParts.push(barParts[type]);
                 }
             }
             else if (type == 'maximize')
             {
-                if (!barParts[type] && section[type])
+                if (!barParts[type])
                 {
                     barParts[type] = top.document.createElement("div");
-                    barParts[type].className = _settings.theme + 'dlgIcon ' + _settings.theme + 'dlgMaximize';
+                    if (section[i].toolTip)
+                        barParts[type].title = section[i].toolTip;
+                    barParts[type].className = _settings.theme + 'dlgIcon dlgMaximize';
                     barParts[type].innerHTML = getSvgHtml({type:type,box:{width:20,height:20},padding:5});
                     elemResizing.push(barParts[type]);
+                    _clickableParts.push(barParts[type]);
                 }
             }
             else if (type == 'fullscreen')
             {
-                if (!barParts[type] && section[type])
+                if (!barParts[type])
                 {
                     barParts[type] = top.document.createElement("div");
-                    barParts[type].className = _settings.theme + 'dlgIcon ' + _settings.theme + 'dlgFullScreen';
+                    if (section[i].toolTip)
+                        barParts[type].title = section[i].toolTip;
+                    barParts[type].className = _settings.theme + 'dlgIcon dlgFullScreen';
                     barParts[type].innerHTML = getSvgHtml({type:type,box:{width:20,height:20},padding:4});
                     elemResizing.push(barParts[type]);
+                    _clickableParts.push(barParts[type]);
                 }
             }
         }
 
-        for(var type in section)
+        for(var i = 0; i < section.length; i ++)
         {
+            var type = section[i].type;
+            if (!type)
+                continue;
+
             if ((type == 'minimize') || (type == 'maximize') || (type == 'fullscreen'))
             {
-                for(var i = 0; i < elemResizing.length; i ++)
-                {
-                    barParts[posInBar].appendChild(elemResizing[i]);
-                }
                 if (elemResizing.length > 0)
                 {
+                    for(var j = 0; j < elemResizing.length; j ++)
+                    {
+                        barParts[posInBar].appendChild(elemResizing[j]);
+                    }
+
                     barParts['restore'] = top.document.createElement("div");
-                    barParts['restore'].className = _settings.theme + 'dlgIcon ' + _settings.theme + 'dlgRestore';
+                    barParts['restore'].title = 'Restore';
+                    barParts['restore'].className = _settings.theme + 'dlgIcon dlgRestore';
                     barParts['restore'].innerHTML = getSvgHtml({type:'restore',box:{width:20,height:20},padding:4});
                     barParts['restore'].style.display = 'none';
                     barParts[posInBar].appendChild(barParts['restore']);
+                    _clickableParts.push(barParts['restore']);
                 }
                 elemResizing = [];
-            }
-            else if (type == 'html')
+            }            
+            else if (type == 'caption')
             {
-                barParts[posInBar].innerHTML = section[type];
+                barParts[type] = elementFromHTML(section[i].content);
+                if (section[i].toolTip)
+                    barParts[type].title = section[i].toolTip;
+                barParts[type].className = _settings.theme + 'dlgHeadline';
+                barParts[posInBar].appendChild(barParts[type]);
+                if (typeof (section[i].onClicked) == 'function')
+                    _clickableParts.push(barParts[type]);
             }
             else if (type == 'close')
             {
-                if (!barParts[type] && section[type])
+                if (!barParts[type])
                 {
                     barParts[type] = top.document.createElement("div");
-                    barParts[type].className = _settings.theme + 'dlgIcon ' + _settings.theme + 'dlgClose';
+                    if (section[i].toolTip)
+                        barParts[type].title = section[i].toolTip;
+                    barParts[type].className = _settings.theme + 'dlgIcon dlgClose';
                     barParts[type].innerHTML = getSvgHtml({type:'close',box:{width:20,height:20},padding:5});
                     barParts[posInBar].appendChild(barParts[type]);
+                    _clickableParts.push(barParts[type]);
+                }
+            }
+            else if (type == 'button')
+            {
+                barParts[type] = top.document.createElement("button");
+                if (section[i].toolTip)
+                    barParts[type].title = section[i].toolTip;
+                barParts[type].className = _settings.theme + 'dlgButton ' + section[i].cssClass;
+                if (section[i].content)
+                    barParts[type].innerHTML = section[i].content;
+                barParts[posInBar].appendChild(barParts[type]);
+                _clickableParts.push(barParts[type]);
+            }
+            else if (type == 'html')
+            {
+                if (section[i].content)
+                {
+                    barParts[type] = elementFromHTML(section[i].content);
+                    if (section[i].toolTip)
+                        barParts[type].title = section[i].toolTip;
+                    if (section[i].cssClass)
+                        barParts[type].className = section[i].cssClass;
+                    barParts[posInBar].appendChild(barParts[type]);
+                    if (typeof (section[i].onClicked) == 'function')
+                        _clickableParts.push(barParts[type]);
                 }
             }
         }
@@ -434,26 +576,29 @@ function pureDialog(opt)
         return false;
     }
 
-    function hoverButtons(event)
+    function hoverClickable(event)
     {
-        for(var i = 0; i < _titleContainers.length; i ++)
+        for(var i = 0; i < _clickableParts.length; i ++)
         {
-            var rect = _titleContainers[i].getBoundingClientRect();
+            var rect = _clickableParts[i].getBoundingClientRect();
             if (inRect(event, rect, 0))
                 return true;
         }
         return false;
     }
 
-    function hoverTest(event, tol)
+    function hoverFrame(event, tol)
     {
         var tolerant = 0;
         if (tol)
             tolerant = tol;
 
-        var rectTitle = elemTitle.getBoundingClientRect();
-        if (inRect(event, rectTitle, tolerant))
-            return 'title';
+        if (elemTitle)
+        {
+            var rectTitle = elemTitle.getBoundingClientRect();
+            if (inRect(event, rectTitle, tolerant))
+                return 'title';
+        }
 
         var rect = elemFrame.getBoundingClientRect();
         if (inRect(event, {left: (rect.left-tolerant), top: (rect.top-tolerant), width: (2*tolerant), height: (2*tolerant)}))
@@ -478,12 +623,12 @@ function pureDialog(opt)
 
     function isDraggable()
     {
-        return (valid(_settings.dragging) && _settings.dragging.enabled);
+        return (valid(_settings.dragging) && _settings.dragging);
     }
 
     function isResizable()
     {
-        return (valid(_settings.resizing) && _settings.resizing.enabled);
+        return (valid(_settings.resizing) && _settings.resizing);
     }
 
     function changeCursor(pos)
@@ -512,47 +657,10 @@ function pureDialog(opt)
         else elemOverlay.style.cursor = 'default';
     }
 
-    function onMouseDown(event)
-    {
-        event = event || window.event;
-        event.preventDefault();
-
-        if (hoverButtons(event))
-            return;
-
-        var pos = hoverTest(event, 4);
-        if (pos)
-        {
-            if ((_dlgStatus == 'maximized') || (_dlgStatus == 'fullscreen'))
-                return;
-            if ((_dlgStatus == 'minimized') && (pos != 'title') && (pos != 'e') && (pos != 'w'))
-                return;
-            if (pos == 'title')
-            {
-                if (!isDraggable())
-                    return;
-            } 
-            else
-            {
-                if (!isResizable())
-                    return;
-            }
-            log(pos);
-            _dragging = pos;
-        }
-        if (_dragging)
-        {
-            log('onMouseDown', event);
-
-            _lastMovePos.x = event.clientX;
-            _lastMovePos.y = event.clientY;
-        }
-    }
-
     function getMinDragWidth()
     {
         var rectTitleLeft = elemTitleParts['left'].getBoundingClientRect();
-        var rectTitleText = elemTitleParts['text'].getBoundingClientRect();
+        var rectTitleText = elemTitleParts['caption'].getBoundingClientRect();
         var rectTitleRight = elemTitleParts['right'].getBoundingClientRect();
         return (parseInt(rectTitleLeft.width,10) + parseInt(rectTitleText.width,10) + parseInt(rectTitleRight.width,10) + 4);
     }
@@ -640,6 +748,43 @@ function pureDialog(opt)
         return dlgSize;
     }
 
+    function onMouseDown(event)
+    {
+        event = event || window.event;
+        event.preventDefault();
+
+        if (hoverClickable(event))
+            return;
+
+        var pos = hoverFrame(event, 4);
+        if (pos)
+        {
+            if ((_dlgStatus == 'maximized') || (_dlgStatus == 'fullscreen'))
+                return;
+            if ((_dlgStatus == 'minimized') && (pos != 'title') && (pos != 'e') && (pos != 'w'))
+                return;
+            if (pos == 'title')
+            {
+                if (!isDraggable())
+                    return;
+            } 
+            else
+            {
+                if (!isResizable())
+                    return;
+            }
+            log(pos);
+            _dragging = pos;
+        }
+        if (_dragging)
+        {
+            log('onMouseDown', event);
+
+            _lastMovePos.x = event.clientX;
+            _lastMovePos.y = event.clientY;
+        }
+    }
+
     function onMouseMove(event)
     {
         event = event || window.event;
@@ -647,7 +792,13 @@ function pureDialog(opt)
 
         if (!_dragging)
         {
-            var pos = hoverTest(event, 4);
+            if (hoverClickable(event))
+            {
+                elemOverlay.style.cursor = 'pointer';
+                return;
+            }
+
+            var pos = hoverFrame(event, 4);
             changeCursor(pos);
             return;
         }
@@ -965,16 +1116,13 @@ function pureDialog(opt)
 
     function reLocateTitleText()
     {
-        if (_settings.title.middle && (_settings.title.middle.align == 'left'))
+        var leftWidth = 0;
+        if (elemTitleParts['left'])
         {
-            var leftWidth = 0;
-            if (elemTitleParts['left'])
-            {
-                var rectTitleLeft = elemTitleParts['left'].getBoundingClientRect();
-                leftWidth = rectTitleLeft.width;
-            }
-            elemTitleParts['middle'].style.left = parseInt(leftWidth,10) + 'px';
+            var rectTitleLeft = elemTitleParts['left'].getBoundingClientRect();
+            leftWidth = rectTitleLeft.width;
         }
+        elemTitleParts['middle'].style.marginLeft = parseInt(leftWidth,10) + 'px';
     }
 
     function onToggleMin(event)
@@ -1047,18 +1195,16 @@ function pureDialog(opt)
 
     function bindEvents()
     {
-        if (valid(elemTitleParts['close']))
-            elemTitleParts['close'].addEventListener('click', onButtonClose, true);
-
-        if (valid(elemTitleParts['fullscreen']))
-            elemTitleParts['fullscreen'].addEventListener('click', onToggleFullScreen, true);
-        if (valid(elemTitleParts['restore']))
-            elemTitleParts['restore'].addEventListener('click', onToggleRestore, true);
-
         if (valid(elemTitleParts['minimize']))
             elemTitleParts['minimize'].addEventListener('click', onToggleMin, true);
         if (valid(elemTitleParts['maximize']))
             elemTitleParts['maximize'].addEventListener('click', onToggleMax, true);
+        if (valid(elemTitleParts['fullscreen']))
+            elemTitleParts['fullscreen'].addEventListener('click', onToggleFullScreen, true);
+        if (valid(elemTitleParts['restore']))
+            elemTitleParts['restore'].addEventListener('click', onToggleRestore, true);
+        if (valid(elemTitleParts['close']))
+            elemTitleParts['close'].addEventListener('click', onButtonClose, true);
 
         top.document.addEventListener('fullscreenchange', onFullScreenChanged);
         top.document.addEventListener('webkitfullscreenchange', onFullScreenChanged);

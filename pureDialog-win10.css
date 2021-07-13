@@ -57,7 +57,7 @@
     display: flex;
     position: relative;
 
-	flex: 1 0 auto;
+	flex: 1 1 auto;
 
     width: 100%;
 
@@ -91,6 +91,23 @@
     font-size: 14px;
     color: black;
 }
+.win10-dlgButton
+{
+    width: 80px;
+    height: 30px;
+
+    margin: 0 4px 0 4px;
+    border: solid 1px transparent;
+
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.win10-dlgButton:hover
+{
+    border-color: #A0A0A0;
+}
 .win10-dlgTitle .Left .win10-dlgIcon,
 .win10-dlgFooter .Left .win10-dlgIcon 
 {
@@ -110,19 +127,19 @@
 {
     background-color: RGB(210,210,210);
 }
-.win10-dlgClose:hover > svg > path
+.win10-dlgIcon.dlgClose:hover > svg > path
 {
     stroke: white;
 }
-.win10-dlgClose:active > svg > path
+.win10-dlgIcon.dlgClose:active > svg > path
 {
     stroke: white;
 }
-.win10-dlgClose:hover
+.win10-dlgIcon.dlgClose:hover
 {
     background-color: RGB(240,0,0);
 }
-.win10-dlgClose:active
+.win10-dlgIcon.dlgClose:active
 {
     background-color: RGB(255,100,100);
 }
@@ -150,7 +167,7 @@
 	flex-flow: row nowrap;
 	align-items: center; 
 
-    left: 32px;
+    left: 0px;
 /*    width: calc(100% - 20px); */
     height: 100%;
 }
