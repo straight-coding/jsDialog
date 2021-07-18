@@ -200,8 +200,8 @@
 
         document.getElementById("win10").addEventListener('click', function(){
           var dlg1 = new pureDialog({
-              id: 'qazsewdcxc',
-              zIndex: 10,
+              //id: 'qazsewdcxc',
+              //zIndex: 10,
               theme: 'win10',
               width: 600,
               height: 400,
@@ -238,6 +238,7 @@
                     onClicked: function() {}
                   }
                 ],
+                middleAlign: 'left',
                 middle: [
                   {
                     type: 'caption',
@@ -277,9 +278,6 @@
               footer: !document.getElementById('footer_en').checked ? false : {
                 left: [
                   {
-                    html: '<div class="win10-dlgIcon"><span>&#9783;</span></div>',
-                  },
-                  {
                     type: 'button',
                     cssClass: '',
                     content: 'Prev',
@@ -294,31 +292,14 @@
                     onClicked: function() {}
                   }
                 ],
+                middleAlign: 'center',
                 middle: [
                   {
-                    align: 'left',
-                    html: '<span>Dialog Examples</span>'
+                    type: 'html',
+                    content: '<span>Copyright</span>',
                   }
                 ],
                 right: [
-                  {
-                    type: 'html',
-                    content: '<div class="win10-dlgIcon"><span>&#9783;</span></div>',
-                  },
-                  {
-                    type: 'button',
-                    cssClass: '',
-                    content: 'Yes',
-                    toolTip: 'Yes',
-                    onClicked: function() {}
-                  },
-                  {
-                    type: 'button',
-                    cssClass: '',
-                    content: 'No',
-                    toolTip: 'No',
-                    onClicked: function() {}
-                  },
                   {
                     type: 'button',
                     cssClass: '',
@@ -348,7 +329,32 @@
               onDropped: function(context) {
               },
               onClosing: function() {
-                return true;
+                var dlg = new pureDialog('Warning','<span>Quit?</span>', {
+                  right: [
+                    {
+                      type: 'button',
+                      cssClass: '',
+                      content: 'Yes',
+                      toolTip: 'Yes',
+                      onClicked: function() {
+                        dlg1.close();
+                        dlg.close();
+                      }
+                    },
+                    {
+                      type: 'button',
+                      cssClass: '',
+                      content: 'No',
+                      toolTip: 'No',
+                      onClicked: function() {
+                        dlg.close();
+                      }
+                    }
+                  ]
+                });
+                
+                dlg.show();
+                return false;
               },
               onClosed: function(context, result) {
               }

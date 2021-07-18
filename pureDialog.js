@@ -217,6 +217,7 @@ function pureDialog()
     var opt = undefined;
     var caption = undefined;
     var message = undefined;
+    var optButtons = undefined;
 
     var argLen = arguments.length;
     if (argLen == 0)
@@ -231,13 +232,16 @@ function pureDialog()
 
         if ((argLen > 1) && (typeof arguments[1] == 'string'))
             message = arguments[1];
+
+        if ((argLen > 2) && (typeof arguments[2] == 'object'))
+            optButtons = arguments[2];
     }
 
     var _default = {
         id: getUuid(),
         zIndex: getNextZindex(),
         theme: 'win10',
-        dragging: false,
+        dragging: true,
         resizing: false,
         width: 600,
         height: 400
@@ -248,7 +252,7 @@ function pureDialog()
     if (caption)
     {
         _settings.title = {
-            left: [
+            middle: [
                 {
                     type: 'html',
                     content: caption,
@@ -266,26 +270,37 @@ function pureDialog()
 
     if (message)
     {
-        var captionSize = measureText('Caption', _settings.theme + '-dlgTitle');
+        var captionSize = measureText(caption, _settings.theme + '-dlgTitle');
         var footerSize = measureText('Footer', _settings.theme + '-dlgFooter');
 
         var msgSize = measureText(message);
-        _settings.width = msgSize.width;
-        _settings.height = msgSize.height + captionSize.height + footerSize.height;
+        _settings.height = Math.max(msgSize.height + captionSize.height + footerSize.height, 160);
+
+        captionSize = measureText(caption);
+        _settings.width = Math.max(Math.max(msgSize.width, captionSize.width), 320);
+
+        _settings.content = {
+            cssClass: 'dlgMessage',
+            html: message
+          };
     }
 
-    if (!opt)
+    if (optButtons)
+    {
+        _settings.footer = optButtons;
+    }
+    else if (!opt)
     {
         _settings.footer =  {
-            right: [
+            middleAlign: 'center',
+            middle: [
                 {
-                    type: 'OK',
-                    toolTip: 'OK'
-                },
-                {
-                    type: 'Cancel',
-                    toolTip: 'Cancel'
-                },
+                    type: 'button',
+                    cssClass: '',
+                    content: 'OK',
+                    toolTip: 'OK',
+                    onClicked: function() {}
+                }
             ]
         }
     }
@@ -297,6 +312,7 @@ function pureDialog()
     var _lastMovePos = {};
     var _lastSavePos = {};
     var _clickableParts = [];
+    var _onClickButtons = [];
 
     var elemTopBody = top.document.body;
     var elemOverlay = top.document.createElement("div");
@@ -310,14 +326,18 @@ function pureDialog()
     else
         elemTopBody.appendChild(elemOverlay);
 
+    var handleSize = 0;
+    if (_settings.resizing && _settings.resizing.handleSize)
+        handleSize = _settings.resizing.handleSize;
+
     var rectOverlay = elemOverlay.getBoundingClientRect();
-    var dlgTop  = (parseInt(rectOverlay.height,10) - _settings.height - 2 * _settings.resizing.handleSize)/2;
-    var dlgLeft = (parseInt(rectOverlay.width,10) - _settings.width - 2 * _settings.resizing.handleSize)/2;
+    var dlgTop  = (parseInt(rectOverlay.height,10) - _settings.height - 2*handleSize)/2;
+    var dlgLeft = (parseInt(rectOverlay.width,10) - _settings.width - 2*handleSize)/2;
 
     var elemFrame = top.document.createElement("div");
         elemFrame.className = _settings.theme + 'dlgFrame';
-        elemFrame.style.width  = (_settings.width + 2 * _settings.resizing.handleSize) + 'px';
-        elemFrame.style.height = (_settings.height + 2 * _settings.resizing.handleSize) + 'px';
+        elemFrame.style.width  = (_settings.width + 2 * handleSize) + 'px';
+        elemFrame.style.height = (_settings.height + 2 * handleSize) + 'px';
         elemFrame.style.left = (dlgLeft>0 ? dlgLeft : 0) + 'px';
         elemFrame.style.top = (dlgTop>0 ? dlgTop: 0) + 'px';
         elemFrame.style.zIndex = _settings.zIndex + 1;
@@ -329,6 +349,7 @@ function pureDialog()
     {
         elemTitle = top.document.createElement("div");
         elemTitle.className = _settings.theme + 'dlgTitle';
+        elemTitle.style.zIndex = _settings.zIndex + 2;
         elemFrame.appendChild(elemTitle);
 
         createBar(_settings.title, elemTitle, elemTitleParts);
@@ -337,6 +358,7 @@ function pureDialog()
     var elemContent = undefined;
         elemContent = top.document.createElement("div");
         elemContent.className = _settings.theme + 'dlgContent';
+        elemContent.style.zIndex = _settings.zIndex + 2;
         elemFrame.appendChild(elemContent);
     if (_settings.content)
     {
@@ -347,6 +369,14 @@ function pureDialog()
             iframe.style.border = '0';
             elemContent.appendChild(iframe);
         }
+        else if (_settings.content.html)
+        {
+            var elemMessage = top.document.createElement("div");
+            if (_settings.content.cssClass)
+                elemMessage.className = _settings.theme + _settings.content.cssClass;
+            elemMessage.innerHTML = _settings.content.html;
+            elemContent.appendChild(elemMessage);
+        }
     }
 
     var elemFooter = undefined;
@@ -355,6 +385,7 @@ function pureDialog()
     {
         elemFooter = top.document.createElement("div");
         elemFooter.className = _settings.theme + 'dlgFooter';
+        elemFooter.style.zIndex = _settings.zIndex + 2;
         elemFrame.appendChild(elemFooter);
 
         createBar(_settings.footer, elemFooter, elemFooterParts);
@@ -366,6 +397,7 @@ function pureDialog()
         {        
             barParts['left'] = top.document.createElement("div");
             barParts['left'].className = 'Left';
+            barParts['left'].style.zIndex = _settings.zIndex + 4;
             elemBar.appendChild(barParts['left']);
 
             createBarParts(barParts, 'left', barConfig.left);
@@ -373,7 +405,7 @@ function pureDialog()
 
         if (barConfig.middle)
         {        
-            var leftWidth = 0;
+            var leftWidth = 10;
             if (barParts['left'])
             {
                 var rectTitleLeft = barParts['left'].getBoundingClientRect();
@@ -381,7 +413,12 @@ function pureDialog()
             }
             barParts['middle'] = top.document.createElement("div");
             barParts['middle'].className = 'Middle';
-            barParts['middle'].style.marginLeft = parseInt(leftWidth,10) + 'px';
+            barParts['middle'].style.zIndex = _settings.zIndex + 3;
+            if (barConfig.middleAlign == 'center')
+                barParts['middle'].style['justify-content'] = 'center';
+            else //if (barConfig.middleAlign == 'left')
+                barParts['middle'].style.marginLeft = parseInt(leftWidth,10) + 'px';
+
             elemBar.appendChild(barParts['middle']);
 
             createBarParts(barParts, 'middle', barConfig.middle);
@@ -391,6 +428,7 @@ function pureDialog()
         {
             barParts['right'] = top.document.createElement("div");
             barParts['right'].className = 'Right';
+            barParts['right'].style.zIndex = _settings.zIndex + 4;
             elemBar.appendChild(barParts['right']);
 
             createBarParts(barParts, 'right', barConfig.right);
@@ -506,6 +544,14 @@ function pureDialog()
                     barParts[type].innerHTML = section[i].content;
                 barParts[posInBar].appendChild(barParts[type]);
                 _clickableParts.push(barParts[type]);
+
+                if (typeof section[i].onClicked == 'function')
+                {
+                    _onClickButtons.push({
+                        elem: barParts[type],
+                        attr: section[i]
+                    });
+                }
             }
             else if (type == 'html')
             {
@@ -978,9 +1024,13 @@ function pureDialog()
             if (_settings.onClosing())
             {
                 unbindEvents();
-
                 deferRemove(_settings.id);
             }
+        }
+        else
+        {
+            unbindEvents();
+            deferRemove(_settings.id);
         }
     }
 
@@ -1220,14 +1270,45 @@ function pureDialog()
         elemOverlay.addEventListener('mousemove', onMouseMove);
         elemOverlay.addEventListener('mouseup', onMouseUp);
         elemOverlay.addEventListener('mouseleave', onMouseUp);
+
+        for(var i = 0; i < _onClickButtons.length; i ++)
+        {
+            _onClickButtons[i].elem.addEventListener('click', _onClickButtons[i].attr.onClicked);
+        }
     }
 
     function unbindEvents()
     {
+        if (valid(elemTitleParts['minimize']))
+            elemTitleParts['minimize'].removeEventListener('click', onToggleMin);
+        if (valid(elemTitleParts['maximize']))
+            elemTitleParts['maximize'].removeEventListener('click', onToggleMax);
+        if (valid(elemTitleParts['fullscreen']))
+            elemTitleParts['fullscreen'].removeEventListener('click', onToggleFullScreen);
+        if (valid(elemTitleParts['restore']))
+            elemTitleParts['restore'].removeEventListener('click', onToggleRestore);
+        if (valid(elemTitleParts['close']))
+            elemTitleParts['close'].removeEventListener('click', onButtonClose);
+
+        for(var i = 0; i < _onClickButtons.length; i ++)
+        {
+            _onClickButtons[i].elem.removeEventListener('click', _onClickButtons[i].attr.onClicked);
+        }
+
         elemOverlay.removeEventListener('mousedown', onMouseDown);
         elemOverlay.removeEventListener('mousemove', onMouseMove);
         elemOverlay.removeEventListener('mouseup', onMouseUp);
         elemOverlay.removeEventListener('mouseleave', onMouseUp);
+
+        top.document.removeEventListener('fullscreenchange', onFullScreenChanged);
+        top.document.removeEventListener('webkitfullscreenchange', onFullScreenChanged);
+        top.document.removeEventListener('mozfullscreenchange', onFullScreenChanged);
+        top.document.removeEventListener('MSFullscreenChange', onFullScreenChanged);
+
+        top.document.removeEventListener("fullscreenerror", onFullScreenError);
+        top.document.removeEventListener("webkitfullscreenerror", onFullScreenError);
+        top.document.removeEventListener("mozfullscreenerror", onFullScreenError);
+        top.document.removeEventListener("MSFullscreenError", onFullScreenError);
     }
 
     return {
@@ -1239,6 +1320,7 @@ function pureDialog()
         },
         close: function() {
             unbindEvents();
+            deferRemove(_settings.id);
         }
     };
 }
