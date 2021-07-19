@@ -61,7 +61,18 @@ function valid(val)
 function elementFromHTML(htmlString) 
 {
     var template  = document.createElement('template');
-    template.innerHTML = htmlString;
+    if (htmlString.substring(0) != '<')
+    {
+        var innerHtml = '';
+        innerHtml += '<span>';
+        innerHtml += htmlString;
+        innerHtml += '</span>';
+        template.innerHTML = innerHtml;
+    }
+    else
+    {
+        template.innerHTML = htmlString;
+    }
     return template.firstElementChild || template.content.firstChild; 
 }
 
@@ -299,7 +310,10 @@ function pureDialog()
                     cssClass: '',
                     content: 'OK',
                     toolTip: 'OK',
-                    onClicked: function() {}
+                    onClicked: function() {
+                        unbindEvents();
+                        deferRemove(_settings.id);
+                    }
                 }
             ]
         }
@@ -539,7 +553,9 @@ function pureDialog()
                 barParts[type] = top.document.createElement("button");
                 if (section[i].toolTip)
                     barParts[type].title = section[i].toolTip;
-                barParts[type].className = _settings.theme + 'dlgButton ' + section[i].cssClass;
+                barParts[type].className = _settings.theme + 'dlgButton';
+                if (section[i].cssClass)
+                    barParts[type].className += (' ' + section[i].cssClass);
                 if (section[i].content)
                     barParts[type].innerHTML = section[i].content;
                 barParts[posInBar].appendChild(barParts[type]);

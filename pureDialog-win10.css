@@ -75,7 +75,7 @@
 
     width: 100%;
 
-    background: whitesmoke;
+    background: white;
 }
 .win10-dlgFooter
 {
@@ -124,6 +124,18 @@
 .win10-dlgButton:hover
 {
     border-color: #A0A0A0;
+}
+.win10-dlgTitle.Warning
+{
+    background-color: yellow;
+}
+.win10-dlgTitle.Info
+{
+    background-color: blue;
+}
+.win10-dlgTitle.Success
+{
+    background-color: green;
 }
 .win10-dlgTitle .Left .win10-dlgIcon,
 .win10-dlgFooter .Left .win10-dlgIcon 

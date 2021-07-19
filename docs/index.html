@@ -39,6 +39,23 @@
         <div class='base columns main-stretch' style="margin-top:20px; overflow-x: hidden; overflow-y: auto;">
           <table>
             <tr>
+              <td colspan="2">
+                <div class="base column inCellCenter">
+                  <label>Scheme</label>
+                </div>
+              </td>
+              <td>
+                <div class="base row">
+                  <select id="scheme" style="height: 25px;">
+                    <option value="win10">Windows 10</option>
+                    <option value="jquery">jQuery</option>
+                    <option value="ios">IOS</option>
+                    <option value="ubuntu">Ubuntu</option>
+                  </select>
+                </div>
+              </td>
+            </tr>
+            <tr>
               <td colspan="3">
                 <div class="base row">
                   <input type="checkbox" id="dragging" name="dragging"/>
@@ -132,7 +149,7 @@
               </td>
               <td>
                 <div class="base row">
-                  <input type="text" id="title" name="title" placeholder="Straight-Coding"/>
+                  <input type="text" id="footer_text" name="footer_text" placeholder="Straight-Coding"/>
                 </div>
               </td>
             </tr>
@@ -161,14 +178,10 @@
           <!--input type="radio" id="font_small"  name="VAR_FONT" value="small"><label for="font_small">Small</label>&nbsp;&nbsp;
           <input type="radio" id="font_middle" name="VAR_FONT" value="middle"><label for="font_middle">Middle</label>&nbsp;&nbsp;
           <input type="radio" id="font_large"  name="VAR_FONT" value="large"><label for="font_large">Large</label-->
-  
-        </div>
-    
-        <div class='base row between-content margin-t24' style="height: 40px;">
-          <button class='tab' id='win10'>win10</button>
-          <button class='tab margin-l2' id='jquery'>jquery</button>
-          <button class='tab margin-l2' id='ios'>ios</button>
-          <button class='tab margin-l2' id='ubuntu'>ubuntu</button>
+          <div class='base row center-content' style="width: 100%; height: 40px; margin-top: 10px;">
+            <button id='open'>Open Dialog</button>
+          </div>
+      
         </div>
       </div>
     
@@ -185,6 +198,7 @@
         document.getElementById('close_l').checked = true;
 
         document.getElementById('title').value = "Dialog Example";
+        document.getElementById('footer_text').value = "Straight-Coding";
 
         document.getElementById('minimize_r').checked = true;
         document.getElementById('maximize_r').checked = true;
@@ -198,8 +212,8 @@
         document.getElementById('ok').checked = true;
         document.getElementById('cancel').checked = true;
 
-        document.getElementById("win10").addEventListener('click', function(){
-          var dlg1 = new pureDialog({
+        document.getElementById("open").addEventListener('click', function(){
+          var dlgDemo = new pureDialog({
               //id: 'qazsewdcxc',
               //zIndex: 10,
               theme: 'win10',
@@ -243,7 +257,7 @@
                   {
                     type: 'caption',
                     cssClass: '',
-                    content: '<span>Dialog Examples</span>'
+                    content: document.getElementById('title').value
                   }
                 ],
                 right: [
@@ -282,21 +296,21 @@
                     cssClass: '',
                     content: 'Prev',
                     toolTip: 'Prev',
-                    onClicked: function() {}
+                    onClicked: function() {new pureDialog('Alert','<span>Prev clicked</span>');}
                   },
                   {
                     type: 'button',
                     cssClass: '',
                     content: 'Next',
                     toolTip: 'Next',
-                    onClicked: function() {}
+                    onClicked: function() {new pureDialog('Alert','<span>Next clicked</span>');}
                   }
                 ],
                 middleAlign: 'center',
                 middle: [
                   {
                     type: 'html',
-                    content: '<span>Copyright</span>',
+                    content: document.getElementById('footer_text').value
                   }
                 ],
                 right: [
@@ -305,14 +319,14 @@
                     cssClass: '',
                     content: 'OK',
                     toolTip: 'OK',
-                    onClicked: function() {}
+                    onClicked: function() {new pureDialog('Alert','<span>OK clicked</span>');}
                   },
                   {
                     type: 'button',
                     cssClass: '',
                     content: 'Cancel',
                     toolTip: 'Cancel',
-                    onClicked: function() {}
+                    onClicked: function() {new pureDialog('Alert','<span>Cancel clicked</span>');}
                   }
                 ]
               },
@@ -329,7 +343,7 @@
               onDropped: function(context) {
               },
               onClosing: function() {
-                var dlg = new pureDialog('Warning','<span>Quit?</span>', {
+                var confirm = new pureDialog('Warning','<span>Quit?</span>', {
                   right: [
                     {
                       type: 'button',
@@ -337,8 +351,8 @@
                       content: 'Yes',
                       toolTip: 'Yes',
                       onClicked: function() {
-                        dlg1.close();
-                        dlg.close();
+                        dlgDemo.close();
+                        confirm.close();
                       }
                     },
                     {
@@ -347,20 +361,20 @@
                       content: 'No',
                       toolTip: 'No',
                       onClicked: function() {
-                        dlg.close();
+                        confirm.close();
                       }
                     }
                   ]
                 });
                 
-                dlg.show();
+                //confirm.show();
                 return false;
               },
               onClosed: function(context, result) {
               }
           });
 
-          dlg1.show();
+          //dlgDemo.show();
         });
 
 </script>
