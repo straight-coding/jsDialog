@@ -1200,8 +1200,11 @@ function pureDialog()
 
         saveLocation('minimized');
 
+        var topBorder = getComputedStyle(elemFrame,null).getPropertyValue('border-top-width');
+        var bottomBorder = getComputedStyle(elemFrame,null).getPropertyValue('border-bottom-width');
+
         var rectTitle = elemTitle.getBoundingClientRect();
-        elemFrame.style.height = parseInt(rectTitle.height,10) + 'px';
+        elemFrame.style.height = (parseInt(topBorder, 10) + parseInt(bottomBorder, 10) + parseInt(rectTitle.height,10)) + 'px';
         elemFrame.style.width = getMinDragWidth() + 'px';
 
         if (elemContent)
