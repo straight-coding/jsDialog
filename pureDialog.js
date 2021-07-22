@@ -569,6 +569,27 @@ function pureDialog()
                     });
                 }
             }
+            else if (type == 'icon')
+            {
+                barParts[type] = top.document.createElement("div");
+                if (section[i].toolTip)
+                    barParts[type].title = section[i].toolTip;
+                barParts[type].className = _settings.theme + 'dlgIcon';
+                if (section[i].cssClass)
+                    barParts[type].className += (' ' + section[i].cssClass);
+                if (section[i].content)
+                    barParts[type].innerHTML = section[i].content;
+                barParts[posInBar].appendChild(barParts[type]);
+                _clickableParts.push(barParts[type]);
+
+                if (typeof section[i].onClicked == 'function')
+                {
+                    _onClickButtons.push({
+                        elem: barParts[type],
+                        attr: section[i]
+                    });
+                }
+            }
             else if (type == 'html')
             {
                 if (section[i].content)
