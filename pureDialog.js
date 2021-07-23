@@ -380,6 +380,8 @@ function pureDialog()
         {
             var iframe = document.createElement('iframe');
             iframe.src = _settings.content.url;
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
             iframe.style.border = '0';
             elemContent.appendChild(iframe);
         }
