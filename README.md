@@ -1,3 +1,3 @@
 # pureDialog
 
-Dialog developed with pure HTML/CSS/JS
+Dialog developed using pure HTML/CSS/JS, which can be draggable, resizable, minimized, maximized, full screen, etc. 
