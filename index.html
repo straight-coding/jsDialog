@@ -33,7 +33,7 @@
 <body class="fill">
     <div class="base columns center-item fill">
         <div class='base columns center-item' style="height: 100px;">
-          <div class='title margin-t36'>pureDialog Examples</div>
+          <div class='title margin-t36' style="color:royalblue">pureDialog Examples</div>
         </div>
     
         <div class='base columns main-stretch' style="margin-top:20px; overflow-x: hidden; overflow-y: auto;">
@@ -214,9 +214,7 @@
 
         document.getElementById("open").addEventListener('click', function(){
           var dlgDemo = new pureDialog({
-              //id: 'qazsewdcxc',
-              //zIndex: 10,
-              theme: 'win10',
+              theme: document.getElementById('scheme').value,
               width: 600,
               height: 400,
               dragging: document.getElementById('dragging').checked,
@@ -330,18 +328,6 @@
                   }
                 ]
               },
-              onInitDialog: function(context) {
-              },
-              onContentLoaded: function(context) {
-              },
-              onEnter: function(context) {
-              },
-              onLeave: function(context) {
-              },
-              onDragged: function(context) {
-              },
-              onDropped: function(context) {
-              },
               onClosing: function() {
                 var confirm = new pureDialog('Warning','<span>Quit?</span>', {
                   right: [
@@ -373,8 +359,6 @@
               onClosed: function(context, result) {
               }
           });
-
-          //dlgDemo.show();
         });
 
 </script>

@@ -1285,6 +1285,32 @@ function pureDialog()
             restoreLocation();
     }
 
+    function onKeyUp(event)
+    {
+        const keyName = event.key;
+        const keyCode = event.code;
+
+        if (keyName === 'Control') 
+        { // do not alert when only Control key is pressed.
+            console.log('Control pressed');
+            return;
+        }
+      
+        if (event.ctrlKey) //event.altKey, event.shiftKey
+        { // Even though event.key is not 'Control' (e.g., 'a' is pressed),
+          // event.ctrlKey may be true if Ctrl key is pressed at the same time.
+          console.log('Combination of ctrlKey', keyName, keyCode);
+        } 
+        else 
+        {
+            if (keyName === 'Escape')
+            {
+                onButtonClose(event);
+            }
+            console.log('Key pressed', keyName, keyCode);
+        }
+    }
+
     function bindEvents()
     {
         if (valid(elemTitleParts['minimize']))
@@ -1307,6 +1333,8 @@ function pureDialog()
         top.document.addEventListener("webkitfullscreenerror", onFullScreenError);
         top.document.addEventListener("mozfullscreenerror", onFullScreenError);
         top.document.addEventListener("MSFullscreenError", onFullScreenError);
+
+        top.document.addEventListener('keyup', onKeyUp);
 
         elemOverlay.addEventListener('mousedown', onMouseDown);
         elemOverlay.addEventListener('mousemove', onMouseMove);
@@ -1351,6 +1379,7 @@ function pureDialog()
         top.document.removeEventListener("webkitfullscreenerror", onFullScreenError);
         top.document.removeEventListener("mozfullscreenerror", onFullScreenError);
         top.document.removeEventListener("MSFullscreenError", onFullScreenError);
+        top.document.removeEventListener('keyup', onKeyUp);
     }
 
     return {
