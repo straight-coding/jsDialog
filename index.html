@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>pureDialog Examples</title>
-    <link href="docs/share.css" rel="stylesheet">
+    <link href="examples/share.css" rel="stylesheet">
     <link href="pureDialog-win10.css" rel="stylesheet">
     <link href="pureDialog-jquery.css" rel="stylesheet">
     <script src="pureDialog.js"></script>
@@ -37,151 +37,217 @@
         </div>
     
         <div class='base columns main-stretch' style="margin-top:20px; overflow-x: hidden; overflow-y: auto;">
-          <table>
+          <table style="width: 1024px;">
+            <!-- Alert dialog -->
             <tr>
-              <td colspan="2">
-                <div class="base column inCellCenter">
-                  <label>Scheme</label>
-                </div>
+              <td style="text-align: center;">
+                Alert
+              </td>
+              <td style="padding: 0px; background-color: lightgray;">
+                <textarea style="width:calc(100% - 8px);height: 100%;padding:0;margin:2px;resize:none;" readonly>
+  new pureDialog(&#x27;Warning&#x27;, &#x27;Operstion failed&#x27;);</textarea>
               </td>
               <td>
-                <div class="base row">
-                  <select id="scheme" style="height: 25px;">
-                    <option value="win10">Windows 10</option>
-                    <option value="jquery">jQuery</option>
-                    <option value="ios">IOS</option>
-                    <option value="ubuntu">Ubuntu</option>
-                  </select>
+                <div class='base row center-content' style="width: 100%; height: 40px;">
+                  <button id='dlg_alert'>Open Alert</button>
                 </div>
               </td>
             </tr>
+
+            <!-- Yes / No dialog -->
             <tr>
-              <td colspan="3">
-                <div class="base row">
-                  <input type="checkbox" id="dragging" name="dragging"/>
-                  <label for="dragging">Draggable Title</label>
-                </div>
+              <td style="text-align: center;">
+                Yes / No
               </td>
-            </tr>
-            <tr>
-              <td colspan="3">
-                <div class="base row">
-                  <input type="checkbox" id="resizable" name="resizable"/>
-                  <label for="resizable">Resizable Border</label>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td rowspan="3" style="text-align: left">
-                <input type="checkbox" id="title_en" name="title_en"/>
-                <label for="title_en">Title</label>
-              </td>
-              <td class="inCellCenter">
-                <label>Left</label>
+              <td style="padding: 0px; background-color: lightgray;">
+                <textarea rows="20" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
+  var confirm = new pureDialog(
+      &#x27;Confirmation&#x27;,
+      &#x27;&#x3C;span&#x3E;Are you sure to continue ?&#x3C;/span&#x3E;&#x27;, {
+    right: [{
+        type: &#x27;button&#x27;,
+        cssClass: &#x27;&#x27;,   //optional
+        content: &#x27;Yes&#x27;,
+        toolTip: &#x27;Yes&#x27;, //optional
+        onClicked: function() {
+          //Do your job
+          new pureDialog(&#x27;Information&#x27;, &#x27;Operation succeeded&#x27;);
+          confirm.close();
+        }
+      },
+      {
+        type: &#x27;button&#x27;,
+        cssClass: &#x27;&#x27;,   //optional
+        content: &#x27;No&#x27;,
+        toolTip: &#x27;No&#x27;,  //optional
+        onClicked: function() {
+          //giveup
+          new pureDialog(&#x27;Warning&#x27;, &#x27;Operation canceled&#x27;);
+          confirm.close();
+        }
+      }
+    ]
+  });
+                </textarea>
               </td>
               <td>
-                <div class="base row">
-                  <input type="checkbox" id="minimize_l" name="minimize_l"/>
-                  <label for="minimize_l">Minimize</label>
-      
-                  <input type="checkbox" id="maximize_l" name="maximize_l"/>
-                  <label for="maximize_l">Maximize</label>
-      
-                  <input type="checkbox" id="fullscreen_l" name="fullscreen_l"/>
-                  <label for="fullscreen_l">Fullscreen</label>
-      
-                  <input type="checkbox" id="close_l" name="close_l"/>
-                  <label for="close_l">Close</label>
+                <div class='base row center-content' style="width: 100%; height: 40px;">
+                  <button id='dlg_yesno'>Open Yes/No</button>
                 </div>
               </td>
             </tr>
+
+            <!-- Customize dialog -->
             <tr>
-              <td class="inCellCenter">
-                <label>Middle</label>
+              <td style="text-align: center;">
+                Customization
               </td>
-              <td>
-                <div class="base row">
-                  <input type="text" id="title" name="title" placeholder="Dialog Examples"/>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="inCellCenter">
-                <label>Right</label>
-              </td>
-              <td>
-                <div class="base row">
-                  <input type="checkbox" id="minimize_r" name="minimize_r"/>
-                  <label for="minimize_r">Minimize</label>
-      
-                  <input type="checkbox" id="maximize_r" name="maximize_r"/>
-                  <label for="maximize_r">Maximize</label>
-      
-                  <input type="checkbox" id="fullscreen_r" name="fullscreen_r"/>
-                  <label for="fullscreen_r">Fullscreen</label>
-      
-                  <input type="checkbox" id="close_r" name="close_r"/>
-                  <label for="close_r">Close</label>
-                </div>
+              <td style="padding: 0;">
+                <table>
+                  <tr>
+                    <td colspan="2">
+                      <div class="base column inCellCenter">
+                        <label>Scheme</label>
+                      </div>
                     </td>
-            </tr>
-            <tr>
-              <td rowspan="3" style="text-align: left">
-                <input type="checkbox" id="footer_en" name="footer_en"/>
-                <label for="footer_en">Footer</label>
-              </td>
-              <td class="inCellCenter">
-                <label>Left</label>
-              </td>
-              <td>
-                <div class="base row">
-                  <input type="checkbox" id="prev" name="prev"/>
-                  <label for="prev">Prev</label>
-      
-                  <input type="checkbox" id="next" name="next"/>
-                  <label for="next">Next</label>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="inCellCenter">
-                <label>Middle</label>
-              </td>
-              <td>
-                <div class="base row">
-                  <input type="text" id="footer_text" name="footer_text" placeholder="Straight-Coding"/>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="inCellCenter">
-                <label>Right</label>
-              </td>
-              <td>
-                <div class="base row">
-                  <input type="checkbox" id="yes" name="yes"/>
-                  <label for="yes">Yes</label>
-      
-                  <input type="checkbox" id="no" name="no"/>
-                  <label for="no">No</label>
-      
-                  <input type="checkbox" id="ok" name="ok"/>
-                  <label for="ok">OK</label>
-      
-                  <input type="checkbox" id="cancel" name="cancel"/>
-                  <label for="cancel">Cancel</label>
-                </div>
+                    <td>
+                      <div class="base row">
+                        <select id="scheme" style="height: 25px;">
+                          <option value="win10">Windows 10</option>
+                          <option value="jquery">jQuery</option>
+                          <option value="ios">IOS</option>
+                          <option value="ubuntu">Ubuntu</option>
+                        </select>
+                      </div>
                     </td>
+                  </tr>
+                  <tr>
+                    <td colspan="3">
+                      <div class="base row">
+                        <input type="checkbox" id="dragging" name="dragging"/>
+                        <label for="dragging">Draggable Title</label>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="3">
+                      <div class="base row">
+                        <input type="checkbox" id="resizable" name="resizable"/>
+                        <label for="resizable">Resizable Border</label>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowspan="3" style="text-align: left">
+                      <input type="checkbox" id="title_en" name="title_en"/>
+                      <label for="title_en">Title</label>
+                    </td>
+                    <td class="inCellCenter">
+                      <label>Left</label>
+                    </td>
+                    <td>
+                      <div class="base row">
+                        <input type="checkbox" id="minimize_l" name="minimize_l"/>
+                        <label for="minimize_l">Minimize</label>
+            
+                        <input type="checkbox" id="maximize_l" name="maximize_l"/>
+                        <label for="maximize_l">Maximize</label>
+            
+                        <input type="checkbox" id="fullscreen_l" name="fullscreen_l"/>
+                        <label for="fullscreen_l">Fullscreen</label>
+            
+                        <input type="checkbox" id="close_l" name="close_l"/>
+                        <label for="close_l">Close</label>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="inCellCenter">
+                      <label>Middle</label>
+                    </td>
+                    <td>
+                      <div class="base row">
+                        <input type="text" id="title" name="title" placeholder="Dialog Examples"/>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="inCellCenter">
+                      <label>Right</label>
+                    </td>
+                    <td>
+                      <div class="base row">
+                        <input type="checkbox" id="minimize_r" name="minimize_r"/>
+                        <label for="minimize_r">Minimize</label>
+            
+                        <input type="checkbox" id="maximize_r" name="maximize_r"/>
+                        <label for="maximize_r">Maximize</label>
+            
+                        <input type="checkbox" id="fullscreen_r" name="fullscreen_r"/>
+                        <label for="fullscreen_r">Fullscreen</label>
+            
+                        <input type="checkbox" id="close_r" name="close_r"/>
+                        <label for="close_r">Close</label>
+                      </div>
+                          </td>
+                  </tr>
+                  <tr>
+                    <td rowspan="3" style="text-align: left">
+                      <input type="checkbox" id="footer_en" name="footer_en"/>
+                      <label for="footer_en">Footer</label>
+                    </td>
+                    <td class="inCellCenter">
+                      <label>Left</label>
+                    </td>
+                    <td>
+                      <div class="base row">
+                        <input type="checkbox" id="prev" name="prev"/>
+                        <label for="prev">Prev</label>
+            
+                        <input type="checkbox" id="next" name="next"/>
+                        <label for="next">Next</label>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="inCellCenter">
+                      <label>Middle</label>
+                    </td>
+                    <td>
+                      <div class="base row">
+                        <input type="text" id="footer_text" name="footer_text" placeholder="Straight-Coding"/>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="inCellCenter">
+                      <label>Right</label>
+                    </td>
+                    <td>
+                      <div class="base row">
+                        <input type="checkbox" id="yes" name="yes"/>
+                        <label for="yes">Yes</label>
+            
+                        <input type="checkbox" id="no" name="no"/>
+                        <label for="no">No</label>
+            
+                        <input type="checkbox" id="ok" name="ok"/>
+                        <label for="ok">OK</label>
+            
+                        <input type="checkbox" id="cancel" name="cancel"/>
+                        <label for="cancel">Cancel</label>
+                      </div>
+                          </td>
+                  </tr>
+                </table>
+              </td>
+              <td>
+                <div class='base row center-content' style="width: 100%; height: 40px;">
+                  <button id='dlg_customize'>Open Dialog</button>
+                </div>
+              </td>
             </tr>
           </table>
-          
-          <!--input type="radio" id="font_small"  name="VAR_FONT" value="small"><label for="font_small">Small</label>&nbsp;&nbsp;
-          <input type="radio" id="font_middle" name="VAR_FONT" value="middle"><label for="font_middle">Middle</label>&nbsp;&nbsp;
-          <input type="radio" id="font_large"  name="VAR_FONT" value="large"><label for="font_large">Large</label-->
-          <div class='base row center-content' style="width: 100%; height: 40px; margin-top: 10px;">
-            <button id='open'>Open Dialog</button>
-          </div>
-      
         </div>
       </div>
     
@@ -212,7 +278,39 @@
         document.getElementById('ok').checked = true;
         document.getElementById('cancel').checked = true;
 
-        document.getElementById("open").addEventListener('click', function(){
+        document.getElementById("dlg_alert").addEventListener('click', function(){
+          new pureDialog('Warning', 'Operation failed');
+        });
+
+        document.getElementById("dlg_yesno").addEventListener('click', function(){
+          var confirm = new pureDialog('Confirmation','<span>Are you sure to continue ?</span>', {
+                  right: [{
+                      type: 'button',
+                      cssClass: '',
+                      content: 'Yes',
+                      toolTip: 'Yes',
+                      onClicked: function() {
+                        //Do your job
+                        new pureDialog('Information', 'Operation succeeded');
+                        confirm.close();
+                      }
+                    },
+                    {
+                      type: 'button',
+                      cssClass: '',
+                      content: 'No',
+                      toolTip: 'No',
+                      onClicked: function() {
+                        //giveup
+                        new pureDialog('Warning', 'Operation canceled');
+                        confirm.close();
+                      }
+                    }
+                  ]
+                });
+        });
+
+        document.getElementById("dlg_customize").addEventListener('click', function(){
           var dlgDemo = new pureDialog({
               theme: document.getElementById('scheme').value,
               width: 600,
@@ -285,7 +383,7 @@
               },
               content: {
                 iframe: true,
-                url: 'https://github.com/straight-coding'
+                url: 'examples/login.html'
               },
               footer: !document.getElementById('footer_en').checked ? false : {
                 left: [
