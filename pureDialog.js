@@ -251,7 +251,7 @@ function pureDialog()
     var _default = {
         id: getUuid(),
         zIndex: getNextZindex(),
-        theme: 'win10',
+        theme: '',
         dragging: true,
         resizing: false,
         width: 600,
