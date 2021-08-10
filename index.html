@@ -47,7 +47,7 @@
                 Alert
               </td>
               <td style="padding: 0px;">
-                <textarea style="width:calc(100% - 8px);height: 100%;padding:0;margin:2px;resize:none;" readonly>
+                <textarea rows="1" style="width:calc(100% - 8px);height: 100%;padding:0;margin:2px;resize:none;" readonly>
   new pureDialog(&#x27;Warning&#x27;, &#x27;Operstion failed&#x27;);</textarea>
               </td>
               <td>
@@ -63,7 +63,7 @@
                 Yes / No
               </td>
               <td style="padding: 0px;">
-                <textarea rows="20" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
+                <textarea rows="10" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
   var confirm = new pureDialog(
       &#x27;Confirmation&#x27;,
       &#x27;&#x3C;span&#x3E;Are you sure to continue ?&#x3C;/span&#x3E;&#x27;, {
@@ -106,7 +106,7 @@
                 Windows 10
               </td>
               <td style="padding: 0px;">
-                <textarea rows="4" id="code_win10" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
+                <textarea rows="1" id="code_win10" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
   new pureDialog(&#x27;Warning like Windows 10&#x27;, &#x27;Operation failed&#x27;, {theme: &#x27;win10&#x27;});                  
                 </textarea>
               </td>
@@ -123,7 +123,7 @@
                 jQuery
               </td>
               <td style="padding: 0px;">
-                <textarea rows="4" id="code_jquery" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
+                <textarea rows="1" id="code_jquery" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
   new pureDialog(&#x27;Warning like jQuery&#x27;, &#x27;Operation failed&#x27;, {theme: &#x27;jquery&#x27;});                  
                 </textarea>
               </td>
@@ -140,7 +140,7 @@
                 IOS
               </td>
               <td style="padding: 0px;">
-                <textarea rows="4" id="code_ios" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
+                <textarea rows="1" id="code_ios" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
   new pureDialog(&#x27;Warning like ios&#x27;, &#x27;Operation failed&#x27;, {theme: &#x27;ios&#x27;});                  
                 </textarea>
               </td>
@@ -157,7 +157,7 @@
                 Ubuntu
               </td>
               <td style="padding: 0px;">
-                <textarea rows="4" id="code_ubuntu" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
+                <textarea rows="1" id="code_ubuntu" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
   new pureDialog(&#x27;Warning like ubuntu&#x27;, &#x27;Operation failed&#x27;, {theme: &#x27;ubuntu&#x27;});                  
                 </textarea>
               </td>
@@ -380,8 +380,9 @@
         }
 
         document.getElementById('theme').addEventListener('change', function(){
-          setTheme(document.getElementById('theme').value);
-          if (document.getElementById('theme').value == 'ios')
+          var theme = document.getElementById('theme').value;
+          top.setTheme(theme);
+          if ((theme == 'ios') || (theme == 'ubuntu'))
           {
             document.getElementById('title_l').click();
             document.getElementById('fullscreen_l').checked = false;
@@ -389,6 +390,7 @@
           }
           else
           {
+            document.getElementById('title_r').click();
             document.getElementById('fullscreen_l').checked = true;
             document.getElementById('fullscreen_r').checked = true;
           }

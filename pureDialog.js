@@ -137,7 +137,7 @@ function getSvgHtml(opt)
     htmlSvg += ' d="';
     if (opt.type == 'menu')
     {
-        if (opt.theme == 'ios-')
+        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
         {
             padding = 4;
             
@@ -160,7 +160,7 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'minimize')
     {
-        if (opt.theme == 'ios-')
+        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
         {
             padding = 4;
             fill = '#FFBF2F';
@@ -182,7 +182,7 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'maximize')
     {
-        if (opt.theme == 'ios-')
+        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
         {
             padding = 4;
             fill = '#28CA41';
@@ -209,7 +209,7 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'fullscreen')
     {
-        if (opt.theme == 'ios-')
+        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
         {
             padding = 4;
             var R = (box.width-2*padding)/2;
@@ -236,7 +236,7 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'restore')
     {
-        if (opt.theme == 'ios-')
+        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
         {
             padding = 4;
             var R = (box.width-2*padding)/2;
@@ -261,7 +261,7 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'close')
     {
-        if (opt.theme == 'ios-')
+        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
         {
             padding = 4;
             fill = '#FD7973';
@@ -476,6 +476,8 @@ function pureDialog()
     }
     else
     {
+        _settings = deepMerge(_default, {});
+
         if (typeof arguments[0] == 'string')
             caption = arguments[0];
 
@@ -483,10 +485,20 @@ function pureDialog()
             message = arguments[1];
 
         if ((argLen > 2) && (typeof arguments[2] == 'object'))
+        {
             prop = arguments[2];
-
-        _settings = deepMerge(_default, {});
+            if (prop.theme)
+            {
+                _settings.theme = prop.theme;
+                delete prop.theme;
+            }
+        }
     }
+
+    if (!valid(_settings.theme))
+        _settings.theme = '';
+    if (_settings.theme && (_settings.theme.substr(-1) != '-'))
+        _settings.theme += '-';
 
     if (caption)
     {
@@ -504,18 +516,36 @@ function pureDialog()
             toolTip: '',
         });
 
-        if (!_settings.title.right)
-            _settings.title.right = [];
-        setIcon(_settings.title.right, {
-                    type: 'close',
-                    toolTip: 'Close'
-                });
+        if (_settings.theme == 'ios-')
+        {
+            if (!_settings.title.left)
+                _settings.title.left = [];
+            setIcon(_settings.title.left, {
+                        type: 'close',
+                        toolTip: 'Close'
+                    });
+        }
+        else
+        {
+            if (!_settings.title.right)
+                _settings.title.right = [];
+            setIcon(_settings.title.right, {
+                        type: 'close',
+                        toolTip: 'Close'
+                    });
+        }
+    }
+
+    if ((_settings.theme == 'ios-') || (_settings.theme == 'ubuntu-'))
+    {
+        if (_settings.title && !_settings.title.middleAlign)
+            _settings.title.middleAlign = 'center';
     }
 
     if (message)
     {
-        var captionSize = measureText(caption, _settings.theme + '-dlgTitle');
-        var footerSize = measureText('Footer', _settings.theme + '-dlgFooter');
+        var captionSize = measureText(caption, _settings.theme + 'dlgTitle');
+        var footerSize = measureText('Footer', _settings.theme + 'dlgFooter');
 
         var msgSize = measureText(message);
         _settings.height = Math.max(msgSize.height + captionSize.height + footerSize.height, 160);
@@ -529,11 +559,6 @@ function pureDialog()
           };
     }
 
-    if (prop && prop.theme)
-    {
-        _settings.theme = prop.theme;
-        delete prop.theme;
-    }
 
     if (prop && (Object.keys(prop).length > 0))
     {
@@ -768,7 +793,7 @@ function pureDialog()
             }            
             else if (type == 'caption')
             {
-                barParts[type] = elementFromHTML(section[i].content);
+                barParts[type] = elementFromHTML(section[i].content + '&nbsp;&nbsp;');
                 if (section[i].toolTip)
                     barParts[type].title = section[i].toolTip;
                 barParts[type].className = _settings.theme + 'dlgHeadline';
@@ -876,11 +901,6 @@ function pureDialog()
             if (valid(_settings.resizing.maxHeight) && (_settings.height > _settings.resizing.maxHeight))
                 _settings.height = _settings.resizing.maxHeight;
         }
-
-        if (!valid(_settings.theme))
-            _settings.theme = '';
-        if (_settings.theme && (_settings.theme.substr(-1) != '-'))
-            _settings.theme += '-';
     }
 
     function inRect(event, rect, tol)
@@ -1392,7 +1412,10 @@ function pureDialog()
         if (elemFooter)
             elemFooter.style.display = 'none';
         if (elemTitleParts['restore'])
+        {
+            elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'minimize',padding:4});
             elemTitleParts['restore'].style.display = 'flex';
+        }
 
         //after all being visible
         reLocateTitleText();
@@ -1415,7 +1438,10 @@ function pureDialog()
         elemFrame.style.height = '100%';
 
         if (elemTitleParts['restore'])
+        {
+            elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'maximize',padding:4});
             elemTitleParts['restore'].style.display = 'flex';
+        }
 
         //after all being visible
         reLocateTitleText();
