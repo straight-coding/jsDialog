@@ -9,6 +9,8 @@
     <link href="pureDialog.css" rel="stylesheet">
     <link href="pureDialog-win10.css" rel="stylesheet">
     <link href="pureDialog-jquery.css" rel="stylesheet">
+    <link href="pureDialog-ios.css" rel="stylesheet">
+    <link href="pureDialog-ubuntu.css" rel="stylesheet">
     <script src="pureDialog.js"></script>
 
     <style>
@@ -44,7 +46,7 @@
               <td style="text-align: center;">
                 Alert
               </td>
-              <td style="padding: 0px; background-color: lightgray;">
+              <td style="padding: 0px;">
                 <textarea style="width:calc(100% - 8px);height: 100%;padding:0;margin:2px;resize:none;" readonly>
   new pureDialog(&#x27;Warning&#x27;, &#x27;Operstion failed&#x27;);</textarea>
               </td>
@@ -60,7 +62,7 @@
               <td style="text-align: center;">
                 Yes / No
               </td>
-              <td style="padding: 0px; background-color: lightgray;">
+              <td style="padding: 0px;">
                 <textarea rows="20" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
   var confirm = new pureDialog(
       &#x27;Confirmation&#x27;,
@@ -98,6 +100,74 @@
               </td>
             </tr>
 
+            <!-- Windows 10 -->
+            <tr>
+              <td style="text-align: center;">
+                Windows 10
+              </td>
+              <td style="padding: 0px;">
+                <textarea rows="4" id="code_win10" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
+  new pureDialog(&#x27;Warning like Windows 10&#x27;, &#x27;Operation failed&#x27;, {theme: &#x27;win10&#x27;});                  
+                </textarea>
+              </td>
+              <td>
+                <div class='base row center-content' style="width: 100%; height: 40px;">
+                  <button id='dlg_win10'>Open Win10 Style</button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- jQuery -->
+            <tr>
+              <td style="text-align: center;">
+                jQuery
+              </td>
+              <td style="padding: 0px;">
+                <textarea rows="4" id="code_jquery" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
+  new pureDialog(&#x27;Warning like jQuery&#x27;, &#x27;Operation failed&#x27;, {theme: &#x27;jquery&#x27;});                  
+                </textarea>
+              </td>
+              <td>
+                <div class='base row center-content' style="width: 100%; height: 40px;">
+                  <button id='dlg_jquery'>Open jQuery Style</button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- IOS -->
+            <tr>
+              <td style="text-align: center;">
+                IOS
+              </td>
+              <td style="padding: 0px;">
+                <textarea rows="4" id="code_ios" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
+  new pureDialog(&#x27;Warning like ios&#x27;, &#x27;Operation failed&#x27;, {theme: &#x27;ios&#x27;});                  
+                </textarea>
+              </td>
+              <td>
+                <div class='base row center-content' style="width: 100%; height: 40px;">
+                  <button id='dlg_ios'>Open IOS Style</button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Ubuntu -->
+            <tr>
+              <td style="text-align: center;">
+                Ubuntu
+              </td>
+              <td style="padding: 0px;">
+                <textarea rows="4" id="code_ubuntu" style="width:calc(100% - 8px);height: auto;padding:0;margin:2px;resize:none;" readonly>
+  new pureDialog(&#x27;Warning like ubuntu&#x27;, &#x27;Operation failed&#x27;, {theme: &#x27;ubuntu&#x27;});                  
+                </textarea>
+              </td>
+              <td>
+                <div class='base row center-content' style="width: 100%; height: 40px;">
+                  <button id='dlg_ubuntu'>Open Ubuntu Style</button>
+                </div>
+              </td>
+            </tr>
+
             <!-- Customize dialog -->
             <tr>
               <td style="text-align: center;">
@@ -113,7 +183,7 @@
                     </td>
                     <td>
                       <div class="base row">
-                        <select id="scheme" style="height: 25px;">
+                        <select id="theme" style="height: 25px;">
                           <option value="win10">Windows 10</option>
                           <option value="jquery">jQuery</option>
                           <option value="ios">IOS</option>
@@ -144,7 +214,8 @@
                       <label for="title_en">Title</label>
                     </td>
                     <td class="inCellCenter">
-                      <label>Left</label>
+                      <input type="radio" id="title_l" name="title_buttons"/>
+                      <label for="title_l">Left</label>
                     </td>
                     <td>
                       <div class="base row">
@@ -174,7 +245,8 @@
                   </tr>
                   <tr>
                     <td class="inCellCenter">
-                      <label>Right</label>
+                      <input type="radio" id="title_r" name="title_buttons"/>
+                      <label for="title_r">Right</label>
                     </td>
                     <td>
                       <div class="base row">
@@ -198,7 +270,7 @@
                       <label for="footer_en">Footer</label>
                     </td>
                     <td class="inCellCenter">
-                      <label>Left</label>
+                      <label for="footer_l">Left</label>
                     </td>
                     <td>
                       <div class="base row">
@@ -222,7 +294,7 @@
                   </tr>
                   <tr>
                     <td class="inCellCenter">
-                      <label>Right</label>
+                      <label for="footer_r">Right</label>
                     </td>
                     <td>
                       <div class="base row">
@@ -253,6 +325,10 @@
       </div>
     
     <script>
+        var defaultScheme = 'win10';
+
+        document.getElementById('theme').value = defaultScheme;
+
         document.getElementById('dragging').checked = true;
         document.getElementById('resizable').checked = true;
 
@@ -267,6 +343,11 @@
         document.getElementById('title').value = "Dialog Example";
         document.getElementById('footer_text').value = "Straight-Coding";
 
+        document.getElementById('minimize_l').checked = true;
+        document.getElementById('maximize_l').checked = true;
+        document.getElementById('fullscreen_l').checked = true;
+        document.getElementById('close_l').checked = true;
+
         document.getElementById('minimize_r').checked = true;
         document.getElementById('maximize_r').checked = true;
         document.getElementById('fullscreen_r').checked = true;
@@ -279,6 +360,42 @@
         document.getElementById('ok').checked = true;
         document.getElementById('cancel').checked = true;
 
+        var radios = document.querySelectorAll('input[type="radio"]');
+        for(var i = 0; i < radios.length; i ++)
+        {
+          radios[i].addEventListener('click', function(){
+            if ((this.id == 'title_l') || (this.id == 'title_r'))
+            {
+              document.getElementById('minimize_l').disabled = (this.id == 'title_r');
+              document.getElementById('maximize_l').disabled = (this.id == 'title_r');
+              document.getElementById('fullscreen_l').disabled = (this.id == 'title_r');
+              document.getElementById('close_l').disabled = (this.id == 'title_r');
+
+              document.getElementById('minimize_r').disabled = (this.id == 'title_l');
+              document.getElementById('maximize_r').disabled = (this.id == 'title_l');
+              document.getElementById('fullscreen_r').disabled = (this.id == 'title_l');
+              document.getElementById('close_r').disabled = (this.id == 'title_l');
+            }
+          });
+        }
+
+        document.getElementById('theme').addEventListener('change', function(){
+          setTheme(document.getElementById('theme').value);
+          if (document.getElementById('theme').value == 'ios')
+          {
+            document.getElementById('title_l').click();
+            document.getElementById('fullscreen_l').checked = false;
+            document.getElementById('fullscreen_r').checked = false;
+          }
+          else
+          {
+            document.getElementById('fullscreen_l').checked = true;
+            document.getElementById('fullscreen_r').checked = true;
+          }
+        });
+
+        document.getElementById('title_r').click();
+
         document.getElementById("dlg_alert").addEventListener('click', function(){
           new pureDialog('Warning', 'Operation failed');
         });
@@ -288,8 +405,8 @@
                   right: [{
                       type: 'button',
                       cssClass: '',
-                      content: 'Yes',
-                      toolTip: 'Yes',
+                      content: 'Yes/是',
+                      toolTip: 'Yes/是',
                       onClicked: function() {
                         //Do your job
                         new pureDialog('Information', 'Operation succeeded');
@@ -299,8 +416,8 @@
                     {
                       type: 'button',
                       cssClass: '',
-                      content: 'No',
-                      toolTip: 'No',
+                      content: 'No/否',
+                      toolTip: 'No/否',
                       onClicked: function() {
                         //giveup
                         new pureDialog('Warning', 'Operation canceled');
@@ -311,9 +428,27 @@
                 });
         });
 
+        document.getElementById("dlg_win10").addEventListener('click', function(){
+          new pureDialog('Warning like Windows 10', 'Operation failed', {theme: 'win10'});
+        });
+
+        document.getElementById("dlg_jquery").addEventListener('click', function(){
+          new pureDialog('Warning like jQuery', 'Operation failed', {theme: 'jquery'});
+        });
+
+        document.getElementById("dlg_ios").addEventListener('click', function(){
+          new pureDialog('Warning like IOS', 'Operation failed', {theme: 'ios'});
+        });
+
+        document.getElementById("dlg_ubuntu").addEventListener('click', function(){
+          new pureDialog('Warning like Ubuntu', 'Operation failed', {theme: 'ubuntu'});
+        });
+
         document.getElementById("dlg_customize").addEventListener('click', function(){
+          var leftClose = document.getElementById('title_l').checked;
+          var theme = document.getElementById('theme').value;
           var dlgDemo = new pureDialog({
-              theme: document.getElementById('scheme').value,
+              theme: theme,
               width: 600,
               height: 400,
               dragging: document.getElementById('dragging').checked,
@@ -327,29 +462,29 @@
               title: !document.getElementById('title_en').checked ? false : {
                 left: [
                   {
-                    type: document.getElementById('close_l').checked ? 'close' : '',
+                    type: leftClose && document.getElementById('close_l').checked ? 'close' : '',
                     toolTip: 'Close'
                   },
                   {
-                    type: document.getElementById('minimize_l').checked ? 'minimize' : '',
+                    type: leftClose && document.getElementById('minimize_l').checked ? 'minimize' : '',
                     toolTip: 'Minimize'
                   },
                   {
-                    type: document.getElementById('maximize_l').checked ? 'maximize' : '',
+                    type: leftClose && document.getElementById('maximize_l').checked ? 'maximize' : '',
                     toolTip: 'Maximize'
                   },
                   {
-                    type: document.getElementById('fullscreen_l').checked ? 'fullscreen' : '',
+                    type: leftClose && document.getElementById('fullscreen_l').checked ? 'fullscreen' : '',
                     toolTip: 'Fullscreen'
                   },
                   {
-                    type: 'icon',
+                    type: !leftClose ? 'icon' : '',
                     content: getSvgHtml({type:'menu',box:{width:20,height:20},padding:4}),
                     toolTip: 'Menu',
                     onClicked: function() {}
                   }
                 ],
-                middleAlign: 'left',
+                middleAlign: (theme=='ios')||(theme=='ubuntu') ? 'center' : 'left',
                 middle: [
                   {
                     type: 'caption',
@@ -359,25 +494,19 @@
                 ],
                 right: [
                   {
-                    type: 'icon',
-                    content: getSvgHtml({type:'menu',box:{width:20,height:20},padding:4}),
-                    toolTip: 'Menu',
-                    onClicked: function() {}
-                  },
-                  {
-                    type: document.getElementById('minimize_r').checked ? 'minimize' : '',
+                    type: !leftClose && document.getElementById('minimize_r').checked ? 'minimize' : '',
                     toolTip: 'Minimize'
                   },
                   {
-                    type: document.getElementById('maximize_r').checked ? 'maximize' : '',
+                    type: !leftClose && document.getElementById('maximize_r').checked ? 'maximize' : '',
                     toolTip: 'Maximize'
                   },
                   {
-                    type: document.getElementById('fullscreen_r').checked ? 'fullscreen' : '',
+                    type: !leftClose && document.getElementById('fullscreen_r').checked ? 'fullscreen' : '',
                     toolTip: 'Fullscreen'
                   },
                   {
-                    type: document.getElementById('close_r').checked ? 'close' : '',
+                    type: !leftClose && document.getElementById('close_r').checked ? 'close' : '',
                     toolTip: 'Close'
                   }
                 ]
@@ -433,8 +562,8 @@
                     {
                       type: 'button',
                       cssClass: '',
-                      content: 'Yes',
-                      toolTip: 'Yes',
+                      content: 'Yes/是',
+                      toolTip: 'Yes/是',
                       onClicked: function() {
                         dlgDemo.close();
                         confirm.close();
@@ -443,8 +572,8 @@
                     {
                       type: 'button',
                       cssClass: '',
-                      content: 'No',
-                      toolTip: 'No',
+                      content: 'No/否',
+                      toolTip: 'No/否',
                       onClicked: function() {
                         confirm.close();
                       }

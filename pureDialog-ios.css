@@ -1,4 +1,4 @@
-.dlgOverlay
+.ios-dlgOverlay
 {
     box-sizing: border-box; 
     display: none;
@@ -9,10 +9,10 @@
     width: 100vw; 
     height: 100vh;  
 
-    background-color: (0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.2);
     overflow: hidden;
 }
-.dlgFrame
+.ios-dlgFrame
 {
     box-sizing: border-box; 
     display: flex;
@@ -25,6 +25,18 @@
     padding: 0;
 
 	flex-flow: column nowrap;
+    flex-shrink: 0;
+
+    font-style: normal;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-variant-east-asian: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    font-size: 14px;
+    line-height: 22px;
+    font-family: arial, sans-serif;    
 
     border: solid 1px gray;
 /*
@@ -32,13 +44,17 @@
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;    
 */
     box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
-    background:(255, 255, 255);
+    background: rgb(255, 255, 255);
 }
-.dlgTitle
+.ios-dlgTitle
 {
     box-sizing: border-box; 
     display: flex;
     position: relative;
+
+	flex-flow: row nowrap;
+	align-items: stretch; 
+    flex-shrink: 0;
 
     font-size: 12px;
 
@@ -46,9 +62,37 @@
     background: white;
 
     width: 100%;
-    height: 32px;
+    height: 25px;
 }
-.dlgTitleIcon
+.ios-dlgContent
+{
+    box-sizing: border-box; 
+    display: flex;
+    position: relative;
+
+	flex: 1 1 auto;
+    flex-shrink: 0;
+
+    width: 100%;
+
+    background: white;
+}
+.ios-dlgFooter
+{
+    box-sizing: border-box; 
+    display: flex;
+    position: relative;
+
+	flex-flow: row nowrap;
+	align-items: stretch; 
+    flex-shrink: 0;
+
+    width: 100%;
+    height: 30px;
+
+    background-color: white;
+}
+.ios-dlgIcon
 {
     box-sizing: border-box; 
     display: flex;
@@ -56,40 +100,77 @@
 	flex-flow: row nowrap;
 	align-items: center; 
 	justify-content: center;
+    flex-shrink: 0;
 
-    height: 100%;
+    height: 25px;
 
     font-size: 14px;
     color: black;
 }
-.dlgTitleLeft .dlgTitleIcon
+.ios-dlgButton
 {
-    width: 32px;
+    width: 80px;
+    height: 20px;
+
+    margin: 0 4px 0 4px;
+    padding: 0;
+
+    border: solid 1px transparent;
+    flex-shrink: 0;
+
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
-.dlgTitleRight .dlgTitleIcon
+.ios-dlgButton:hover
 {
-    width: 46px;
+    border-color: #A0A0A0;
 }
-.dlgTitleIcon:hover
+.ios-dlgTitle.Warning
+{
+    background-color: yellow;
+}
+.ios-dlgTitle.Info
+{
+    background-color: blue;
+}
+.ios-dlgTitle.Success
+{
+    background-color: green;
+}
+.ios-dlgTitle .Left .ios-dlgIcon,
+.ios-dlgFooter .Left .ios-dlgIcon 
+{
+    width: 25px;
+}
+.ios-dlgTitle .Right .ios-dlgIcon,
+.ios-dlgFooter .Right .ios-dlgIcon 
+{
+    width: 25px;
+}
+.ios-dlgIcon:hover
 {
     cursor: pointer;
-    background-color: RGB(230,230,230);
 }
-.dlgTitleIcon:active
+.ios-dlgIcon:active
 {
     background-color: RGB(210,210,210);
 }
-.dlgTitleIcon.dlgClose:hover
+.ios-dlgTitle .ios-dlgIcon.dlgMinimize svg:hover path:nth-child(2)
 {
-    color: white;
-    background-color: RGB(240,0,0);
+    stroke: #a75d09;
 }
-.dlgTitleIcon.dlgClose:active
+.ios-dlgTitle .ios-dlgIcon.dlgMaximize svg:hover path:nth-child(2)
 {
-    color: white;
-    background-color: RGB(255,100,100);
+    stroke: #1b4202;
 }
-.dlgTitleLeft
+.ios-dlgTitle .ios-dlgIcon.dlgClose svg:hover path:nth-child(2)
+{
+    stroke: #A6342E;
+}
+.ios-dlgTitle .Left,
+.ios-dlgFooter .Left
 {
     box-sizing: border-box; 
     display: flex;
@@ -98,11 +179,13 @@
 	flex-flow: row nowrap;
 	align-items: center; 
 	justify-content: flex-start;
+    flex-shrink: 0;
 
     height: 100%;
     left: 0px;
 }
-.dlgTitleMiddle
+.ios-dlgTitle .Middle,
+.ios-dlgFooter .Middle
 {
     box-sizing: border-box; 
     display: flex;
@@ -110,16 +193,19 @@
 
 	flex-flow: row nowrap;
 	align-items: center; 
+    flex-shrink: 0;
 
-    left: 32px;
-    width: calc(100% - 20px);
+    left: 0px;
+    width: 100%;
     height: 100%;
 }
-.dlgTitleText
+.ios-dlgTitle .Text,
+.ios-dlgFooter .Text
 {
     color:RGB(100,100,100);
 }
-.dlgTitleRight
+.ios-dlgTitle .Right,
+.ios-dlgFooter .Right
 {
     box-sizing: border-box; 
     display: flex;
@@ -127,36 +213,20 @@
 
 	flex-flow: row nowrap;
 	align-items: center; 
+    flex-shrink: 0;
 
     height: 100%;
     right: 0px;
 
     color: white;
 }
-.dlgTitleRight .dlgTitleIcon
+.ios-dlgTitle .Right .ios-dlgIcon,
+.ios-dlgFooter .Right .ios-dlgIcon
 {
     margin-left: 0px;
 }
-.dlgContent
+.ios-dlgMessage
 {
-    box-sizing: border-box; 
-    display: flex;
-    position: relative;
-
-	flex: 1 0 auto;
-
-    width: 100%;
-
-    background: whitesmoke;
-}
-.dlgFooter
-{
-    box-sizing: border-box; 
-    display: flex;
-    position: relative;
-
-    width: 100%;
-    height: 25px;
-
-    background-color: red;
+    flex-shrink: 0;
+    margin: 10px 10px 10px 10px;
 }

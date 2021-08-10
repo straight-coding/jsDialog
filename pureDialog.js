@@ -11,6 +11,8 @@ if (window.top === window.self)
     var zIndexStart = 10000;
     var zIndexNext = zIndexStart;
 
+    var defaultTheme = 'win10';
+
     var liveDialogs = {};
     var deadDialogs = {};
 
@@ -37,6 +39,11 @@ function getUuid()
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
+}
+
+function setTheme(theme)
+{
+    top.defaultTheme = theme;
 }
 
 function getNextZindex()
@@ -87,12 +94,19 @@ function getSvgHtml(opt)
 
     var padding = 0;
     var fill = 'none';
+    var strokeWidth = null;
     var fillOpacity = null;
     var stroke = '#000';
     var strokeOpacity = null;
 
     if (opt)
     {
+        if (opt.theme == 'jquery-')
+        {
+            strokeWidth = 2;
+            stroke = '#888';
+        }
+
         if (opt.box) 
         {
             if (valid(opt.box.top)) box.top = parseInt(opt.box.top, 10);
@@ -110,6 +124,8 @@ function getSvgHtml(opt)
         }
     }
 
+    var hoverPath = '';
+
     var htmlSvg = '';
     htmlSvg += '<svg';
     htmlSvg += ' viewBox="'+box.left+' '+box.top+' '+box.width+' '+box.height+'"';
@@ -121,64 +137,154 @@ function getSvgHtml(opt)
     htmlSvg += ' d="';
     if (opt.type == 'menu')
     {
-        var size = 5;
-        htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+1);              htmlSvg += 'h'+(size);
-        htmlSvg += 'M'+(box.left+padding)+','+(box.top+(box.height/2));         htmlSvg += 'h'+(size);
-        htmlSvg += 'M'+(box.left+padding)+','+(box.top+box.height-padding-1);   htmlSvg += 'h'+(size);
+        if (opt.theme == 'ios-')
+        {
+            padding = 4;
+            
+            var R = (box.width-2*padding)/2;
+            htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
+        }
+        else
+        {
+            var size = 5;
+            htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+1);              htmlSvg += 'h'+(size);
+            htmlSvg += 'M'+(box.left+padding)+','+(box.top+(box.height/2));         htmlSvg += 'h'+(size);
+            htmlSvg += 'M'+(box.left+padding)+','+(box.top+box.height-padding-1);   htmlSvg += 'h'+(size);
 
-        htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+padding+1);            htmlSvg += 'h-'+(size);
-        htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+(box.height/2));       htmlSvg += 'h-'+(size);
-        htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+box.height-padding-1); htmlSvg += 'h-'+(size);
+            htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+padding+1);            htmlSvg += 'h-'+(size);
+            htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+(box.height/2));       htmlSvg += 'h-'+(size);
+            htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+box.height-padding-1); htmlSvg += 'h-'+(size);
+        }
     }
     else if (opt.type == 'minimize')
     {
-        htmlSvg += 'M'+(box.left+padding)+','+(box.top+(box.height/2));
-        htmlSvg += 'h'+(box.width-2*padding);
+        if (opt.theme == 'ios-')
+        {
+            padding = 4;
+            fill = '#FFBF2F';
+            stroke = '#B67F42';//'#E3A31A';
+
+            var R = (box.width-2*padding)/2;
+            htmlSvg += 'M'+(box.left+padding)+','+(box.top+R+padding);
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
+
+            hoverPath += 'M'+(box.left+padding) + ',' + (box.top+R+padding);
+            hoverPath += 'h'+(2*R);
+        }
+        else
+        {
+            htmlSvg += 'M'+(box.left+padding)+','+(box.top+(box.height/2));
+            htmlSvg += 'h'+(box.width-2*padding);
+        }
     }
     else if (opt.type == 'maximize')
     {
-        htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding);
-        htmlSvg += 'h'+(box.width-2*padding);
-        htmlSvg += 'v'+(box.height-2*padding);
-        htmlSvg += 'h-'+(box.width-2*padding);
-        htmlSvg += 'z';
+        if (opt.theme == 'ios-')
+        {
+            padding = 4;
+            fill = '#28CA41';
+            stroke = '#6F9856';//'#15AF2B';
+
+            var R = (box.width-2*padding)/2;
+            htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
+
+            hoverPath += 'M'+(box.left+padding) + ',' + (box.top+R+padding);
+            hoverPath += 'h'+(2*R);
+            hoverPath += 'M'+(box.left+R+padding) + ',' + (box.top+padding);
+            hoverPath += 'v'+(2*R);
+        }
+        else
+        {
+            htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding);
+            htmlSvg += 'h'+(box.width-2*padding);
+            htmlSvg += 'v'+(box.height-2*padding);
+            htmlSvg += 'h-'+(box.width-2*padding);
+            htmlSvg += 'z';
+        }
     }
     else if (opt.type == 'fullscreen')
     {
-        var size = 4;
-        htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+size);
-        htmlSvg += 'v-'+(size);
-        htmlSvg += 'h'+(size);
-        htmlSvg += 'M'+(box.left+box.width-padding-size)+','+(box.top+padding);
-        htmlSvg += 'h'+(size);
-        htmlSvg += 'v'+(size);
-        htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+box.height-padding-size);
-        htmlSvg += 'v'+(size);
-        htmlSvg += 'h-'+(size);
-        htmlSvg += 'M'+(box.left+padding+size)+','+(box.top+box.height-padding);
-        htmlSvg += 'h-'+(size);
-        htmlSvg += 'v-'+(size);
+        if (opt.theme == 'ios-')
+        {
+            padding = 4;
+            var R = (box.width-2*padding)/2;
+            htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
+        }
+        else
+        {
+            var size = 4;
+            htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+size);
+            htmlSvg += 'v-'+(size);
+            htmlSvg += 'h'+(size);
+            htmlSvg += 'M'+(box.left+box.width-padding-size)+','+(box.top+padding);
+            htmlSvg += 'h'+(size);
+            htmlSvg += 'v'+(size);
+            htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+box.height-padding-size);
+            htmlSvg += 'v'+(size);
+            htmlSvg += 'h-'+(size);
+            htmlSvg += 'M'+(box.left+padding+size)+','+(box.top+box.height-padding);
+            htmlSvg += 'h-'+(size);
+            htmlSvg += 'v-'+(size);
+        }
     }
     else if (opt.type == 'restore')
     {
-        var cascade = 3;
-        htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+cascade);
-        htmlSvg += 'h'+(box.width-2*padding-cascade);
-        htmlSvg += 'v'+(box.height-2*padding-cascade);
-        htmlSvg += 'h-'+(box.width-2*padding-cascade);
-        htmlSvg += 'z';
-        htmlSvg += 'M'+(box.left+padding+cascade+1)+','+(box.top+padding+cascade);
-        htmlSvg += 'v-'+(cascade);
-        htmlSvg += 'h'+(box.width-2*padding-cascade-1);
-        htmlSvg += 'v'+(box.height-2*padding-cascade-1);
-        htmlSvg += 'h-'+(cascade);
+        if (opt.theme == 'ios-')
+        {
+            padding = 4;
+            var R = (box.width-2*padding)/2;
+            htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
+        }
+        else
+        {
+            var cascade = 3;
+            htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+cascade);
+            htmlSvg += 'h'+(box.width-2*padding-cascade);
+            htmlSvg += 'v'+(box.height-2*padding-cascade);
+            htmlSvg += 'h-'+(box.width-2*padding-cascade);
+            htmlSvg += 'z';
+            htmlSvg += 'M'+(box.left+padding+cascade+1)+','+(box.top+padding+cascade);
+            htmlSvg += 'v-'+(cascade);
+            htmlSvg += 'h'+(box.width-2*padding-cascade-1);
+            htmlSvg += 'v'+(box.height-2*padding-cascade-1);
+            htmlSvg += 'h-'+(cascade);
+        }
     }
     else if (opt.type == 'close')
     {
-        htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding);
-        htmlSvg += 'L'+(box.left+box.width-padding)+','+(box.top+box.height-padding);
-        htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+padding);
-        htmlSvg += 'L'+(box.left+padding)+','+(box.top+box.height-padding);
+        if (opt.theme == 'ios-')
+        {
+            padding = 4;
+            fill = '#FD7973';
+            stroke = '#A6342E';//'#E1342E';
+
+            var R = (box.width-2*padding)/2;
+            htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
+            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
+
+            var delta = R*Math.sqrt(2)/2;
+            hoverPath += 'M'+(padding+R-delta) + ',' + (padding+R-delta);
+            hoverPath += 'l'+(2*delta) + ',' + (2*delta);
+            hoverPath += 'M'+(padding+R-delta) + ',' + (padding+R+delta);
+            hoverPath += 'l'+(2*delta) + ',-' + (2*delta);
+        }
+        else
+        {
+            htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding);
+            htmlSvg += 'L'+(box.left+box.width-padding)+','+(box.top+box.height-padding);
+            htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+padding);
+            htmlSvg += 'L'+(box.left+padding)+','+(box.top+box.height-padding);
+        }
     }
     else
     {
@@ -187,6 +293,8 @@ function getSvgHtml(opt)
 
     if (stroke) 
         htmlSvg += ' stroke="'+stroke+'"'; //#ED1C24
+    if (strokeWidth)
+        htmlSvg += ' stroke-width="'+strokeWidth+'"';
     if (strokeOpacity) 
         htmlSvg += ' stroke-opacity="'+strokeOpacity+'"'; //#ED1C24
     if (fill) 
@@ -195,6 +303,26 @@ function getSvgHtml(opt)
         htmlSvg += ' fill-opacity="'+fillOpacity+'"'; //#ED1C24
 
     htmlSvg +=   '/>';
+    if (hoverPath)
+    {
+        htmlSvg +=   '<path';
+        htmlSvg += ' d="';
+        htmlSvg += hoverPath;
+        htmlSvg += '"';
+
+        if (stroke) 
+            htmlSvg += ' stroke="none"'; //#ED1C24
+        if (strokeWidth)
+            htmlSvg += ' stroke-width="'+strokeWidth+'"';
+        if (strokeOpacity) 
+            htmlSvg += ' stroke-opacity="'+strokeOpacity+'"'; //#ED1C24
+        if (fill) 
+            htmlSvg += ' fill="'+fill+'"'; //#ED1C24
+        if (fillOpacity) 
+            htmlSvg += ' fill-opacity="'+fillOpacity+'"'; //#ED1C24
+        
+        htmlSvg +=   '/>';
+    }
     htmlSvg += '</svg>';
 
     return htmlSvg;
@@ -223,19 +351,129 @@ function measureText(text, cssClass)
     return size;
 }
 
+function setIcon(container, obj)
+{
+    var copy = deepMerge({}, obj);
+    for(var i = 0; i < container.length; i ++)
+    {
+        if (container[i].type == obj.type)
+        {
+            container[i] = copy;
+            return;
+        }
+    }
+    container.push(copy);
+}
+
+/*
+    //NOTE: undefined key or function() will be ignored by JSON.stringify(...)
+    const A = {
+        a: [null, {a:undefined}, [null,new Date()], {a(){}}],
+        b: [1,2],
+        c: {a:1, b:2}
+    }
+    const B = {
+        a: ["new", 9],
+        b: [new Date()],
+        c: {a:{}, c:[]}
+    }
+    log('A:', JSON.stringify(deepCopy(A)));
+    log('B:', JSON.stringify(deepCopy(B)));
+    log('Merged:', deepMerge(A, B));
+*/
+function deepCopy(val)
+{
+    if ((val == undefined) || (val == null))
+        return val;
+    
+    if (Array.isArray(val))
+    {
+        var ret = [];
+        for(var j = 0; j < val.length; j ++)
+            ret.push(deepCopy(val[j]));
+        return ret;
+    }
+    else if (typeof (val) === 'object')
+    {
+        var ret = {};
+        for(var k in val)
+            ret[k] = deepCopy(val[k]);
+        return ret;
+    }
+    return val;
+}
+
+function deepMerge()
+{
+    var objs = [];
+    for(var i = 0; i < arguments.length; i ++)
+    {
+        if ((arguments[i] == undefined) || (arguments[i] == null))
+            continue;
+        if (typeof (arguments[i]) == 'object')
+            objs.push(arguments[i]);
+    }
+
+    if (objs.length == 0)
+        return null;
+
+    //log(objs);
+
+    var target = {};
+    var isArray = false;
+    if (Array.isArray(objs[0]))
+    {
+        isArray = true;
+        target = [];
+    }
+
+    for(var i = 0; i < objs.length; i ++)
+    {
+        if (isArray)
+        {
+            if (!Array.isArray(objs[i]))
+                continue;
+            for(var j = 0; j < objs[i].length; j ++)
+                target.push(c(objs[i][j]));
+        }
+        else
+        {
+            if (Array.isArray(objs[i]))
+                continue;
+            for(var k in objs[i])
+                target[k] = deepCopy(objs[i][k]);
+        }
+    }
+    return target;
+}
+
 function pureDialog()
 {
+    var _settings = null;
+    var _default = {
+        id: getUuid(),
+        zIndex: getNextZindex(),
+        theme: top.defaultTheme,
+        dragging: true,
+        resizing: false,
+        width: 600,
+        height: 400
+    };
+
     var opt = undefined;
     var caption = undefined;
     var message = undefined;
-    var optButtons = undefined;
+    var prop = undefined;
 
     var argLen = arguments.length;
     if (argLen == 0)
         return null;
 
     if (typeof arguments[0] == 'object')
+    {
         opt = arguments[0];
+        _settings = deepMerge(_default, opt);
+    }
     else
     {
         if (typeof arguments[0] == 'string')
@@ -245,38 +483,33 @@ function pureDialog()
             message = arguments[1];
 
         if ((argLen > 2) && (typeof arguments[2] == 'object'))
-            optButtons = arguments[2];
+            prop = arguments[2];
+
+        _settings = deepMerge(_default, {});
     }
-
-    var _default = {
-        id: getUuid(),
-        zIndex: getNextZindex(),
-        theme: '',
-        dragging: true,
-        resizing: false,
-        width: 600,
-        height: 400
-    };
-
-    var _settings = deepMerge(_default, opt);
 
     if (caption)
     {
-        _settings.title = {
-            middle: [
-                {
-                    type: 'html',
-                    content: caption,
-                    toolTip: '',
-                }
-            ],
-            right: [
-                {
+        if (!_settings.title)
+            _settings.title = {};
+
+        if (!_settings.title.middle)
+            _settings.title.middle = [];
+
+        if (!_settings.title.middle)
+            _settings.title.middle = [];
+        setIcon(_settings.title.middle, {
+            type: 'caption',
+            content: caption,
+            toolTip: '',
+        });
+
+        if (!_settings.title.right)
+            _settings.title.right = [];
+        setIcon(_settings.title.right, {
                     type: 'close',
                     toolTip: 'Close'
-                },
-            ]
-        };
+                });
     }
 
     if (message)
@@ -296,9 +529,15 @@ function pureDialog()
           };
     }
 
-    if (optButtons)
+    if (prop && prop.theme)
     {
-        _settings.footer = optButtons;
+        _settings.theme = prop.theme;
+        delete prop.theme;
+    }
+
+    if (prop && (Object.keys(prop).length > 0))
+    {
+        _settings.footer = prop;
     }
     else if (!opt)
     {
@@ -433,7 +672,7 @@ function pureDialog()
             if (barConfig.middleAlign == 'center')
                 barParts['middle'].style['justify-content'] = 'center';
             else //if (barConfig.middleAlign == 'left')
-                barParts['middle'].style.marginLeft = parseInt(leftWidth,10) + 'px';
+                barParts['middle'].style.paddingLeft = parseInt(leftWidth,10) + 'px';
 
             elemBar.appendChild(barParts['middle']);
 
@@ -469,7 +708,7 @@ function pureDialog()
                     if (section[i].toolTip)
                         barParts[type].title = section[i].toolTip;
                     barParts[type].className = _settings.theme + 'dlgIcon dlgMinimize';
-                    barParts[type].innerHTML = getSvgHtml({type:type,box:{width:20,height:20},padding:4});
+                    barParts[type].innerHTML = getSvgHtml({theme:_settings.theme,type:type,padding:4});
                     elemResizing.push(barParts[type]);
                     _clickableParts.push(barParts[type]);
                 }
@@ -482,7 +721,7 @@ function pureDialog()
                     if (section[i].toolTip)
                         barParts[type].title = section[i].toolTip;
                     barParts[type].className = _settings.theme + 'dlgIcon dlgMaximize';
-                    barParts[type].innerHTML = getSvgHtml({type:type,box:{width:20,height:20},padding:5});
+                    barParts[type].innerHTML = getSvgHtml({theme:_settings.theme,type:type,padding:5});
                     elemResizing.push(barParts[type]);
                     _clickableParts.push(barParts[type]);
                 }
@@ -495,7 +734,7 @@ function pureDialog()
                     if (section[i].toolTip)
                         barParts[type].title = section[i].toolTip;
                     barParts[type].className = _settings.theme + 'dlgIcon dlgFullScreen';
-                    barParts[type].innerHTML = getSvgHtml({type:type,box:{width:20,height:20},padding:4});
+                    barParts[type].innerHTML = getSvgHtml({theme:_settings.theme,type:type,padding:4});
                     elemResizing.push(barParts[type]);
                     _clickableParts.push(barParts[type]);
                 }
@@ -520,7 +759,7 @@ function pureDialog()
                     barParts['restore'] = top.document.createElement("div");
                     barParts['restore'].title = 'Restore';
                     barParts['restore'].className = _settings.theme + 'dlgIcon dlgRestore';
-                    barParts['restore'].innerHTML = getSvgHtml({type:'restore',box:{width:20,height:20},padding:4});
+                    barParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'restore',padding:4});
                     barParts['restore'].style.display = 'none';
                     barParts[posInBar].appendChild(barParts['restore']);
                     _clickableParts.push(barParts['restore']);
@@ -545,7 +784,7 @@ function pureDialog()
                     if (section[i].toolTip)
                         barParts[type].title = section[i].toolTip;
                     barParts[type].className = _settings.theme + 'dlgIcon dlgClose';
-                    barParts[type].innerHTML = getSvgHtml({type:'close',box:{width:20,height:20},padding:5});
+                    barParts[type].innerHTML = getSvgHtml({theme:_settings.theme,type:'close',padding:5});
                     barParts[posInBar].appendChild(barParts[type]);
                     _clickableParts.push(barParts[type]);
                 }
@@ -969,88 +1208,6 @@ function pureDialog()
         return (typeof (obj) === 'object');
     }
 
-/*
-    //NOTE: undefined key or function() will be ignored by JSON.stringify(...)
-    const A = {
-        a: [null, {a:undefined}, [null,new Date()], {a(){}}],
-        b: [1,2],
-        c: {a:1, b:2}
-    }
-    const B = {
-        a: ["new", 9],
-        b: [new Date()],
-        c: {a:{}, c:[]}
-    }
-    log('A:', JSON.stringify(deepCopy(A)));
-    log('B:', JSON.stringify(deepCopy(B)));
-    log('Merged:', deepMerge(A, B));
-*/
-    function deepCopy(val)
-    {
-        if ((val == undefined) || (val == null))
-            return val;
-        
-        if (Array.isArray(val))
-        {
-            var ret = [];
-            for(var j = 0; j < val.length; j ++)
-                ret.push(deepCopy(val[j]));
-            return ret;
-        }
-        else if (typeof (val) === 'object')
-        {
-            var ret = {};
-            for(var k in val)
-                ret[k] = deepCopy(val[k]);
-            return ret;
-        }
-        return val;
-    }
-
-    function deepMerge()
-    {
-        var objs = [];
-        for(var i = 0; i < arguments.length; i ++)
-        {
-            if ((arguments[i] == undefined) || (arguments[i] == null))
-                continue;
-            if (typeof (arguments[i]) == 'object')
-                objs.push(arguments[i]);
-        }
-
-        if (objs.length == 0)
-            return null;
-
-        //log(objs);
-
-        var target = {};
-        var isArray = false;
-        if (Array.isArray(objs[0]))
-        {
-            isArray = true;
-            target = [];
-        }
-
-        for(var i = 0; i < objs.length; i ++)
-        {
-            if (isArray)
-            {
-                if (!Array.isArray(objs[i]))
-                    continue;
-                for(var j = 0; j < objs[i].length; j ++)
-                    target.push(c(objs[i][j]));
-            }
-            else
-            {
-                if (Array.isArray(objs[i]))
-                    continue;
-                for(var k in objs[i])
-                    target[k] = deepCopy(objs[i][k]);
-            }
-        }
-        return target;
-    }
-
     bindEvents();
 
     function onButtonClose(event)
@@ -1211,7 +1368,7 @@ function pureDialog()
             var rectTitleLeft = elemTitleParts['left'].getBoundingClientRect();
             leftWidth = rectTitleLeft.width;
         }
-        elemTitleParts['middle'].style.marginLeft = parseInt(leftWidth,10) + 'px';
+        elemTitleParts['middle'].style.paddingLeft = parseInt(leftWidth,10) + 'px';
     }
 
     function onToggleMin(event)
