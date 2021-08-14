@@ -173,7 +173,7 @@
               <td style="text-align: center;">
                 Customization
               </td>
-              <td style="padding: 0;">
+              <td style="padding: auto; text-align: center; vertical-align: middle;">
                 <table>
                   <tr>
                     <td colspan="2">
@@ -382,15 +382,18 @@
         document.getElementById('theme').addEventListener('change', function(){
           var theme = document.getElementById('theme').value;
           top.setTheme(theme);
+          if (theme == 'ios')
+            document.getElementById('title_l').click();
+          else
+            document.getElementById('title_r').click();
+
           if ((theme == 'ios') || (theme == 'ubuntu'))
           {
-            document.getElementById('title_l').click();
             document.getElementById('fullscreen_l').checked = false;
             document.getElementById('fullscreen_r').checked = false;
           }
           else
           {
-            document.getElementById('title_r').click();
             document.getElementById('fullscreen_l').checked = true;
             document.getElementById('fullscreen_r').checked = true;
           }

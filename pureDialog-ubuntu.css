@@ -39,12 +39,15 @@
     font-family: arial, sans-serif;    
 
     border: solid 1px gray;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+
 /*
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;    
 */
     box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
-    background: rgb(255, 255, 255);
+    background: rgb(255, 255, 255); 
 }
 .ubuntu-dlgTitle
 {
@@ -58,12 +61,15 @@
 
     font-size: 12px;
 
-    color: black;
-    background: white;
-
     width: 100%;
-    height: 25px;
+    height: 35px;
+
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    background: #4C4B44;
+    color: white;
 }
+
 .ubuntu-dlgContent
 {
     box-sizing: border-box; 
@@ -157,17 +163,53 @@
 {
     background-color: RGB(210,210,210);
 }
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg:hover path:nth-child(2)
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg stop:nth-child(1),
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg stop:nth-child(1)
 {
-    stroke: #a75d09;
+    stop-color: #C4C4C4;
 }
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg:hover path:nth-child(2)
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg stop:nth-child(2),
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg stop:nth-child(2)
 {
-    stroke: #1b4202;
+    stop-color: #A2A2A2;
 }
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg:hover path:nth-child(2)
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg:hover stop:nth-child(1)
 {
-    stroke: #A6342E;
+    stop-color: #C4C4C4;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg:hover stop:nth-child(2)
+{
+    stop-color: #d4d4d4;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg:hover stop:nth-child(1)
+{
+    stop-color: #C4C4C4;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg:hover stop:nth-child(2)
+{
+    stop-color: #d4d4d4;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg stop:nth-child(1)
+{
+    stop-color: #D88A6E;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg stop:nth-child(2)
+{
+    stop-color: #D74B1B;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg:hover stop:nth-child(1)
+{
+    stop-color: #F89A7E;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg:hover stop:nth-child(2)
+{
+    stop-color: #E75B2B;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg path:nth-of-type(2),
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg path:nth-of-type(2),
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg path:nth-of-type(2)
+{
+    stroke: black;
 }
 .ubuntu-dlgTitle .Left,
 .ubuntu-dlgFooter .Left

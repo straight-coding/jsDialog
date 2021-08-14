@@ -93,10 +93,10 @@ function getSvgHtml(opt)
     };
 
     var padding = 0;
-    var fill = 'none';
+    var fill = null;
     var strokeWidth = null;
     var fillOpacity = null;
-    var stroke = '#000';
+    var stroke = null;
     var strokeOpacity = null;
 
     if (opt)
@@ -124,6 +124,12 @@ function getSvgHtml(opt)
         }
     }
 
+    if (!fill)
+    {
+        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
+            fill = "url(#gradient_"+opt.type+")";
+    }
+
     var hoverPath = '';
 
     var htmlSvg = '';
@@ -133,6 +139,12 @@ function getSvgHtml(opt)
     htmlSvg += ' height="'+box.height+'"';
     htmlSvg += ' xmlns="http://www.w3.org/2000/svg"';
     htmlSvg += '>';
+
+    htmlSvg += '<linearGradient id="gradient_'+opt.type+'">';
+    htmlSvg += '<stop offset="0%" />';
+    htmlSvg += '<stop offset="100%" />';
+    htmlSvg += '</linearGradient>';
+
     htmlSvg +=   '<path';
     htmlSvg += ' d="';
     if (opt.type == 'menu')
@@ -163,14 +175,20 @@ function getSvgHtml(opt)
         if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
         {
             padding = 4;
-            fill = '#FFBF2F';
-            stroke = '#B67F42';//'#E3A31A';
+            //fill = '#FFBF2F';
+            //stroke = '#B67F42';//'#E3A31A';
 
             var R = (box.width-2*padding)/2;
             htmlSvg += 'M'+(box.left+padding)+','+(box.top+R+padding);
             htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
             htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
 
+            if (opt.theme == 'ubuntu-')
+            {
+                padding += 2;
+                R = (box.width-2*padding)/2;
+            }
+    
             hoverPath += 'M'+(box.left+padding) + ',' + (box.top+R+padding);
             hoverPath += 'h'+(2*R);
         }
@@ -185,14 +203,20 @@ function getSvgHtml(opt)
         if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
         {
             padding = 4;
-            fill = '#28CA41';
-            stroke = '#6F9856';//'#15AF2B';
+            //fill = '#28CA41';
+            //stroke = '#6F9856';//'#15AF2B'; ubuntu: #73726B
 
             var R = (box.width-2*padding)/2;
             htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
             htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
             htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
 
+            if (opt.theme == 'ubuntu-')
+            {
+                padding += 2;
+                R = (box.width-2*padding)/2;
+            }
+    
             hoverPath += 'M'+(box.left+padding) + ',' + (box.top+R+padding);
             hoverPath += 'h'+(2*R);
             hoverPath += 'M'+(box.left+R+padding) + ',' + (box.top+padding);
@@ -264,14 +288,23 @@ function getSvgHtml(opt)
         if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
         {
             padding = 4;
-            fill = '#FD7973';
-            stroke = '#A6342E';//'#E1342E';
+            //fill = '#FD7973';
+            //if (opt.theme == 'ios-')
+              //  stroke = '#A6342E';//'#E1342E';
+            //else
+              //  stroke = '#E6^134';
 
             var R = (box.width-2*padding)/2;
             htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
             htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
             htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
 
+            if (opt.theme == 'ubuntu-')
+            {
+                padding += 2;
+                R = (box.width-2*padding)/2;
+            }
+    
             var delta = R*Math.sqrt(2)/2;
             hoverPath += 'M'+(padding+R-delta) + ',' + (padding+R-delta);
             hoverPath += 'l'+(2*delta) + ',' + (2*delta);
