@@ -157,15 +157,55 @@
 {
     background-color: RGB(210,210,210);
 }
-.ios-dlgTitle .ios-dlgIcon.dlgMinimize svg:hover path:nth-child(2)
+.ios-dlgTitle .ios-dlgIcon.dlgMinimize svg stop:nth-child(1),
+.ios-dlgTitle .ios-dlgIcon.dlgMinimize svg stop:nth-child(2)
+{
+    stop-color: #FFBF2F;
+}
+.ios-dlgTitle .ios-dlgIcon.dlgMaximize svg stop:nth-child(1),
+.ios-dlgTitle .ios-dlgIcon.dlgMaximize svg stop:nth-child(2)
+{
+    stop-color: #28CA41;
+}
+.ios-dlgTitle .ios-dlgIcon.dlgClose svg stop:nth-child(1),
+.ios-dlgTitle .ios-dlgIcon.dlgClose svg stop:nth-child(2)
+{
+    stop-color: #FD7973;
+}
+/*
+.ios-dlgTitle .ios-dlgIcon.dlgMinimize svg:hover stop:nth-child(1),
+.ios-dlgTitle .ios-dlgIcon.dlgMinimize svg:hover stop:nth-child(2)
+{
+    stop-color: #a75d09;
+}
+.ios-dlgTitle .ios-dlgIcon.dlgMaximize svg:hover stop:nth-child(1),
+.ios-dlgTitle .ios-dlgIcon.dlgMaximize svg:hover stop:nth-child(2)
+{
+    stop-color: #1b4202;
+}
+.ios-dlgTitle .ios-dlgIcon.dlgClose svg:hover stop:nth-child(1),
+.ios-dlgTitle .ios-dlgIcon.dlgClose svg:hover stop:nth-child(2)
+{
+    stop-color: #A6342E;
+}
+*/
+/*
+.ios-dlgTitle .ios-dlgIcon.dlgMinimize svg path:nth-of-type(2),
+.ios-dlgTitle .ios-dlgIcon.dlgMaximize svg path:nth-of-type(2),
+.ios-dlgTitle .ios-dlgIcon.dlgClose svg path:nth-of-type(2)
+{
+    stroke: black;
+}
+*/
+.ios-dlgTitle .ios-dlgIcon.dlgMinimize svg:hover path:nth-of-type(2)
 {
     stroke: #a75d09;
 }
-.ios-dlgTitle .ios-dlgIcon.dlgMaximize svg:hover path:nth-child(2)
+.ios-dlgTitle .ios-dlgIcon.dlgMaximize svg:hover path:nth-of-type(2)
 {
     stroke: #1b4202;
 }
-.ios-dlgTitle .ios-dlgIcon.dlgClose svg:hover path:nth-child(2)
+.ios-dlgTitle .ios-dlgIcon.dlgClose svg:hover path:nth-of-type(2)
 {
     stroke: #A6342E;
 }

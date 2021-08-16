@@ -98,13 +98,23 @@ function getSvgHtml(opt)
     var fillOpacity = null;
     var stroke = null;
     var strokeOpacity = null;
+    var theme = '';
 
     if (opt)
     {
-        if (opt.theme == 'jquery-')
+        theme = opt.theme;
+        if (theme.substr(-1) != '-')
+            theme += '-';
+
+        if (theme == 'jquery-')
         {
             strokeWidth = 2;
             stroke = '#888';
+        }
+        else if (theme == 'win10-')
+        {
+            strokeWidth = 1;
+            stroke = '#000';
         }
 
         if (opt.box) 
@@ -126,7 +136,7 @@ function getSvgHtml(opt)
 
     if (!fill)
     {
-        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
+        if ((theme == 'ios-') || (theme == 'ubuntu-'))
             fill = "url(#gradient_"+opt.type+")";
     }
 
@@ -140,16 +150,19 @@ function getSvgHtml(opt)
     htmlSvg += ' xmlns="http://www.w3.org/2000/svg"';
     htmlSvg += '>';
 
-    htmlSvg += '<linearGradient id="gradient_'+opt.type+'">';
-    htmlSvg += '<stop offset="0%" />';
-    htmlSvg += '<stop offset="100%" />';
-    htmlSvg += '</linearGradient>';
+    if ((theme == 'ios-') || (theme == 'ubuntu-'))
+    {
+        htmlSvg += '<linearGradient id="gradient_'+opt.type+'">';
+        htmlSvg += '<stop offset="0%" />';
+        htmlSvg += '<stop offset="100%" />';
+        htmlSvg += '</linearGradient>';
+    }
 
     htmlSvg +=   '<path';
     htmlSvg += ' d="';
     if (opt.type == 'menu')
     {
-        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
+        if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
             
@@ -172,7 +185,7 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'minimize')
     {
-        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
+        if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
             //fill = '#FFBF2F';
@@ -183,7 +196,7 @@ function getSvgHtml(opt)
             htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
             htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
 
-            if (opt.theme == 'ubuntu-')
+            //if (theme == 'ubuntu-')
             {
                 padding += 2;
                 R = (box.width-2*padding)/2;
@@ -200,7 +213,7 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'maximize')
     {
-        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
+        if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
             //fill = '#28CA41';
@@ -211,7 +224,7 @@ function getSvgHtml(opt)
             htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
             htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
 
-            if (opt.theme == 'ubuntu-')
+            //if (theme == 'ubuntu-')
             {
                 padding += 2;
                 R = (box.width-2*padding)/2;
@@ -233,7 +246,7 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'fullscreen')
     {
-        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
+        if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
             var R = (box.width-2*padding)/2;
@@ -260,7 +273,7 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'restore')
     {
-        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
+        if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
             var R = (box.width-2*padding)/2;
@@ -285,11 +298,11 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'close')
     {
-        if ((opt.theme == 'ios-') || (opt.theme == 'ubuntu-'))
+        if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
             //fill = '#FD7973';
-            //if (opt.theme == 'ios-')
+            //if (theme == 'ios-')
               //  stroke = '#A6342E';//'#E1342E';
             //else
               //  stroke = '#E6^134';
@@ -299,7 +312,7 @@ function getSvgHtml(opt)
             htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
             htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
 
-            if (opt.theme == 'ubuntu-')
+            //if (theme == 'ubuntu-')
             {
                 padding += 2;
                 R = (box.width-2*padding)/2;
@@ -332,6 +345,8 @@ function getSvgHtml(opt)
         htmlSvg += ' stroke-opacity="'+strokeOpacity+'"'; //#ED1C24
     if (fill) 
         htmlSvg += ' fill="'+fill+'"'; //#ED1C24
+    else
+        htmlSvg += ' fill="none"';
     if (fillOpacity) 
         htmlSvg += ' fill-opacity="'+fillOpacity+'"'; //#ED1C24
 
@@ -842,7 +857,7 @@ function pureDialog()
                     if (section[i].toolTip)
                         barParts[type].title = section[i].toolTip;
                     barParts[type].className = _settings.theme + 'dlgIcon dlgClose';
-                    barParts[type].innerHTML = getSvgHtml({theme:_settings.theme,type:'close',padding:5});
+                    barParts[type].innerHTML = getSvgHtml({theme:_settings.theme,type:type,padding:5});
                     barParts[posInBar].appendChild(barParts[type]);
                     _clickableParts.push(barParts[type]);
                 }
@@ -891,7 +906,7 @@ function pureDialog()
             }
             else if (type == 'html')
             {
-                if (section[i].content)
+                if (!barParts[type])
                 {
                     barParts[type] = elementFromHTML(section[i].content);
                     if (section[i].toolTip)
