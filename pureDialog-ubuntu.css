@@ -145,72 +145,6 @@
 {
     background-color: green;
 }
-.ubuntu-dlgTitle .Left .ubuntu-dlgIcon,
-.ubuntu-dlgFooter .Left .ubuntu-dlgIcon 
-{
-    width: 25px;
-}
-.ubuntu-dlgTitle .Right .ubuntu-dlgIcon,
-.ubuntu-dlgFooter .Right .ubuntu-dlgIcon 
-{
-    width: 25px;
-}
-.ubuntu-dlgIcon:hover
-{
-    cursor: pointer;
-}
-.ubuntu-dlgIcon:active
-{
-    background-color: RGB(210,210,210);
-}
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg stop:nth-child(1),
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg stop:nth-child(1)
-{
-    stop-color: #C4C4C4;
-}
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg stop:nth-child(2),
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg stop:nth-child(2)
-{
-    stop-color: #A2A2A2;
-}
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg:hover stop:nth-child(1)
-{
-    stop-color: #C4C4C4;
-}
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg:hover stop:nth-child(2)
-{
-    stop-color: #d4d4d4;
-}
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg:hover stop:nth-child(1)
-{
-    stop-color: #C4C4C4;
-}
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg:hover stop:nth-child(2)
-{
-    stop-color: #d4d4d4;
-}
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg stop:nth-child(1)
-{
-    stop-color: #D88A6E;
-}
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg stop:nth-child(2)
-{
-    stop-color: #D74B1B;
-}
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg:hover stop:nth-child(1)
-{
-    stop-color: #F89A7E;
-}
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg:hover stop:nth-child(2)
-{
-    stop-color: #E75B2B;
-}
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg path:nth-of-type(2),
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg path:nth-of-type(2),
-.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg path:nth-of-type(2)
-{
-    stroke: black;
-}
 .ubuntu-dlgTitle .Left,
 .ubuntu-dlgFooter .Left
 {
@@ -262,13 +196,117 @@
 
     color: white;
 }
-.ubuntu-dlgTitle .Right .ubuntu-dlgIcon,
-.ubuntu-dlgFooter .Right .ubuntu-dlgIcon
-{
-    margin-left: 0px;
-}
 .ubuntu-dlgMessage
 {
     flex-shrink: 0;
     margin: 10px 10px 10px 10px;
 }
+.ubuntu-dlgIcon:hover
+{
+    cursor: pointer;
+}
+.ubuntu-dlgTitle .Right .ubuntu-dlgIcon,
+.ubuntu-dlgFooter .Right .ubuntu-dlgIcon
+{
+    margin-left: 0px;
+}
+.ubuntu-dlgTitle .Left .ubuntu-dlgIcon,
+.ubuntu-dlgFooter .Left .ubuntu-dlgIcon, 
+.ubuntu-dlgTitle .Right .ubuntu-dlgIcon,
+.ubuntu-dlgFooter .Right .ubuntu-dlgIcon 
+{
+    width: 25px;
+}
+.ubuntu-dlgIcon.dlgMinimize,
+.ubuntu-dlgIcon.dlgRestoreMin
+{
+/*<svg viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><linearGradient id="gradient_minimize"><stop offset="0%" stop-color="#C4C4C4"></stop><stop offset="100%" stop-color="#A2A2A2"></stop></linearGradient><path d="M4,10a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" fill="url(#gradient_minimize)"></path><path d="M6,10h8" stroke="#000" fill="url(#gradient_minimize)"></path></svg>*/
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAgMjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50X21pbmltaXplIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjQzRDNEM0Ij48L3N0b3A+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjQTJBMkEyIj48L3N0b3A+PC9saW5lYXJHcmFkaWVudD48cGF0aCBkPSJNNCwxMGE2LDYgMCAxLDAgMTIsMGE2LDYgMCAxLDAgLTEyLDAiIGZpbGw9InVybCgjZ3JhZGllbnRfbWluaW1pemUpIj48L3BhdGg+PHBhdGggZD0iTTYsMTBoOCIgc3Ryb2tlPSIjMDAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50X21pbmltaXplKSI+PC9wYXRoPjwvc3ZnPg==");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 20px 20px;
+}
+.ubuntu-dlgIcon.dlgMaximize,
+.ubuntu-dlgIcon.dlgRestoreMax
+{
+/*<svg viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><linearGradient id="gradient_maximize"><stop offset="0%" stop-color="#C4C4C4"></stop><stop offset="100%" stop-color="#A2A2A2"></stop></linearGradient><path d="M4,10a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" fill="url(#gradient_maximize)"></path><path d="M6,10h8M10,6v8" stroke="#000" fill="url(#gradient_maximize)"></path></svg>*/
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAgMjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50X21heGltaXplIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjQzRDNEM0Ij48L3N0b3A+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjQTJBMkEyIj48L3N0b3A+PC9saW5lYXJHcmFkaWVudD48cGF0aCBkPSJNNCwxMGE2LDYgMCAxLDAgMTIsMGE2LDYgMCAxLDAgLTEyLDAiIGZpbGw9InVybCgjZ3JhZGllbnRfbWF4aW1pemUpIj48L3BhdGg+PHBhdGggZD0iTTYsMTBoOE0xMCw2djgiIHN0cm9rZT0iIzAwMCIgZmlsbD0idXJsKCNncmFkaWVudF9tYXhpbWl6ZSkiPjwvcGF0aD48L3N2Zz4=");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 20px 20px;
+}
+.ubuntu-dlgIcon.dlgClose
+{
+/*<svg viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><linearGradient id="gradient_close"><stop offset="0%" stop-color="#D88A6E"></stop><stop offset="100%" stop-color="#D74B1B"></stop></linearGradient><path d="M4,10a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" fill="url(#gradient_close)"></path><path d="M7.17157287525381,7.17157287525381l5.656854249492381,5.656854249492381M7.17157287525381,12.82842712474619l5.656854249492381,-5.656854249492381" stroke="#000" fill="url(#gradient_close)"></path></svg>*/
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAgMjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50X2Nsb3NlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjRDg4QTZFIj48L3N0b3A+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjRDc0QjFCIj48L3N0b3A+PC9saW5lYXJHcmFkaWVudD48cGF0aCBkPSJNNCwxMGE2LDYgMCAxLDAgMTIsMGE2LDYgMCAxLDAgLTEyLDAiIGZpbGw9InVybCgjZ3JhZGllbnRfY2xvc2UpIj48L3BhdGg+PHBhdGggZD0iTTcuMTcxNTcyODc1MjUzODEsNy4xNzE1NzI4NzUyNTM4MWw1LjY1Njg1NDI0OTQ5MjM4MSw1LjY1Njg1NDI0OTQ5MjM4MU03LjE3MTU3Mjg3NTI1MzgxLDEyLjgyODQyNzEyNDc0NjE5bDUuNjU2ODU0MjQ5NDkyMzgxLC01LjY1Njg1NDI0OTQ5MjM4MSIgc3Ryb2tlPSIjMDAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50X2Nsb3NlKSI+PC9wYXRoPjwvc3ZnPg==");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 20px 20px;
+}
+.ubuntu-dlgIcon.dlgMinimize:hover,
+.ubuntu-dlgIcon.dlgRestoreMin:hover
+{
+/*<svg viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><linearGradient id="gradient_minimize"><stop offset="0%" stop-color="#C4C4C4"></stop><stop offset="100%" stop-color="#D4D4D4"></stop></linearGradient><path d="M4,10a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" fill="url(#gradient_minimize)"></path><path d="M6,10h8" stroke="#000" fill="url(#gradient_minimize)"></path></svg>*/
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAgMjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50X21pbmltaXplIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjQzRDNEM0Ij48L3N0b3A+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjRDRENEQ0Ij48L3N0b3A+PC9saW5lYXJHcmFkaWVudD48cGF0aCBkPSJNNCwxMGE2LDYgMCAxLDAgMTIsMGE2LDYgMCAxLDAgLTEyLDAiIGZpbGw9InVybCgjZ3JhZGllbnRfbWluaW1pemUpIj48L3BhdGg+PHBhdGggZD0iTTYsMTBoOCIgc3Ryb2tlPSIjMDAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50X21pbmltaXplKSI+PC9wYXRoPjwvc3ZnPg==");
+}
+.ubuntu-dlgIcon.dlgMaximize:hover,
+.ubuntu-dlgIcon.dlgRestoreMax:hover
+{
+/*<svg viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><linearGradient id="gradient_maximize"><stop offset="0%" stop-color="#C4C4C4"></stop><stop offset="100%" stop-color="#D4D4D4"></stop></linearGradient><path d="M4,10a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" fill="url(#gradient_maximize)"></path><path d="M6,10h8M10,6v8" stroke="#000" fill="url(#gradient_maximize)"></path></svg>*/
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAgMjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50X21heGltaXplIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjQzRDNEM0Ij48L3N0b3A+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjRDRENEQ0Ij48L3N0b3A+PC9saW5lYXJHcmFkaWVudD48cGF0aCBkPSJNNCwxMGE2LDYgMCAxLDAgMTIsMGE2LDYgMCAxLDAgLTEyLDAiIGZpbGw9InVybCgjZ3JhZGllbnRfbWF4aW1pemUpIj48L3BhdGg+PHBhdGggZD0iTTYsMTBoOE0xMCw2djgiIHN0cm9rZT0iIzAwMCIgZmlsbD0idXJsKCNncmFkaWVudF9tYXhpbWl6ZSkiPjwvcGF0aD48L3N2Zz4=");
+}
+.ubuntu-dlgIcon.dlgClose:hover
+{
+/*<svg viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><linearGradient id="gradient_close"><stop offset="0%" stop-color="#F89A7E"></stop><stop offset="100%" stop-color="#E75B2B"></stop></linearGradient><path d="M4,10a6,6 0 1,0 12,0a6,6 0 1,0 -12,0" fill="url(#gradient_close)"></path><path d="M7.17157287525381,7.17157287525381l5.656854249492381,5.656854249492381M7.17157287525381,12.82842712474619l5.656854249492381,-5.656854249492381" stroke="#000" fill="url(#gradient_close)"></path></svg>*/
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAgMjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50X2Nsb3NlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjRkQ3OTczIj48L3N0b3A+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjRkQ3OTczIj48L3N0b3A+PC9saW5lYXJHcmFkaWVudD48cGF0aCBkPSJNNCwxMGE2LDYgMCAxLDAgMTIsMGE2LDYgMCAxLDAgLTEyLDAiIHN0cm9rZT0iI0E2MzQyRSIgZmlsbD0idXJsKCNncmFkaWVudF9jbG9zZSkiPjwvcGF0aD48cGF0aCBkPSJNNy4xNzE1NzI4NzUyNTM4MSw3LjE3MTU3Mjg3NTI1MzgxbDUuNjU2ODU0MjQ5NDkyMzgxLDUuNjU2ODU0MjQ5NDkyMzgxTTcuMTcxNTcyODc1MjUzODEsMTIuODI4NDI3MTI0NzQ2MTlsNS42NTY4NTQyNDk0OTIzODEsLTUuNjU2ODU0MjQ5NDkyMzgxIiBzdHJva2U9IiNBNjM0MkUiIGZpbGw9InVybCgjZ3JhZGllbnRfY2xvc2UpIj48L3BhdGg+PC9zdmc+");
+}
+/*
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg stop:nth-child(1),
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg stop:nth-child(1)
+{
+    stop-color: #C4C4C4;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg stop:nth-child(2),
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg stop:nth-child(2)
+{
+    stop-color: #A2A2A2;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg stop:nth-child(1)
+{
+    stop-color: #D88A6E;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg stop:nth-child(2)
+{
+    stop-color: #D74B1B;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg:hover stop:nth-child(1)
+{
+    stop-color: #C4C4C4;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg:hover stop:nth-child(2)
+{
+    stop-color: #d4d4d4;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg:hover stop:nth-child(1)
+{
+    stop-color: #C4C4C4;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg:hover stop:nth-child(2)
+{
+    stop-color: #d4d4d4;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg:hover stop:nth-child(1)
+{
+    stop-color: #F89A7E;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg:hover stop:nth-child(2)
+{
+    stop-color: #E75B2B;
+}
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMinimize svg path:nth-of-type(2),
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgMaximize svg path:nth-of-type(2),
+.ubuntu-dlgTitle .ubuntu-dlgIcon.dlgClose svg path:nth-of-type(2)
+{
+    stroke: black;
+}
+*/

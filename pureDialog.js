@@ -6,6 +6,8 @@
 
 'use strict';
 
+var svgByScript = false;
+
 if (window.top === window.self)
 {
     var zIndexStart = 10000;
@@ -81,310 +83,6 @@ function elementFromHTML(htmlString)
         template.innerHTML = htmlString;
     }
     return template.firstElementChild || template.content.firstChild; 
-}
-
-function getSvgHtml(opt)
-{ //{type:'',box:{top:0,left:0,width:100,height:100},padding:4,stroke:'',fill:'','fill-opacity':0.5,'stroke-opacity':0.8}
-    var box = {
-        top:0,
-        left:0,
-        width:20,
-        height:20
-    };
-
-    var padding = 0;
-    var fill = null;
-    var strokeWidth = null;
-    var fillOpacity = null;
-    var stroke = null;
-    var strokeOpacity = null;
-    var theme = '';
-
-    if (opt)
-    {
-        theme = opt.theme;
-        if (theme.substr(-1) != '-')
-            theme += '-';
-
-        if (theme == 'jquery-')
-        {
-            strokeWidth = 2;
-            stroke = '#888';
-        }
-        else if (theme == 'win10-')
-        {
-            strokeWidth = 1;
-            stroke = '#000';
-        }
-
-        if (opt.box) 
-        {
-            if (valid(opt.box.top)) box.top = parseInt(opt.box.top, 10);
-            if (valid(opt.box.left)) box.left = parseInt(opt.box.left, 10);
-            if (valid(opt.box.width)) box.width = parseInt(opt.box.width, 10);
-            if (valid(opt.box.height)) box.height = parseInt(opt.box.height, 10);
-        }
-        for(var attr in opt)
-        {
-            if (attr == 'padding')               padding = opt[attr];
-            else if (attr == 'fill')             fill = opt[attr];
-            else if (attr == 'stroke')           stroke = opt[attr];
-            else if (attr == 'fill-opacity')     fillOpacity = opt[attr];
-            else if (attr == 'stroke-opacity')   strokeOpacity = opt[attr];
-        }
-    }
-
-    if (!fill)
-    {
-        if ((theme == 'ios-') || (theme == 'ubuntu-'))
-            fill = "url(#gradient_"+opt.type+")";
-    }
-
-    var hoverPath = '';
-
-    var htmlSvg = '';
-    htmlSvg += '<svg';
-    htmlSvg += ' viewBox="'+box.left+' '+box.top+' '+box.width+' '+box.height+'"';
-    htmlSvg += ' width="'+box.width+'"';
-    htmlSvg += ' height="'+box.height+'"';
-    htmlSvg += ' xmlns="http://www.w3.org/2000/svg"';
-    htmlSvg += '>';
-
-    if ((theme == 'ios-') || (theme == 'ubuntu-'))
-    {
-        htmlSvg += '<linearGradient id="gradient_'+opt.type+'">';
-        htmlSvg += '<stop offset="0%" />';
-        htmlSvg += '<stop offset="100%" />';
-        htmlSvg += '</linearGradient>';
-    }
-
-    htmlSvg +=   '<path';
-    htmlSvg += ' d="';
-    if (opt.type == 'menu')
-    {
-        return '';
-        
-        if ((theme == 'ios-') || (theme == 'ubuntu-'))
-        {
-            padding = 4;
-            
-            var R = (box.width-2*padding)/2;
-            htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
-        }
-        else
-        {
-            var size = 5;
-            htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+1);              htmlSvg += 'h'+(size);
-            htmlSvg += 'M'+(box.left+padding)+','+(box.top+(box.height/2));         htmlSvg += 'h'+(size);
-            htmlSvg += 'M'+(box.left+padding)+','+(box.top+box.height-padding-1);   htmlSvg += 'h'+(size);
-
-            htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+padding+1);            htmlSvg += 'h-'+(size);
-            htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+(box.height/2));       htmlSvg += 'h-'+(size);
-            htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+box.height-padding-1); htmlSvg += 'h-'+(size);
-        }
-    }
-    else if (opt.type == 'minimize')
-    {
-        return '';
-
-        if ((theme == 'ios-') || (theme == 'ubuntu-'))
-        {
-            padding = 4;
-            //fill = '#FFBF2F';
-            //stroke = '#B67F42';//'#E3A31A';
-
-            var R = (box.width-2*padding)/2;
-            htmlSvg += 'M'+(box.left+padding)+','+(box.top+R+padding);
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
-
-            //if (theme == 'ubuntu-')
-            {
-                padding += 2;
-                R = (box.width-2*padding)/2;
-            }
-    
-            hoverPath += 'M'+(box.left+padding) + ',' + (box.top+R+padding);
-            hoverPath += 'h'+(2*R);
-        }
-        else
-        {
-            htmlSvg += 'M'+(box.left+padding)+','+(box.top+(box.height/2));
-            htmlSvg += 'h'+(box.width-2*padding);
-        }
-    }
-    else if (opt.type == 'maximize')
-    {
-        return '';
-
-        if ((theme == 'ios-') || (theme == 'ubuntu-'))
-        {
-            padding = 4;
-            //fill = '#28CA41';
-            //stroke = '#6F9856';//'#15AF2B'; ubuntu: #73726B
-
-            var R = (box.width-2*padding)/2;
-            htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
-
-            //if (theme == 'ubuntu-')
-            {
-                padding += 2;
-                R = (box.width-2*padding)/2;
-            }
-    
-            hoverPath += 'M'+(box.left+padding) + ',' + (box.top+R+padding);
-            hoverPath += 'h'+(2*R);
-            hoverPath += 'M'+(box.left+R+padding) + ',' + (box.top+padding);
-            hoverPath += 'v'+(2*R);
-        }
-        else
-        {
-            htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding);
-            htmlSvg += 'h'+(box.width-2*padding);
-            htmlSvg += 'v'+(box.height-2*padding);
-            htmlSvg += 'h-'+(box.width-2*padding);
-            htmlSvg += 'z';
-        }
-    }
-    else if (opt.type == 'fullscreen')
-    {
-        return '';
-
-        if ((theme == 'ios-') || (theme == 'ubuntu-'))
-        {
-            padding = 4;
-            var R = (box.width-2*padding)/2;
-            htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
-        }
-        else
-        {
-            var size = 4;
-            htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+size);
-            htmlSvg += 'v-'+(size);
-            htmlSvg += 'h'+(size);
-            htmlSvg += 'M'+(box.left+box.width-padding-size)+','+(box.top+padding);
-            htmlSvg += 'h'+(size);
-            htmlSvg += 'v'+(size);
-            htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+box.height-padding-size);
-            htmlSvg += 'v'+(size);
-            htmlSvg += 'h-'+(size);
-            htmlSvg += 'M'+(box.left+padding+size)+','+(box.top+box.height-padding);
-            htmlSvg += 'h-'+(size);
-            htmlSvg += 'v-'+(size);
-        }
-    }
-    else if (opt.type == 'restore')
-    {
-        return '';
-
-        if ((theme == 'ios-') || (theme == 'ubuntu-'))
-        {
-            padding = 4;
-            var R = (box.width-2*padding)/2;
-            htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
-        }
-        else
-        {
-            var cascade = 3;
-            htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding+cascade);
-            htmlSvg += 'h'+(box.width-2*padding-cascade);
-            htmlSvg += 'v'+(box.height-2*padding-cascade);
-            htmlSvg += 'h-'+(box.width-2*padding-cascade);
-            htmlSvg += 'z';
-            htmlSvg += 'M'+(box.left+padding+cascade+1)+','+(box.top+padding+cascade);
-            htmlSvg += 'v-'+(cascade);
-            htmlSvg += 'h'+(box.width-2*padding-cascade-1);
-            htmlSvg += 'v'+(box.height-2*padding-cascade-1);
-            htmlSvg += 'h-'+(cascade);
-        }
-    }
-    else if (opt.type == 'close')
-    {
-        return '';
-        if ((theme == 'ios-') || (theme == 'ubuntu-'))
-        {
-            padding = 4;
-            //fill = '#FD7973';
-            //if (theme == 'ios-')
-              //  stroke = '#A6342E';//'#E1342E';
-            //else
-              //  stroke = '#E6^134';
-
-            var R = (box.width-2*padding)/2;
-            htmlSvg += 'M'+(padding)+','+(box.top+R+padding);
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 ' + 2*R + ',0';
-            htmlSvg += 'a'+R+','+R + ' 0 1,0 -' + 2*R + ',0';
-
-            //if (theme == 'ubuntu-')
-            {
-                padding += 2;
-                R = (box.width-2*padding)/2;
-            }
-    
-            var delta = R*Math.sqrt(2)/2;
-            hoverPath += 'M'+(padding+R-delta) + ',' + (padding+R-delta);
-            hoverPath += 'l'+(2*delta) + ',' + (2*delta);
-            hoverPath += 'M'+(padding+R-delta) + ',' + (padding+R+delta);
-            hoverPath += 'l'+(2*delta) + ',-' + (2*delta);
-        }
-        else
-        {
-            htmlSvg += 'M'+(box.left+padding)+','+(box.top+padding);
-            htmlSvg += 'L'+(box.left+box.width-padding)+','+(box.top+box.height-padding);
-            htmlSvg += 'M'+(box.left+box.width-padding)+','+(box.top+padding);
-            htmlSvg += 'L'+(box.left+padding)+','+(box.top+box.height-padding);
-        }
-    }
-    else
-    {
-    }
-    htmlSvg += '"';
-
-    if (stroke) 
-        htmlSvg += ' stroke="'+stroke+'"'; //#ED1C24
-    if (strokeWidth)
-        htmlSvg += ' stroke-width="'+strokeWidth+'"';
-    if (strokeOpacity) 
-        htmlSvg += ' stroke-opacity="'+strokeOpacity+'"'; //#ED1C24
-    if (fill) 
-        htmlSvg += ' fill="'+fill+'"'; //#ED1C24
-    else
-        htmlSvg += ' fill="none"';
-    if (fillOpacity) 
-        htmlSvg += ' fill-opacity="'+fillOpacity+'"'; //#ED1C24
-
-    htmlSvg +=   '/>';
-    if (hoverPath)
-    {
-        htmlSvg +=   '<path';
-        htmlSvg += ' d="';
-        htmlSvg += hoverPath;
-        htmlSvg += '"';
-
-        if (stroke) 
-            htmlSvg += ' stroke="none"'; //#ED1C24
-        if (strokeWidth)
-            htmlSvg += ' stroke-width="'+strokeWidth+'"';
-        if (strokeOpacity) 
-            htmlSvg += ' stroke-opacity="'+strokeOpacity+'"'; //#ED1C24
-        if (fill) 
-            htmlSvg += ' fill="'+fill+'"'; //#ED1C24
-        if (fillOpacity) 
-            htmlSvg += ' fill-opacity="'+fillOpacity+'"'; //#ED1C24
-        
-        htmlSvg +=   '/>';
-    }
-    htmlSvg += '</svg>';
-
-    return htmlSvg;
 }
 
 function measureText(text, cssClass)
@@ -792,7 +490,6 @@ function pureDialog()
                     if (section[i].toolTip)
                         barParts[type].title = section[i].toolTip;
                     barParts[type].className = _settings.theme + 'dlgIcon dlgMinimize';
-                    barParts[type].innerHTML = getSvgHtml({theme:_settings.theme,type:type,padding:4});
                     elemResizing.push(barParts[type]);
                     _clickableParts.push(barParts[type]);
                 }
@@ -805,7 +502,6 @@ function pureDialog()
                     if (section[i].toolTip)
                         barParts[type].title = section[i].toolTip;
                     barParts[type].className = _settings.theme + 'dlgIcon dlgMaximize';
-                    barParts[type].innerHTML = getSvgHtml({theme:_settings.theme,type:type,padding:5});
                     elemResizing.push(barParts[type]);
                     _clickableParts.push(barParts[type]);
                 }
@@ -818,7 +514,6 @@ function pureDialog()
                     if (section[i].toolTip)
                         barParts[type].title = section[i].toolTip;
                     barParts[type].className = _settings.theme + 'dlgIcon dlgFullScreen';
-                    barParts[type].innerHTML = getSvgHtml({theme:_settings.theme,type:type,padding:4});
                     elemResizing.push(barParts[type]);
                     _clickableParts.push(barParts[type]);
                 }
@@ -843,7 +538,6 @@ function pureDialog()
                     barParts['restore'] = top.document.createElement("div");
                     barParts['restore'].title = 'Restore';
                     barParts['restore'].className = _settings.theme + 'dlgIcon dlgRestore';
-                    barParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'restore',padding:4});
                     barParts['restore'].style.display = 'none';
                     barParts[posInBar].appendChild(barParts['restore']);
                     _clickableParts.push(barParts['restore']);
@@ -868,7 +562,6 @@ function pureDialog()
                     if (section[i].toolTip)
                         barParts[type].title = section[i].toolTip;
                     barParts[type].className = _settings.theme + 'dlgIcon dlgClose';
-                    barParts[type].innerHTML = getSvgHtml({theme:_settings.theme,type:type,padding:5});
                     barParts[posInBar].appendChild(barParts[type]);
                     _clickableParts.push(barParts[type]);
                 }
@@ -1065,7 +758,17 @@ function pureDialog()
         var rectTitleLeft = elemTitleParts['left'].getBoundingClientRect();
         var rectTitleText = elemTitleParts['caption'].getBoundingClientRect();
         var rectTitleRight = elemTitleParts['right'].getBoundingClientRect();
-        return (parseInt(rectTitleLeft.width,10) + parseInt(rectTitleText.width,10) + parseInt(rectTitleRight.width,10) + 4);
+
+        var leftOffset = parseInt(rectTitleLeft.width,10);
+        var rightOffset = parseInt(rectTitleRight.width,10);
+
+        var textAlign = elemTitleParts['caption'].parentNode.style.justifyContent;
+        if ((textAlign == 'center') || (textAlign == 'middle'))
+        {
+            if (rightOffset > leftOffset)
+                return 2*rightOffset + parseInt(rectTitleText.width,10) + 4;
+        }
+        return leftOffset + rightOffset + parseInt(rectTitleText.width,10) + 4;
     }
 
     function validatePosition(lastPos, nextPos)
@@ -1344,12 +1047,14 @@ function pureDialog()
         if (_lastSavePos.height)
             elemFrame.style.height = _lastSavePos.height + 'px';
 
-        if (elemTitleParts['restore'].classList.contains('Min'))
-            elemTitleParts['restore'].classList.remove('Min');
-        if (elemTitleParts['restore'].classList.contains('Max'))
-            elemTitleParts['restore'].classList.remove('Max');
-        if (elemTitleParts['restore'].classList.contains('Full'))
-            elemTitleParts['restore'].classList.remove('Full');
+        if (elemTitleParts['restore'].classList.contains('dlgRestoreMin'))
+            elemTitleParts['restore'].classList.remove('dlgRestoreMin');
+        if (elemTitleParts['restore'].classList.contains('dlgRestoreMax'))
+            elemTitleParts['restore'].classList.remove('dlgRestoreMax');
+        if (elemTitleParts['restore'].classList.contains('dlgRestoreFull'))
+            elemTitleParts['restore'].classList.remove('dlgRestoreFull');
+
+        elemTitleParts['restore'].classList.add('dlgRestore');
 
         _dlgStatus = 'normal';
         _lastSavePos = {};
@@ -1397,7 +1102,8 @@ function pureDialog()
         {
             log('onToggleFullScreen', 'switching to fullscreen');
 
-            elemTitleParts['restore'].classList.add('Full');
+            elemTitleParts['restore'].classList.remove('dlgRestore');
+            elemTitleParts['restore'].classList.add('dlgRestoreFull');
 
             saveLocation('fullscreen');
 
@@ -1475,7 +1181,6 @@ function pureDialog()
 
         var rectTitle = elemTitle.getBoundingClientRect();
         elemFrame.style.height  = (parseInt(topBorder, 10) + parseInt(bottomBorder, 10) + parseInt(topPadding, 10) + parseInt(bottomPadding, 10) + parseInt(rectTitle.height,10)) + 'px';
-        elemFrame.style.width = getMinDragWidth() + 'px';
 
         if (elemContent)
             elemContent.style.display = 'none';
@@ -1483,17 +1188,15 @@ function pureDialog()
             elemFooter.style.display = 'none';
         if (elemTitleParts['restore'])
         {
-            elemTitleParts['restore'].classList.add('Min');
-
-            if (_settings.theme == 'win10-')
-                elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'restore',padding:4});
-            else
-                elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'minimize',padding:4});
+            elemTitleParts['restore'].classList.remove('dlgRestore');
+            elemTitleParts['restore'].classList.add('dlgRestoreMin');
             elemTitleParts['restore'].style.display = 'flex';
         }
 
         //after all being visible
         reLocateTitleText();
+
+        elemFrame.style.width = getMinDragWidth() + 'px';
     }
 
     function onToggleMax(event)
@@ -1514,12 +1217,8 @@ function pureDialog()
 
         if (elemTitleParts['restore'])
         {
-            elemTitleParts['restore'].classList.add('Max');
-
-            if (_settings.theme == 'win10-')
-                elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'restore',padding:4});
-            else
-                elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'maximize',padding:4});
+            elemTitleParts['restore'].classList.remove('dlgRestore');
+            elemTitleParts['restore'].classList.add('dlgRestoreMax');
             elemTitleParts['restore'].style.display = 'flex';
         }
 
