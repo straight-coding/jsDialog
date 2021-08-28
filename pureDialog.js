@@ -162,6 +162,8 @@ function getSvgHtml(opt)
     htmlSvg += ' d="';
     if (opt.type == 'menu')
     {
+        return '';
+        
         if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
@@ -185,6 +187,8 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'minimize')
     {
+        return '';
+
         if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
@@ -213,6 +217,8 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'maximize')
     {
+        return '';
+
         if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
@@ -246,6 +252,8 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'fullscreen')
     {
+        return '';
+
         if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
@@ -273,6 +281,8 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'restore')
     {
+        return '';
+
         if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
@@ -298,6 +308,7 @@ function getSvgHtml(opt)
     }
     else if (opt.type == 'close')
     {
+        return '';
         if ((theme == 'ios-') || (theme == 'ubuntu-'))
         {
             padding = 4;
