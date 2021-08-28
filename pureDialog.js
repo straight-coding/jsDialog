@@ -841,7 +841,7 @@ function pureDialog()
             }            
             else if (type == 'caption')
             {
-                barParts[type] = elementFromHTML(section[i].content + '&nbsp;&nbsp;');
+                barParts[type] = elementFromHTML('&nbsp;&nbsp;' + section[i].content + '&nbsp;&nbsp;');
                 if (section[i].toolTip)
                     barParts[type].title = section[i].toolTip;
                 barParts[type].className = _settings.theme + 'dlgHeadline';
@@ -1333,6 +1333,13 @@ function pureDialog()
         if (_lastSavePos.height)
             elemFrame.style.height = _lastSavePos.height + 'px';
 
+        if (elemTitleParts['restore'].classList.contains('Min'))
+            elemTitleParts['restore'].classList.remove('Min');
+        if (elemTitleParts['restore'].classList.contains('Max'))
+            elemTitleParts['restore'].classList.remove('Max');
+        if (elemTitleParts['restore'].classList.contains('Full'))
+            elemTitleParts['restore'].classList.remove('Full');
+
         _dlgStatus = 'normal';
         _lastSavePos = {};
 
@@ -1378,6 +1385,8 @@ function pureDialog()
         else 
         {
             log('onToggleFullScreen', 'switching to fullscreen');
+
+            elemTitleParts['restore'].classList.add('Full');
 
             saveLocation('fullscreen');
 
@@ -1450,9 +1459,11 @@ function pureDialog()
 
         var topBorder = getComputedStyle(elemFrame,null).getPropertyValue('border-top-width');
         var bottomBorder = getComputedStyle(elemFrame,null).getPropertyValue('border-bottom-width');
+        var topPadding = getComputedStyle(elemFrame,null).getPropertyValue('padding-top');
+        var bottomPadding = getComputedStyle(elemFrame,null).getPropertyValue('padding-bottom');
 
         var rectTitle = elemTitle.getBoundingClientRect();
-        elemFrame.style.height = (parseInt(topBorder, 10) + parseInt(bottomBorder, 10) + parseInt(rectTitle.height,10)) + 'px';
+        elemFrame.style.height  = (parseInt(topBorder, 10) + parseInt(bottomBorder, 10) + parseInt(topPadding, 10) + parseInt(bottomPadding, 10) + parseInt(rectTitle.height,10)) + 'px';
         elemFrame.style.width = getMinDragWidth() + 'px';
 
         if (elemContent)
@@ -1461,7 +1472,12 @@ function pureDialog()
             elemFooter.style.display = 'none';
         if (elemTitleParts['restore'])
         {
-            elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'minimize',padding:4});
+            elemTitleParts['restore'].classList.add('Min');
+
+            if (_settings.theme == 'win10-')
+                elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'restore',padding:4});
+            else
+                elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'minimize',padding:4});
             elemTitleParts['restore'].style.display = 'flex';
         }
 
@@ -1487,7 +1503,12 @@ function pureDialog()
 
         if (elemTitleParts['restore'])
         {
-            elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'maximize',padding:4});
+            elemTitleParts['restore'].classList.add('Max');
+
+            if (_settings.theme == 'win10-')
+                elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'restore',padding:4});
+            else
+                elemTitleParts['restore'].innerHTML = getSvgHtml({theme:_settings.theme,type:'maximize',padding:4});
             elemTitleParts['restore'].style.display = 'flex';
         }
 
