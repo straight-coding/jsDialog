@@ -451,7 +451,7 @@ function pureDialog()
             barParts['middle'] = top.document.createElement("div");
             barParts['middle'].className = 'Middle';
             barParts['middle'].style.zIndex = _settings.zIndex + 3;
-            if (barConfig.middleAlign == 'center')
+            if ((barConfig.middleAlign == 'center') || (barConfig.middleAlign == 'middle'))
                 barParts['middle'].style['justify-content'] = 'center';
             else //if (barConfig.middleAlign == 'left')
                 barParts['middle'].style.paddingLeft = parseInt(leftWidth,10) + 'px';
@@ -888,6 +888,8 @@ function pureDialog()
 
             _lastMovePos.x = event.clientX;
             _lastMovePos.y = event.clientY;
+
+            elemContent.style.pointerEvents = 'none';
         }
     }
 
@@ -913,6 +915,8 @@ function pureDialog()
         var deltaY = parseInt(event.clientY - _lastMovePos.y, 10);
             _lastMovePos.x = event.clientX;
             _lastMovePos.y = event.clientY;
+
+        //log('deltaX', deltaX, 'deltaY', deltaY);
 
         if ((deltaX == 0) && (deltaY == 0))
             return;
@@ -977,6 +981,8 @@ function pureDialog()
 
         _dragging = null;
         _lastMovePos = {};
+
+        elemContent.style.pointerEvents = '';
     }
 
     function isRealObject(obj)
