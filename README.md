@@ -122,7 +122,8 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
                       cssClass: '',
                       content: 'Yes/是',
                       toolTip: 'Yes/是',
-                      onClicked: function() {
+                      onClicked: function() 
+                      {
                         dlgDemo.close();  //close the parent widget
                         confirm.close();  //close the current widget
                       }
@@ -132,7 +133,8 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
                       cssClass: '',
                       content: 'No/否',
                       toolTip: 'No/否',
-                      onClicked: function() {
+                      onClicked: function() 
+                      {
                         confirm.close();
                       }
                     }
