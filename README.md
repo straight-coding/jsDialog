@@ -2,6 +2,38 @@
 
 pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a widget with features such as dragging, resizing, minimizing/maximizing window, full screen, etc. 
 
+# Warning dialog
+```
+           new pureDialog('Warning', 'Operation failed');
+```
+
+# Confirm dialog
+```
+          var confirm = new pureDialog('Confirmation','<span>Are you sure to continue ?</span>', {
+                  right: [{
+                      type: 'button',
+                      cssClass: '',
+                      content: 'Yes/是',
+                      toolTip: 'Yes/是',
+                      onClicked: function() { //do your job
+                        new pureDialog('Information', 'Operation succeeded');
+                        confirm.close();
+                      }
+                    },
+                    {
+                      type: 'button',
+                      cssClass: '',
+                      content: 'No/否',
+                      toolTip: 'No/否',
+                      onClicked: function() { //giveup
+                        new pureDialog('Warning', 'Operation canceled');
+                        confirm.close();
+                      }
+                    }
+                  ]
+                });
+```
+
 # Customize a widget
 
  [`See demo here `](https://straight-coding.github.io/pureDialog)
