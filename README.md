@@ -2,6 +2,8 @@
 
 pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a widget with features such as dragging, resizing, minimizing/maximizing window, full screen, etc. 
 
+ [`See demo here `](https://straight-coding.github.io/pureDialog)
+
 # Warning dialog
 ```
           new pureDialog('Warning', 'Operation failed');
@@ -35,8 +37,6 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
 ```
 
 # Customize a widget
-
- [`See demo here `](https://straight-coding.github.io/pureDialog)
 
 ```
           var dlgDemo = new pureDialog({
