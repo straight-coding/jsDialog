@@ -10,7 +10,7 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
               width: 600,        //in pixels
               height: 400,       //in pixels
               dragging: true,    //the title is draggable
-              resizing: {        //the border is deaggable
+              resizing: {        //the border is draggable
                 handleSize: 4,   //detection width of the draggable area
                 minWidth: 320,   //minimum width of the widget
                 maxWidth: 1024,  //maximum width of the widget
