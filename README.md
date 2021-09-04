@@ -47,7 +47,7 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
                   {
                     type: 'caption',
                     cssClass: '',
-                    content: document.getElementById('title').value
+                    content: 'Text on Title'
                   }
                 ],
                 right: [
@@ -94,7 +94,7 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
                 middle: [
                   {
                     type: 'html',
-                    content: document.getElementById('footer_text').value
+                    content: 'Text on Footer'
                   }
                 ],
                 right: [
