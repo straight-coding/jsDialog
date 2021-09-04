@@ -7,6 +7,7 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
 # Warning dialog
 ```
           new pureDialog('Warning', 'Operation failed');
+          new pureDialog('Warning like ios', 'Operation failed', {theme: 'ios'});
 ```
 
 # Confirm dialog
