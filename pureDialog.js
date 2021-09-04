@@ -24,12 +24,20 @@ if (window.top === window.self)
 
     function dialogGC()
     {
+        if (Object.keys(deadDialogs).length == 0)
+            return;
+
         for(var dlgID in deadDialogs)
         {
             var dlg = top.document.getElementById(dlgID);
             if (dlg && dlg.parentNode)
                 dlg.parentNode.removeChild(dlg);
             delete deadDialogs[dlgID];
+        }
+
+        if (Object.keys(liveDialogs).length == 0)
+        {
+            zIndexNext = zIndexStart;
         }
     }
 }
@@ -57,9 +65,8 @@ function getNextZindex()
 
 function deferRemove(dlgID)
 {
-    top.deadDialogs[dlgID] = {
-        t: new Date()
-    }
+    delete top.liveDialogs[dlgID];
+    top.deadDialogs[dlgID] = { t: new Date() };
 }
 
 function valid(val)
@@ -361,6 +368,8 @@ function pureDialog()
     else
         elemTopBody.appendChild(elemOverlay);
 
+    top.liveDialogs[_settings.id] = { t: new Date() };
+    
     var handleSize = 0;
     if (_settings.resizing && _settings.resizing.handleSize)
         handleSize = _settings.resizing.handleSize;
