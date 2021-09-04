@@ -2,7 +2,7 @@
 
 pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a widget with features such as dragging, resizing, minimizing/maximizing window, full screen, etc. 
 
-# Custimize a widget
+# Customize a widget
 
  [`See demo here `](https://straight-coding.github.io/pureDialog)
 
