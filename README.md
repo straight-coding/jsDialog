@@ -4,7 +4,7 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
 
 # Warning dialog
 ```
-           new pureDialog('Warning', 'Operation failed');
+          new pureDialog('Warning', 'Operation failed');
 ```
 
 # Confirm dialog
@@ -12,9 +12,9 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
           var confirm = new pureDialog('Confirmation','<span>Are you sure to continue ?</span>', {
                   right: [{
                       type: 'button',
-                      cssClass: '',
+                      cssClass: '',        //optional
                       content: 'Yes/是',
-                      toolTip: 'Yes/是',
+                      toolTip: 'Yes/是',   //optional
                       onClicked: function() { //do your job
                         new pureDialog('Information', 'Operation succeeded');
                         confirm.close();
@@ -22,9 +22,9 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
                     },
                     {
                       type: 'button',
-                      cssClass: '',
+                      cssClass: '',       //optional
                       content: 'No/否',
-                      toolTip: 'No/否',
+                      toolTip: 'No/否',   //optional
                       onClicked: function() { //giveup
                         new pureDialog('Warning', 'Operation canceled');
                         confirm.close();
