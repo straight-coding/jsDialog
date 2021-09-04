@@ -13,6 +13,7 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
 # Confirm dialog
 ```
           var confirm = new pureDialog('Confirmation','<span>Are you sure to continue ?</span>', {
+                  theme: 'ios',            //optional
                   right: [{
                       type: 'button',
                       cssClass: '',        //optional
