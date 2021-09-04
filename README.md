@@ -6,22 +6,22 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
 
 ```
           var dlgDemo = new pureDialog({
-              theme: 'win10',
-              width: 600,
-              height: 400,
-              dragging: true,
-              resizing: {
-                handleSize: 4,
-                minWidth: 320,
-                maxWidth: 1024,
-                minHeight: 200,
-                maxHeight: 800
+              theme: 'win10',    //'win10', 'ios', 'jquery', 'ubuntu'
+              width: 600,        //in pixels
+              height: 400,       //in pixels
+              dragging: true,    //the title is draggable
+              resizing: {        //the border is deaggable
+                handleSize: 4,   //detection width of the draggable area
+                minWidth: 320,   //minimum width of the widget
+                maxWidth: 1024,  //maximum width of the widget
+                minHeight: 200,  //minimum height of the widget
+                maxHeight: 800   //maximum height of the widget
               },
               title: {
                 left: [
                   {
-                    type: 'close',
-                    toolTip: 'Close'
+                    type: 'close',      //'close', 'minimize', 'maximize', 'fullscreen', 'button', 'caption', 'icon' or 'html'
+                    toolTip: 'Close'    //multilingual wording
                   },
                   {
                     type: 'minimize',
@@ -37,17 +37,17 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
                   },
                   {
                     type: 'icon',
-                    cssClass: 'dlgMenu',
+                    cssClass: 'dlgMenu',      //customized css class
                     toolTip: 'Menu',
-                    onClicked: function() {}
+                    onClicked: function() {}  //additional operation when clicked
                   }
                 ],
-                middleAlign: 'center',
+                middleAlign: 'center',        //'center' or 'left', alignment of the text content in 'middle' block
                 middle: [
                   {
                     type: 'caption',
                     cssClass: '',
-                    content: 'Text on Title'
+                    content: 'Text on Title'  //html content to show
                   }
                 ],
                 right: [
@@ -70,17 +70,17 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
                 ]
               },
               content: {
-                iframe: true,
-                url: 'examples/login.html'
+                iframe: true,                  //content will be wrapped in an iframe element
+                url: 'examples/login.html'     //url of the content
               },
               footer: {
                 left: [
                   {
                     type: 'button',
-                    cssClass: '',
-                    content: 'Prev',
-                    toolTip: 'Prev',
-                    onClicked: function() {}
+                    cssClass: '',             //customized css class
+                    content: 'Prev',          //multilingual wording
+                    toolTip: 'Prev',          //multilingual wording
+                    onClicked: function() {}  //additional operation when clicked
                   },
                   {
                     type: 'button',
@@ -123,8 +123,8 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
                       content: 'Yes/是',
                       toolTip: 'Yes/是',
                       onClicked: function() {
-                        dlgDemo.close();
-                        confirm.close();
+                        dlgDemo.close();  //close the parent widget
+                        confirm.close();  //close the current widget
                       }
                     },
                     {
