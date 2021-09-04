@@ -70,7 +70,7 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
                 ]
               },
               content: {
-                iframe: true,                  //content will be wrapped in an iframe element
+                iframe: true,                  //content will be wrapped by an iframe element
                 url: 'examples/login.html'     //url of the content
               },
               footer: {
