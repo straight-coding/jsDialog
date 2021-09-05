@@ -14,7 +14,8 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
  
 # Customization
 
-  Before creating your own dialog theme (such as named 'diy'), you could make a copy (named 'pureDialog-diy.css') from any of 'pureDialog-win10.css', 'pureDialog-jquery.css', 'pureDialog-ios.css', or  'pureDialog-ubuntu.css', then rename all class prefix in this css file, such as renaming '.win10-dlgFrame' to '.diy-dlgFrame'.
+  Before creating your own dialog theme (such as named 'diy'), you could make a copy (named 'pureDialog-diy.css') from any of 'pureDialog-win10.css', 'pureDialog-jquery.css', 'pureDialog-ios.css', or 'pureDialog-ubuntu.css', then rename all class prefixes in this css file, for example, renaming '.win10-dlgFrame' to '.diy-dlgFrame'.
+  
   In additional, you should change the default theme defined in pureDialog.js.
   ```
       var defaultTheme = 'win10';    ====>     var defaultTheme = 'diy';
