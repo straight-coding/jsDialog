@@ -63,7 +63,7 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
 
 ```
   var dlgDemo = new pureDialog({
-      theme: 'win10',    //'win10', 'ios', 'jquery', 'ubuntu'
+      theme: 'win10',    //builtin themes: 'win10', 'ios', 'jquery', 'ubuntu'
       width: 600,        //in pixels
       height: 400,       //in pixels
       dragging: true,    //the title is draggable
