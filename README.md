@@ -3,10 +3,10 @@
 pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a widget with features such as dragging, resizing, minimizing/maximizing window, full screen, etc. 
 
  [`See demo here `](https://straight-coding.github.io/pureDialog)
- [Windows 10](/demo-win10.png)
- [jQuery](/demo-jquery.png)
- [IOS](/demo-ios.png)
- [Ubuntu](/demo-ubuntu.png)
+ ![Windows 10](/demo-win10.png)
+ ![jQuery](/demo-jquery.png)
+ ![IOS](/demo-ios.png)
+ ![Ubuntu](/demo-ubuntu.png)
 
 # Warning dialog
 ```
