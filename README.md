@@ -4,13 +4,13 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
 
  [`See demo here `](https://straight-coding.github.io/pureDialog)
  
-     ![Windows 10](/demo-win10.png)
+   ![Windows 10](/demo-win10.png)
  
-     ![jQuery](/demo-jquery.png)
+   ![jQuery](/demo-jquery.png)
  
-     ![IOS](/demo-ios.png)
+   ![IOS](/demo-ios.png)
  
-     ![Ubuntu](/demo-ubuntu.png)
+   ![Ubuntu](/demo-ubuntu.png)
  
 
 # Warning dialog
