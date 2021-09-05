@@ -181,3 +181,8 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
               onClosed: function(context, result) {}
           });
 ```
+
+# Element layout
+
+  ![Elements](/element-layout.png)
+  
