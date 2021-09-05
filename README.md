@@ -20,7 +20,7 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
   ```
       var defaultTheme = 'win10';    ====>     var defaultTheme = 'diy';
         
-        or call the following function before creating widget
+  or call the following function before creating any widget
         
       setTheme('diy');
   ```
