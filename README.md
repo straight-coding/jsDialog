@@ -184,5 +184,7 @@ pureDialog is written in pure HTML/CSS/JS. This module allows you to customize a
 
 # Element layout
 
+  CSS class name is on the top left corner of the relavant element.
+
   ![Elements](/element-layout.png)
   
