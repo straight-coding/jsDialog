@@ -6,8 +6,6 @@
 
 'use strict';
 
-var svgByScript = false;
-
 if (window.top === window.self)
 {
     var zIndexStart = 10000;
@@ -370,18 +368,18 @@ function pureDialog()
 
     top.liveDialogs[_settings.id] = { t: new Date() };
     
-    var handleSize = 0;
+    var _handleSize = 4;
     if (_settings.resizing && _settings.resizing.handleSize)
-        handleSize = _settings.resizing.handleSize;
+        _handleSize = _settings.resizing.handleSize;
 
     var rectOverlay = elemOverlay.getBoundingClientRect();
-    var dlgTop  = (parseInt(rectOverlay.height,10) - _settings.height - 2*handleSize)/2;
-    var dlgLeft = (parseInt(rectOverlay.width,10) - _settings.width - 2*handleSize)/2;
+    var dlgTop  = (parseInt(rectOverlay.height,10) - _settings.height - 2*_handleSize)/2;
+    var dlgLeft = (parseInt(rectOverlay.width,10) - _settings.width - 2*_handleSize)/2;
 
     var elemFrame = top.document.createElement("div");
         elemFrame.className = _settings.theme + 'dlgFrame';
-        elemFrame.style.width  = (_settings.width + 2 * handleSize) + 'px';
-        elemFrame.style.height = (_settings.height + 2 * handleSize) + 'px';
+        elemFrame.style.width  = (_settings.width + 2 * _handleSize) + 'px';
+        elemFrame.style.height = (_settings.height + 2 * _handleSize) + 'px';
         elemFrame.style.left = (dlgLeft>0 ? dlgLeft : 0) + 'px';
         elemFrame.style.top = (dlgTop>0 ? dlgTop: 0) + 'px';
         elemFrame.style.zIndex = _settings.zIndex + 1;
@@ -871,7 +869,7 @@ function pureDialog()
         if (hoverClickable(event))
             return;
 
-        var pos = hoverFrame(event, 4);
+        var pos = hoverFrame(event, _handleSize);
         if (pos)
         {
             if ((_dlgStatus == 'maximized') || (_dlgStatus == 'fullscreen'))
@@ -915,7 +913,7 @@ function pureDialog()
                 return;
             }
 
-            var pos = hoverFrame(event, 4);
+            var pos = hoverFrame(event, _handleSize);
             changeCursor(pos);
             return;
         }
